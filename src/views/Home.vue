@@ -52,6 +52,5 @@ import { Component, Vue } from 'vue-property-decorator';
 })
 export default class Home extends Vue {
 	public drawer = null;
-
 }
 </script>

@@ -1,5 +1,9 @@
 {
   "defaultSeverity": "warning",
+  "globals": {
+    "_": true,
+    "errors":true
+  },
   "extends": [
     "tslint:recommended"
   ],
@@ -9,8 +13,9 @@
     ]
   },
   "rules": {
+    "no-shadowed-variable":false,
     "quotemark": [true, "single"],
-    "indent": [true, "tabs", 2],
+    "indent": [true, "tabs",2],
     "align": [true, "parameters", "statements"],
     "interface-name": false,
     "ordered-imports": false,
