@@ -5,11 +5,11 @@ import getters from './getters';
 
 Vue.use(Vuex);
 
-const requireContext = require.context('./modules', false, /.*\.js$/);
+const requireContext = require.context('./modules', false, /.*\.ts$/);
 
 const modules: any = requireContext.keys()
 	.map((file) =>
-		[file.replace(/(^.\/)|(\.js$)/g, ''), requireContext(file)],
+		[file.replace(/(^.\/)|(\.ts$)/g, ''), requireContext(file)],
 	)
 	.reduce((moduless, [name, module]) => {
 		(moduless as any)[name] = module;

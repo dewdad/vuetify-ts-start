@@ -43,18 +43,25 @@ export default class App extends Vue {
 		};
 	}
 
-	public setLayout(layout: string): void {
+	public mounted() {
+		this.$bus.$on('linear:start', this.start, this);
+		this.$bus.$on('setLayout', (layout: string) => {
+			this.setLayout(layout);
+		}, this);
+	}
+
+	private setLayout(layout: string): void {
 		if (!layout || !layouts[layout]) {
 			layout = this.defaultLayout;
 		}
 		this.layout = layouts[layout];
 	}
 
-	public start() {
+	private start() {
 		this.$refs.loading.start();
 	}
 
-	public finish() {
+	private finish() {
 		this.$refs.loading.finish();
 	}
 

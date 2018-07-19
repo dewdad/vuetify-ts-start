@@ -1,7 +1,7 @@
 import { RouteConfig } from 'vue-router/types/router';
 import Route from './route';
 
-const route = new Route();
+export const route = new Route();
 route.view('/', 'Home.vue').name('home').meta({ title: 'home', icon: 'home', noCache: true });
 route.view('/about', 'About.vue').name('about').meta({ title: 'about', icon: 'apps', noCache: true });
 

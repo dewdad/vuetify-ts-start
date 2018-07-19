@@ -90,10 +90,10 @@ function setLayout(router: Router, to: Route) {
 			router.app.$nextTick(() => {
 			// Start the page loading bar.
 				if ((component as any).loading !== false) {
-					(router.app as any).start();
+					router.app.$bus.$emit('linear:start');
 				}
 				// Set application layout.
-				(router.app as any).setLayout((component as any).layout || '');
+				router.app.$bus.$emit('setLayout', (component as any).layout || '');
 			});
 		}
 	});

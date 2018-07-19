@@ -1,5 +1,5 @@
 const getters = {
-	// drawer: (state: any) => state.app.drawer,
+	drawer: (state: any) => state.app.drawer,
 	// sidebar: (state: any) => state.app.sidebar,
 	// language: (state: any) => state.app.language,
 	// device: (state: any) => state.app.device,
@@ -14,7 +14,7 @@ const getters = {
 	// setting: (state: any) => state.user.setting,
 	// permission_routers: (state: any) => state.permission.routers,
 	// // 导航
-	// drawers: (state: any) => state.permission.drawers,
+	drawers: (state: any) => state.permission.drawers,
 	// addRouters: (state: any) => state.permission.addRouters,
 	// errorLogs: (state: any) => state.errorLog.logs,
 	// snackbar: (state: any) => state.app.snackbar,

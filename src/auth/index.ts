@@ -80,7 +80,7 @@ export default class Auth {
 		this.router.afterEach((to, from) => {
 			const { app } = this.router;
 			app.$nextTick(() => {
-				(app as any).finish();
+				app.$bus.$emit('linear:start');
 			});
 		});
 	}
