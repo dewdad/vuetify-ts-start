@@ -20,20 +20,22 @@
 import { Component, Vue } from 'vue-property-decorator';
 import ListItem from './ListItem.vue';
 @Component({
-  components:{
-    'list-item':ListItem
-  }
+	components: {
+		'list-item': ListItem,
+	},
 })
 export default class Drawer extends Vue {
-  get routes(){
-    return this.$store.getters.drawers;
-  }
+	get routes() {
+		return this.$store.getters.drawers;
+	}
 
-  get drawer(){
-    return this.$store.getters.drawer 
-  }
 
-  set drawer(val){
-    this.$store.dispatch('app/changeDrawer', val);
-  }
+	get drawer() {
+		return this.$store.getters.drawer;
+	}
+
+	set drawer(val) {
+		this.$store.dispatch('app/changeDrawer', val);
+	}
 }
+</script>

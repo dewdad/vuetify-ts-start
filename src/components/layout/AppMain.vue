@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fill-height>
       <transition name="fade-transform" mode="out-in">
         <keep-alive :include="cachedViews">
           <router-view :key="key"></router-view>
@@ -13,6 +13,12 @@ import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Main extends Vue {
+	get cachedViews() {
+		return this.$store.state.tagsView.cachedViews;
+	}
 
+	get key() {
+		return this.$route.fullPath;
+	}
 }
 </script>

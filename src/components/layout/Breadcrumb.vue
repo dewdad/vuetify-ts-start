@@ -1,6 +1,5 @@
 <template>
   <v-breadcrumbs divider="/" class="breadcrumbs">
-    <!-- <transition-group name="breadcrumb"> -->
       <v-breadcrumbs-item
         v-for="(item,index) in levelList"
         :key="item.path"
@@ -8,9 +7,8 @@
         :to="item.redirect||item.path"
         :class="{'no-redirect':routerDisabled(item,index)}"
       >
-        {{ generateTitle(item.meta.title) }}
+        {{ item.meta.title }}
       </v-breadcrumbs-item>
-    <!-- </transition-group> -->
   </v-breadcrumbs>
 </template>
 

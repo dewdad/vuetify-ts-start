@@ -1,8 +1,8 @@
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 import store from '@/store';
 import Meta from 'vue-meta';
 import routes from './routes';
-import Router, { RouterOptions, Route, RouteRecord, RawLocation } from 'vue-router';
+import Router, {  Route, RouteRecord, RawLocation } from 'vue-router';
 import { sync } from 'vuex-router-sync';
 import { PositionResult, RouteConfig, Position, NavigationGuard } from 'vue-router/types/router';
 import Auth from '@/auth';
@@ -71,6 +71,7 @@ function make(routes: RouteConfig[]) {
 	const auth = new Auth(router);
 	auth.attempt(setLayout);
 
+
 	return router;
 }
 
@@ -84,6 +85,7 @@ export type SetLayout = (router: Router, to: Route) => void;
 
 function setLayout(router: Router, to: Route) {
 	// Get the first matched component.
+
 	router.onReady(() => {
 		const [component] = router.getMatchedComponents({ ...to });
 		if (component) {
@@ -93,7 +95,16 @@ function setLayout(router: Router, to: Route) {
 					router.app.$bus.$emit('linear:start');
 				}
 				// Set application layout.
-				router.app.$bus.$emit('setLayout', (component as any).layout || '');
+				let layout = 'app';
+				if (component.hasOwnProperty('options')) {
+					layout = (component as any).options.layout;
+				}
+				if (component.hasOwnProperty('resolved')) {
+
+
+					layout = (component as any).resolved.options.layout;
+				}
+				router.app.$bus.$emit('setLayout', layout);
 			});
 		}
 	});

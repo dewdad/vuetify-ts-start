@@ -6,16 +6,11 @@ import getters from './getters';
 Vue.use(Vuex);
 
 const requireContext = require.context('./modules', false, /.*\.ts$/);
-
-const modules: any = requireContext.keys()
-	.map((file) =>
-		[file.replace(/(^.\/)|(\.ts$)/g, ''), requireContext(file)],
-	)
-	.reduce((moduless, [name, module]) => {
-		(moduless as any)[name] = module;
-		(moduless as any)[name].namespaced = true;
-		return modules;
-	}, {});
+interface VuexModule {[propName: string]: any; }
+const modules: VuexModule = requireContext.keys()
+	.map((file) => [file.replace(/(^.\/)|(\.ts$)/g, ''), requireContext(file)])
+	// tslint:disable-next-line:max-line-length
+	.reduce((moduless: VuexModule, [name, module]) => ({...moduless, ...{[name]: {...module, namespaced: true}} }), {});
 
 export default new Vuex.Store({
 	modules,

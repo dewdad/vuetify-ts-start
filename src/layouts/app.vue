@@ -16,12 +16,13 @@ import {  AppMain, Footerbar, Drawer, Toolbar } from '@/components/layout';
 
 @Component({
 	components: {
+		'drawer': Drawer,
 		'toolbar': Toolbar,
 		'app-main': AppMain,
 		'footerbar': Footerbar,
 	},
 })
-export default class AppComponent extends Vue {
+export default class AppLayout extends Vue {
 
 }
 </script>
