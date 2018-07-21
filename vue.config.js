@@ -1,11 +1,12 @@
-const webpack = require('webpack');
+const webpack = require('webpack')
+
 module.exports = {
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({
-        _: 'lodash',
-      }),
-    ],
+        _: 'lodash'
+      })
+    ]
   },
   pluginOptions: {
     enableInSFC: false

@@ -1,21 +1,21 @@
-import {LoDashStatic} from 'lodash';
-import { EventBus } from '@/plugins/event';
-import Vue from 'vue';
+import { LoDashStatic } from 'lodash'
+import { EventBus } from '@/plugins/event'
+import Vue from 'vue'
 
 declare global {
-	const _: LoDashStatic;
+  const _: LoDashStatic
 }
 
 declare module 'vue/types/vue' {
-	interface Vue {
+  interface Vue {
 $bus: EventBus;
-	}
+  }
 
 }
 
 // ComponentOptions is declared in types/options.d.ts
 declare module 'vue/types/options' {
-	interface ComponentOptions<V extends Vue> {
+  interface ComponentOptions<V extends Vue> {
 layout?: string;
-	}
+  }
 }

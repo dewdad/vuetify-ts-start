@@ -1,15 +1,15 @@
-import Vue, { VueConstructor } from 'vue';
-import store from '@/store';
-import Meta from 'vue-meta';
-import routes from './routes';
-import Router, {  Route, RouteRecord, RawLocation } from 'vue-router';
-import { sync } from 'vuex-router-sync';
-import { PositionResult, RouteConfig, Position, NavigationGuard } from 'vue-router/types/router';
-import Auth from '@/auth';
+import Vue, { VueConstructor } from 'vue'
+import store from '@/store'
+import Meta from 'vue-meta'
+import routes from './routes'
+import Router, { Route, RouteRecord, RawLocation } from 'vue-router'
+import { sync } from 'vuex-router-sync'
+import { PositionResult, RouteConfig, Position, NavigationGuard } from 'vue-router/types/router'
+import Auth from '@/auth'
 // import { getToken } from '@/utils/auth' // getToken from cookie
 
-Vue.use(Meta);
-Vue.use(Router);
+Vue.use(Meta)
+Vue.use(Router)
 
 /**
  * Redirect to login if guest.
@@ -17,22 +17,19 @@ Vue.use(Router);
  * @param  {RouteConfig[]} routes
  * @return {Array}
  */
-type Guard = (arg: RouteConfig[]) => RouteConfig[];
+type Guard = (arg: RouteConfig[]) => RouteConfig[]
 
-
-const authGuard: Guard = (routes) => {
-	return beforeEnter(routes, (to, from, next) => {
-		// if (!getToken()) {
-		//   next({
-		//     name: 'login',
-		//     query: { redirect: to.fullPath }
-		//   })
-		// } else {
-		//   next()
-		// }
-		next();
-	});
-};
+const authGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
+  // if (!getToken()) {
+  //   next({
+  //     name: 'login',
+  //     query: { redirect: to.fullPath }
+  //   })
+  // } else {
+  //   next()
+  // }
+  next()
+})
 
 /**
  * Redirect home if authenticated.
@@ -40,20 +37,15 @@ const authGuard: Guard = (routes) => {
  * @param  {RouteConfig[]} routes
  * @return {Array}
  */
-const guestGuard: Guard = (routes: RouteConfig[]) => {
-	return beforeEnter(routes, (to, from, next) => {
-		next();
-	});
-};
+const guestGuard: Guard = (routes: RouteConfig[]) => beforeEnter(routes, (to, from, next) => {
+  next()
+})
 
+const router = make(routes({ authGuard, guestGuard }))
 
-const router = make(
-	routes({ authGuard, guestGuard }),
-);
+sync(store, router)
 
-sync(store, router);
-
-export default router;
+export default router
 
 /**
  * Create a new router instance.
@@ -61,18 +53,17 @@ export default router;
  * @param  {RouteConfig[]} routes
  * @return {Router}
  */
-function make(routes: RouteConfig[]) {
-	const router = new Router({
-		routes,
-		scrollBehavior,
-		mode: 'history',
-	});
+function make (routes: RouteConfig[]) {
+  const router = new Router({
+    routes,
+    scrollBehavior,
+    mode: 'history'
+  })
 
-	const auth = new Auth(router);
-	auth.attempt(setLayout);
+  const auth = new Auth(router)
+  auth.attempt(setLayout)
 
-
-	return router;
+  return router
 }
 
 /**
@@ -81,35 +72,32 @@ function make(routes: RouteConfig[]) {
  * @param {Router} router
  * @param {Route} to
  */
-export type SetLayout = (router: Router, to: Route) => void;
+export type SetLayout = (router: Router, to: Route) => void
 
-function setLayout(router: Router, to: Route) {
-	// Get the first matched component.
+function setLayout (router: Router, to: Route) {
+  // Get the first matched component.
 
-	router.onReady(() => {
-		const [component] = router.getMatchedComponents({ ...to });
-		if (component) {
-			router.app.$nextTick(() => {
-			// Start the page loading bar.
-				if ((component as any).loading !== false) {
-					router.app.$bus.$emit('linear:start');
-				}
-				// Set application layout.
-				let layout = 'app';
-				if (component.hasOwnProperty('options')) {
-					layout = (component as any).options.layout;
-				}
-				if (component.hasOwnProperty('resolved')) {
-
-
-					layout = (component as any).resolved.options.layout;
-				}
-				router.app.$bus.$emit('setLayout', layout);
-			});
-		}
-	});
+  router.onReady(() => {
+    const [component] = router.getMatchedComponents({ ...to })
+    if (component) {
+      router.app.$nextTick(() => {
+      // Start the page loading bar.
+        if ((component as any).loading !== false) {
+          router.app.$bus.$emit('linear:start')
+        }
+        // Set application layout.
+        let layout = 'app'
+        if (component.hasOwnProperty('options')) {
+          layout = (component as any).options.layout
+        }
+        if (component.hasOwnProperty('resolved')) {
+          layout = (component as any).resolved.options.layout
+        }
+        router.app.$bus.$emit('setLayout', layout)
+      })
+    }
+  })
 }
-
 
 /**
  * Apply beforeEnter guard to the routes.
@@ -118,10 +106,8 @@ function setLayout(router: Router, to: Route) {
  * @param  {Function} beforeEnter
  * @return {Array}
  */
-function beforeEnter(routes: RouteConfig[], beforeEnter: NavigationGuard): RouteConfig[] {
-	return routes.map((route) => {
-		return { ...route, beforeEnter };
-	});
+function beforeEnter (routes: RouteConfig[], beforeEnter: NavigationGuard): RouteConfig[] {
+  return routes.map(route => ({ ...route, beforeEnter }))
 }
 
 /**
@@ -132,27 +118,27 @@ function beforeEnter(routes: RouteConfig[], beforeEnter: NavigationGuard): Route
  */
 
 type ScrollBehavior = (
-		to: Route,
-		from: Route,
-		savedPosition: Position | void,
-	) => PositionResult | Promise<PositionResult>;
+    to: Route,
+    from: Route,
+    savedPosition: Position | void,
+  ) => PositionResult | Promise<PositionResult>
 
 // tslint:disable-next-line:max-line-length
-const  scrollBehavior: ScrollBehavior = (to, from, savedPosition) => {
-	if (savedPosition) {
-		return savedPosition;
-	}
+const scrollBehavior: ScrollBehavior = (to, from, savedPosition) => {
+  if (savedPosition) {
+    return savedPosition
+  }
 
-	const position: any = {};
+  const position: any = {}
 
-	if (to.hash) {
-		position.selector = to.hash;
-	}
+  if (to.hash) {
+    position.selector = to.hash
+  }
 
-	if (to.matched.some((m) => m.meta.scrollToTop)) {
-		position.x = 0;
-		position.y = 0;
-	}
+  if (to.matched.some(m => m.meta.scrollToTop)) {
+    position.x = 0
+    position.y = 0
+  }
 
-	return position;
-};
+  return position
+}

@@ -8,16 +8,15 @@
       tabs
     >
       <v-toolbar-side-icon @click.stop="toggleDrawer"></v-toolbar-side-icon>
-      
+
       <v-spacer></v-spacer>
-      
+
       <!-- 全屏 -->
       <!-- <screenfull></screenfull> -->
 
       <!-- 多语言 -->
       <!-- <lang-select></lang-select> -->
 
-      
       <v-menu
       v-model="menu"
       :close-on-content-click="false"
@@ -98,29 +97,27 @@
     </v-toolbar>
 </template>
 
-
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Tabs from './Tabs.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import Tabs from './Tabs.vue'
 @Component({
-		components: {
-				tabs: Tabs,
-		},
-})
+  components: {
+  tabs: Tabs,
+  },
+  })
 export default class ToolBar extends Vue {
-		public fav: boolean = true;
-		public menu: boolean = false;
-		public message: boolean = false;
-		public hints: boolean = true;
-		public name: string = 'zhouchang';
-		public avatar: string = 'https://sfault-avatar.b0.upaiyun.com/264/637/2646379122-59fc9a1534754_huge256';
-		public toggleDrawer() {
-			this.$store.dispatch('app/toggleDrawer');
-		}
+    public fav: boolean = true;
+    public menu: boolean = false;
+    public message: boolean = false;
+    public hints: boolean = true;
+    public name: string = 'zhouchang';
+    public avatar: string = 'https://sfault-avatar.b0.upaiyun.com/264/637/2646379122-59fc9a1534754_huge256';
+    public toggleDrawer () {
+      this.$store.dispatch('app/toggleDrawer')
+    }
 
-		get drawer() {
-				return this.$store.getters.drawer;
-		}
-
+    get drawer () {
+      return this.$store.getters.drawer
+    }
 }
 </script>

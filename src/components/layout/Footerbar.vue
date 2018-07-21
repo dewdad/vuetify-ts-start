@@ -8,15 +8,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Breadcrumb from './Breadcrumb.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import Breadcrumb from './Breadcrumb.vue'
 
 @Component({
-		components: {
-				breadcrumb: Breadcrumb,
-		},
-})
+  components: {
+  breadcrumb: Breadcrumb,
+  },
+  })
 export default class FooterBar extends Vue {
-		public fixed: boolean = true;
+    public fixed: boolean = true;
 }
 </script>

@@ -8,7 +8,7 @@
           <v-tooltip bottom>
             <v-btn
               slot="activator"
-              
+
               icon
               large
               target="_blank"
@@ -40,13 +40,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-	layout: 'default',
-})
+  layout: 'default',
+  })
 export default class Home extends Vue {
-	// layout = 'default'
-	public drawer = null;
+  // layout = 'default'
+  public drawer = null;
 }
 </script>

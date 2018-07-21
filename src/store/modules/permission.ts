@@ -1,5 +1,6 @@
-import { route } from '@/router/routes';
-const drawers = [...route.getNavbar()];
+import { route } from '@/router/routes'
+
+const drawers = [...route.getNavbar()]
 /**
  * 通过meta.role判断是否与当前用户权限匹配
  * @param roles
@@ -36,15 +37,15 @@ interface State {
 export const state: State = {
 //   routers: constantRouterMap,
 //   addRouters: [],
- drawers,
-};
+  drawers
+}
 
 export const mutations = {
 //   SET_ROUTERS: (state, routers) => {
 //     state.addRouters = routers
 //     state.routers = constantRouterMap.concat(routers)
 //   }
-};
+}
 
 export const actions = {
 //   GenerateRoutes({ commit }, data) {
@@ -60,4 +61,4 @@ export const actions = {
 //       resolve()
 //     })
 //   }
-};
+}

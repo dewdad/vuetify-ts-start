@@ -8,62 +8,59 @@
 </template>
 
 <script lang="ts">
-const requireContext = require.context('./layouts', false, /.*\.vue$/);
+import { Component, Vue } from 'vue-property-decorator'
+import Linear from '@/components/loading/Linear.vue'
+
+const requireContext = require.context('./layouts', false, /.*\.vue$/)
 const layouts: any = requireContext.keys()
-	.map((file) =>
-		[file.replace(/(^.\/)|(\.vue$)/g, ''), requireContext(file)],
-	)
-	.reduce((components, [name, component]) => {
-		(components as any)[name] = component;
-		return components;
-	}, {});
-
-import { Component, Vue } from 'vue-property-decorator';
-import Linear from '@/components/loading/Linear.vue';
+  .map(file =>
+    [file.replace(/(^.\/)|(\.vue$)/g, ''), requireContext(file)])
+  .reduce((components, [name, component]) => {
+    (components as any)[name] = component
+    return components
+  }, {})
 @Component({
-	components: {
-		'v-loading': Linear,
-	},
-})
+  components: {
+  'v-loading': Linear,
+  },
+  })
 export default class App extends Vue {
+  public $refs!: {
+    loading: Linear,
+  };
 
-	public $refs!: {
-		loading: Linear,
-	};
+  public layout: any = null;
+  public defaultLayout: string = 'app';
 
-	public layout: any = null;
-	public defaultLayout: string = 'app';
+  public metaInfo () {
+    const appName = 'bestkit erp'
 
-	public metaInfo() {
-		const appName = 'bestkit erp';
+    return {
+      title: appName,
+      titleTemplate: `%s · ${appName}`
+    }
+  }
 
-		return {
-			title: appName,
-			titleTemplate: `%s · ${appName}`,
-		};
-	}
+  public mounted () {
+    this.$bus.$on('linear:start', this.start, this)
+    this.$bus.$on('setLayout', (layout: string) => {
+      this.setLayout(layout)
+    }, this)
+  }
 
-	public mounted() {
-		this.$bus.$on('linear:start', this.start, this);
-		this.$bus.$on('setLayout', (layout: string) => {
-			this.setLayout(layout);
-		}, this);
-	}
+  private setLayout (layout: string): void {
+    if (!layout || !layouts[layout]) {
+      layout = this.defaultLayout
+    }
+    this.layout = layouts[layout]
+  }
 
-	private setLayout(layout: string): void {
-		if (!layout || !layouts[layout]) {
-			layout = this.defaultLayout;
-		}
-		this.layout = layouts[layout];
-	}
+  private start () {
+    this.$refs.loading.start()
+  }
 
-	private start() {
-		this.$refs.loading.start();
-	}
-
-	private finish() {
-		this.$refs.loading.finish();
-	}
-
+  private finish () {
+    this.$refs.loading.finish()
+  }
 }
 </script>

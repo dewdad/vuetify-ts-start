@@ -24,10 +24,14 @@
     "@types/webpack": "^4.4.0",
     "@types/webpack-env": "^1.13.6",
     "@vue/cli-plugin-babel": "^3.0.0-rc.5",
+    "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
     "@vue/cli-plugin-typescript": "^3.0.0-rc.5",
     "@vue/cli-service": "^3.0.0-rc.5",
+    "@vue/eslint-config-airbnb": "^3.0.0-rc.5",
+    "@vue/eslint-config-standard": "^3.0.0-rc.5",
+    "@vue/eslint-config-typescript": "^3.0.0-rc.5",
     "js-cookie": "^2.2.0",
-    "lint-staged": "^6.0.0",
+    "lint-staged": "^7.2.0",
     "lodash": "^4.17.10",
     "material-design-icons-iconfont": "^3.0.3",
     "stylus": "^0.54.5",
@@ -44,6 +48,16 @@
       "git add"
     ],
     "*.vue": [
+      "vue-cli-service lint",
+      "git add",
+      "vue-cli-service lint",
+      "git add",
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.js": [
+      "vue-cli-service lint",
+      "git add",
       "vue-cli-service lint",
       "git add"
     ]
