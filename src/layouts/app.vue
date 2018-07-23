@@ -1,13 +1,13 @@
 <template>
-  <v-app>
-    <drawer></drawer>
+  <div>
+    <!-- <drawer></drawer> -->
     <toolbar></toolbar>
     <v-content>
       <app-main></app-main>
       <footerbar></footerbar>
     </v-content>
     <!-- <snackbar></snackbar> -->
-  </v-app>
+  </div>
 </template>
 
 <script lang="ts">

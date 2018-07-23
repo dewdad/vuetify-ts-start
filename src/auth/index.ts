@@ -1,9 +1,21 @@
 import store from '@/store'
 import Cookies from 'js-cookie'
 import Router from 'vue-router'
-import { SetLayout } from '../router/index'
+import { SetLayout } from '@/router'
 
-const TokenKey = 'Admin-Token'
+const TokenKey = 'app-token'
+
+export function getToken () {
+  return Cookies.get(TokenKey)
+}
+
+export function setToken (token:string) {
+  return Cookies.set(TokenKey, token)
+}
+
+export function removeToken () {
+  return Cookies.remove(TokenKey)
+}
 
 export default class Auth {
   public router: Router;
@@ -15,7 +27,7 @@ export default class Auth {
   }
 
   get token () {
-    return Cookies.get(TokenKey)
+    return getToken()
   }
 
   get roles () {

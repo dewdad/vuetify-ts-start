@@ -8,7 +8,8 @@ declare global {
 
 declare module 'vue/types/vue' {
   interface Vue {
-$bus: EventBus;
+    $bus: EventBus;
+    $loading:({show, text}:({show:boolean, text?:string}))=>void
   }
 
 }

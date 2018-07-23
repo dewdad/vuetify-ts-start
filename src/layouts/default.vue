@@ -1,10 +1,7 @@
 <template>
-  <v-app>
-    <v-content>
+  <v-content>
       <app-main></app-main>
   </v-content>
-  <!-- <snackbar></snackbar> -->
-</v-app>
 </template>
 
 <script lang="ts">

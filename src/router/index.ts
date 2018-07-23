@@ -1,12 +1,11 @@
 import Vue, { VueConstructor } from 'vue'
 import store from '@/store'
 import Meta from 'vue-meta'
-import routes from './routes'
+import routes from '@/router/routers'
 import Router, { Route, RouteRecord, RawLocation } from 'vue-router'
 import { sync } from 'vuex-router-sync'
 import { PositionResult, RouteConfig, Position, NavigationGuard } from 'vue-router/types/router'
-import Auth from '@/auth'
-// import { getToken } from '@/utils/auth' // getToken from cookie
+import { getToken } from '@/auth' // getToken from cookie
 
 Vue.use(Meta)
 Vue.use(Router)
@@ -20,15 +19,14 @@ Vue.use(Router)
 type Guard = (arg: RouteConfig[]) => RouteConfig[]
 
 const authGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
-  // if (!getToken()) {
-  //   next({
-  //     name: 'login',
-  //     query: { redirect: to.fullPath }
-  //   })
-  // } else {
-  //   next()
-  // }
-  next()
+  if (!getToken()) {
+    next({
+      name: 'login',
+      query: { redirect: to.fullPath }
+    })
+  } else {
+    next()
+  }
 })
 
 /**
@@ -37,8 +35,12 @@ const authGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
  * @param  {RouteConfig[]} routes
  * @return {Array}
  */
-const guestGuard: Guard = (routes: RouteConfig[]) => beforeEnter(routes, (to, from, next) => {
-  next()
+const guestGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
+  if (getToken()) {
+    next({ name: 'home' })
+  } else {
+    next()
+  }
 })
 
 const router = make(routes({ authGuard, guestGuard }))
@@ -60,8 +62,24 @@ function make (routes: RouteConfig[]) {
     mode: 'history'
   })
 
-  const auth = new Auth(router)
-  auth.attempt(setLayout)
+  // Register before guard.
+  router.beforeEach(async (to, from, next) => {
+    // if (!store.getters['auth/authCheck'] && store.getters['auth/authToken']) {
+    //   try {
+    //     await store.dispatch('auth/fetchUser')
+    //   } catch (e) { }
+    // }
+
+    setLayout(router, to)
+    next()
+  })
+
+  // Register after hook.
+  router.afterEach((to, from) => {
+    router.app.$nextTick(() => {
+      router.app.$bus.$emit('linear:finish')
+    })
+  })
 
   return router
 }

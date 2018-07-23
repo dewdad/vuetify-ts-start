@@ -45,7 +45,7 @@ export const mutations = {
   TOGGLE_SNACKBAR: (state: State, payload: Snackbar) => {
     state.snackbar = Object.assign({}, state.snackbar, payload)
   },
-  SET_LOADING: (state: State, { show, text = null }: ({show: boolean, text: string})) => {
+  SET_LOADING: (state: State, { show, text = null }: ({show: boolean, text: string|null})) => {
     if (_.isNull(text)) {
       state.loading.text = 'Please stand by'
       state.loading.show = show

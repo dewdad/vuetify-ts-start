@@ -1,15 +1,19 @@
 <template>
     <div id="app">
+      <v-app>
         <v-loading ref="loading"></v-loading>
         <transition name="page" mode="out-in">
             <component v-if="layout" :is="layout.default"></component>
         </transition>
+        <loading-progress></loading-progress>
+      </v-app>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Linear from '@/components/loading/Linear.vue'
+import LoadingProgress from '@/components/loading/Progress.vue'
 
 const requireContext = require.context('./layouts', false, /.*\.vue$/)
 const layouts: any = requireContext.keys()
@@ -22,6 +26,7 @@ const layouts: any = requireContext.keys()
 @Component({
   components: {
   'v-loading': Linear,
+  'loading-progress':LoadingProgress
   },
   })
 export default class App extends Vue {
@@ -43,6 +48,7 @@ export default class App extends Vue {
 
   public mounted () {
     this.$bus.$on('linear:start', this.start, this)
+    this.$bus.$on('linear:finish', this.finish, this)
     this.$bus.$on('setLayout', (layout: string) => {
       this.setLayout(layout)
     }, this)

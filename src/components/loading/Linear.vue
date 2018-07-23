@@ -91,3 +91,17 @@ export default class Linear extends Vue {
     }
 }
 </script>
+
+<style  scoped>
+.v-progress-linear {
+  height: 2px;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 999999;
+}
+
+</style>
