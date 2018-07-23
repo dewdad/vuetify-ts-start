@@ -39,6 +39,7 @@ export default class Home extends Vue {
     this.$loading({show: true, text: '登录中'})
     await User.login(this.formData)
     this.$loading({show: false})
+    this.$router.push({name: 'home'})
   }
 }
 </script>
