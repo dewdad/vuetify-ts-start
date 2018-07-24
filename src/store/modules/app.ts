@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie'
 import { Commit } from 'vuex'
+import { QueryBuild } from '@/api/types'
 
 interface State {
   snackbar: Snackbar;
@@ -64,5 +65,46 @@ export const actions = {
   },
   toggleDrawer ({ commit }: ({commit: Commit})) {
     commit('TOGGLE_DRAWER')
+  }
+}
+
+export class Base {
+  static include:string[] = []
+
+  static with (arg:string[]) {
+    this.include = []
+    this.include.push(...arg)
+    return this
+  }
+
+  static parseInclude () {
+    return this.include.join(',')
+  }
+
+  static getInclude () {
+    return { include: this.parseInclude() }
+  }
+
+  static assignQueryBuild (queryBuild:QueryBuild|null) {
+    return Object.assign({}, this.getInclude(), queryBuild)
+  }
+
+  static filterData (items:any[]|{[propName:string]:any}, orgin = {}) {
+    return _.reduce(items, (res:any, item, key) => {
+      if (_.isObject(item)) {
+        if (_.has(item, 'data')) {
+          res[key] = this.filterData(item.data, _.isArray(item.data) ? [] : {})
+        } else {
+          if (_.isArray(res)) {
+            res.push(this.filterData(item))
+          } else {
+            res[key] = this.filterData(item)
+          }
+        }
+      } else {
+        res[key] = item
+      }
+      return res
+    }, orgin)
   }
 }

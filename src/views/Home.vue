@@ -19,7 +19,8 @@
 import { Component, Vue } from 'vue-property-decorator'
 import {User} from '@/store/modules/user'
 @Component({
-  layout: 'default',
+  layout: 'app',
+  middleware:'auth'
   })
 export default class Home extends Vue {
 }

@@ -16,7 +16,6 @@ const globalMiddleware:any[] = []
 
 // Load middleware modules dynamically.
 const routeMiddleware = resolveMiddleware(require.context('@/middlewares', false, /.*\.ts$/))
-
 /**
  * Redirect to login if guest.
  *
@@ -54,7 +53,6 @@ const guestGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
  *
  */
 const beforeEach:NavigationGuard = async (to, from, next) => {
-  // router.onReady
   // Get the matched components and resolve them.
   const components = await resolveComponents(router.getMatchedComponents({ ...to }))
   if (components.length === 0) {
@@ -69,6 +67,7 @@ const beforeEach:NavigationGuard = async (to, from, next) => {
 
   // Get the middleware for all the matched components.
   const middleware = getMiddleware(components)
+
   // Call each middleware.
   callMiddleware(middleware, to, from, (...args:any[]) => {
     // Set the application layout only if "next()" was called with no args.
@@ -98,8 +97,6 @@ export default router
 /**
  * Create a new router instance.
  *
- * @param  {RouteConfig[]} routes
- * @return {Router}
  */
 function createRouter (routes: RouteConfig[]) {
   const router = new Router({
@@ -111,41 +108,6 @@ function createRouter (routes: RouteConfig[]) {
   router.beforeEach(beforeEach) // before hook
   router.afterEach(afterEach) // after hook
   return router
-}
-
-/**
- * Set the application layout from the matched page component.
- *
- * @param {Router} router
- * @param {Route} to
- */
-
-function setLayout (router: Router, to: Route) {
-  // Get the first matched component.
-
-  router.onReady(async () => {
-    const components = await resolveComponents(router.getMatchedComponents({ ...to }))
-    console.log(components)
-    const [component] = router.getMatchedComponents({ ...to })
-    if (component) {
-      console.log(router.getMatchedComponents(to))
-      router.app.$nextTick(() => {
-        // Start the page loading bar.
-        if ((component as any).loading !== false) {
-          router.app.$bus.$emit('linear:start')
-        }
-        // Set application layout.
-        let layout = 'app'
-        if (component.hasOwnProperty('options')) {
-          layout = (component as any).options.layout
-        }
-        if (component.hasOwnProperty('resolved')) {
-          layout = (component as any).resolved.options.layout
-        }
-        router.app.$bus.$emit('setLayout', layout)
-      })
-    }
-  })
 }
 
 /**
@@ -193,33 +155,22 @@ const scrollBehavior: ScrollBehavior = (to, from, savedPosition) => {
  * @return {Array}
  */
 async function resolveComponents (components:Component[]):Promise<Component[]> {
-  /** no-return-await */
-  let resComponents= await Promise.all(
+  return await Promise.all(
     components.map(async component => {
-      if (typeof component === 'function') {
-        let com = await (component as Function)()
-        return com
-      } else {
-        return component
-      }
-      // return typeof component === 'function' ? await (component as Function)() : component
+      return typeof component === 'function' ? await (component as Function)() : component
     })
   )
-  return resComponents
 }
 
 /**
  * Call each middleware.
  *
- * @param {Array} middleware
- * @param {Route} to
- * @param {Route} from
- * @param {Function} next
  */
 function callMiddleware (middleware:any[], to:Route, from:Route, next:(to?: RawLocation | false | ((vm: Vue) => any) | void) => void) {
   const stack = middleware.reverse()
 
   const _next = (...args:any[]) => {
+    console.log(args)
     // Stop if "_next" was called with an argument or the stack is empty.
     if (args.length > 0 || stack.length === 0) {
       if (args.length > 0) {
@@ -232,9 +183,9 @@ function callMiddleware (middleware:any[], to:Route, from:Route, next:(to?: RawL
     const middleware = stack.pop()
 
     if (typeof middleware === 'function') {
-      middleware(to, from, _next)
+      middleware({app: router.app, to, from, next: _next})
     } else if (routeMiddleware[middleware]) {
-      routeMiddleware[middleware](to, from, _next)
+      routeMiddleware[middleware]({app: router.app, to, from, next: _next})
     } else {
       throw Error(`Undefined middleware [${middleware}]`)
     }
@@ -246,17 +197,15 @@ function callMiddleware (middleware:any[], to:Route, from:Route, next:(to?: RawL
 /**
  * Merge the the global middleware with the components middleware.
  *
- * @param  {Array} components
- * @return {Array}
  */
 function getMiddleware (components:Component[]) {
   const middleware = [...globalMiddleware]
 
-  components.filter((c: any) => c.middleware).forEach((component:any) => {
-    if (Array.isArray(component.middleware)) {
-      middleware.push(...component.middleware)
+  components.filter((c: any) => c.default.options.middleware).forEach((component:any) => {
+    if (Array.isArray(component.default.options.middleware)) {
+      middleware.push(...component.default.options.middleware)
     } else {
-      middleware.push(component.middleware)
+      middleware.push(component.default.options.middleware)
     }
   })
 

@@ -27,8 +27,9 @@ import { Component, Vue } from 'vue-property-decorator'
 import {User} from '@/store/modules/user'
 @Component({
   layout: 'default',
+  middleware:'guest'
   })
-export default class Home extends Vue {
+export default class Login extends Vue {
   public drawer = null;
   formData:{email:string, password:string} = {
     email: '',

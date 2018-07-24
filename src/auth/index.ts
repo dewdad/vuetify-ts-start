@@ -1,7 +1,6 @@
 import store from '@/store'
 import Cookies from 'js-cookie'
 import Router from 'vue-router'
-import { SetLayout } from '@/router'
 
 const TokenKey = 'app-token'
 
@@ -43,19 +42,19 @@ export default class Auth {
     (this.router as any).addRouters(addRouters)
   }
 
-  public attempt (setLayout: SetLayout) {
-    this.beforeEach(setLayout)
+  // public attempt (setLayout: SetLayout) {
+  //   this.beforeEach(setLayout)
 
-    this.afterEach()
-  }
+  //   this.afterEach()
+  // }
 
-  public beforeEach (setLayout: SetLayout) {
-    this.router.beforeEach(async (to, from, next) => {
-      setLayout(this.router, to)
-      next()
-      // }
-    })
-  }
+  // public beforeEach (setLayout: SetLayout) {
+  //   this.router.beforeEach(async (to, from, next) => {
+  //     setLayout(this.router, to)
+  //     next()
+  //     // }
+  //   })
+  // }
 
   public afterEach () {
     this.router.afterEach((to, from) => {
