@@ -14,7 +14,7 @@ export default ({ authGuard, guestGuard }: {authGuard: Guard, guestGuard: Guard 
   ...guestGuard([
 
   ]),
-  {path: '/', name: 'home', component: () => import('@/views/Home.vue')},
+  {path: '/', name: 'home', meta: {title: '首页'}, component: () => import('@/views/Home.vue')},
   {path: '/login', name: 'login', component: () => import('@/views/auth/Login.vue')},
 
   {path: '/product-providers', name: 'product-provider.index', meta: {title: '供应商管理'}, component: () => import('@/views/productProvider/Index.vue')},

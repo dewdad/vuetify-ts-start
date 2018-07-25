@@ -12,16 +12,20 @@
     <P>erp system</P>
   </div>
   <v-divider></v-divider>
-      <list-item :routes="routes"></list-item>
+      <!-- <v-list>
+        <list-item :routes="routes"></list-item>
+      </v-list> -->
+      <list-item></list-item>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import ListItem from './ListItem.vue'
+// import ListItem from './ListItem.vue'
 @Component({
   components: {
-  'list-item': ListItem,
+  // 'list-item': ListItem,
+  'list-item':()=>import('./ListEle.vue')
   },
   })
 export default class Drawer extends Vue {

@@ -76,11 +76,11 @@
           </v-list-tile>
 
           <v-list-tile>
-            <v-list-tile-title>{{$t('navbar.dashboard')}}</v-list-tile-title>
+            <v-list-tile-title>首页</v-list-tile-title>
           </v-list-tile>
 
           <v-list-tile>
-            <v-list-tile-title>{{$t('navbar.logOut')}}</v-list-tile-title>
+            <v-list-tile-title>登出</v-list-tile-title>
           </v-list-tile>
 
         </v-list>

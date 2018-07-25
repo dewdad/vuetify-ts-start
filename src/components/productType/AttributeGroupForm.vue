@@ -13,7 +13,22 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex xs6 sm3 md3 v-for="group in groups" :key="group.id">
-                <v-checkbox  v-model="groupIds" :label="group.name" :value="group.id"></v-checkbox>
+
+                <v-checkbox :readonly="readonly" :disabled="disabled"  v-model="groupIds" :label="group.name" :value="group.id">
+                  <v-tooltip slot="prepend" fixed bottom>
+                    <v-icon v-if="group.variant" slot="activator"  color="primary">build</v-icon>
+                    <v-icon v-else slot="activator" >info</v-icon>
+                    <div>
+                      <ul>
+                        <li v-for="(item,key) in group" :key="key">
+                          <i>{{key}}</i>
+                          <i>:{{item}}</i>
+                        </li>
+                      </ul>
+                    </div>
+                  </v-tooltip>
+                </v-checkbox>
+
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -33,6 +48,8 @@ import { AttributeGroup } from '@/store/modules/attributeGroup'
   })
 export default class RelationAttributeGroupForm extends Vue {
   @Prop(Array) orginFormData!:number[]
+  @Prop(Boolean) disabled!:boolean
+  @Prop(Boolean) readonly!:boolean
   groups:any[] = []
 
   loaded = false

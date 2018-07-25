@@ -53,7 +53,6 @@ const guestGuard: Guard = routes => beforeEnter(routes, (to, from, next) => {
  *
  */
 const beforeEach:NavigationGuard = async (to, from, next) => {
-  // Get the matched components and resolve them.
   const components = await resolveComponents(router.getMatchedComponents({ ...to }))
   if (components.length === 0) {
     return next()
@@ -72,11 +71,13 @@ const beforeEach:NavigationGuard = async (to, from, next) => {
   callMiddleware(middleware, to, from, (...args:any[]) => {
     // Set the application layout only if "next()" was called with no args.
     if (args.length === 0) {
-      router.app.$bus.$emit('setLayout', (components[0] as any).default.options.layout)
+      router.app.$bus.$emit('setLayout', (components[0] as any).layout)
     }
 
     next(...args)
   })
+  // Get the matched components and resolve them.
+  // const components = await resolveComponents(router.getMatchedComponents({ ...to }))
 }
 
 /**
@@ -106,6 +107,7 @@ function createRouter (routes: RouteConfig[]) {
   })
 
   router.beforeEach(beforeEach) // before hook
+
   router.afterEach(afterEach) // after hook
   return router
 }
@@ -157,7 +159,16 @@ const scrollBehavior: ScrollBehavior = (to, from, savedPosition) => {
 async function resolveComponents (components:Component[]):Promise<Component[]> {
   return await Promise.all(
     components.map(async component => {
-      return typeof component === 'function' ? await (component as Function)() : component
+      if (typeof component === 'function') {
+        if (_.has(component, 'options')) {
+          return (component as any).options
+        }
+        return (await (component as Function)()).default.options
+      } else {
+        console.dir(component)
+        return component
+      }
+      // return typeof component === 'function' ? await (component as Function)() : component
     })
   )
 }
@@ -170,7 +181,6 @@ function callMiddleware (middleware:any[], to:Route, from:Route, next:(to?: RawL
   const stack = middleware.reverse()
 
   const _next = (...args:any[]) => {
-    console.log(args)
     // Stop if "_next" was called with an argument or the stack is empty.
     if (args.length > 0 || stack.length === 0) {
       if (args.length > 0) {
@@ -201,11 +211,11 @@ function callMiddleware (middleware:any[], to:Route, from:Route, next:(to?: RawL
 function getMiddleware (components:Component[]) {
   const middleware = [...globalMiddleware]
 
-  components.filter((c: any) => c.default.options.middleware).forEach((component:any) => {
-    if (Array.isArray(component.default.options.middleware)) {
-      middleware.push(...component.default.options.middleware)
+  components.filter((c: any) => c.middleware).forEach((component:any) => {
+    if (Array.isArray(component.middleware)) {
+      middleware.push(...component.middleware)
     } else {
-      middleware.push(component.default.options.middleware)
+      middleware.push(component.middleware)
     }
   })
 

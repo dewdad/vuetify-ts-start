@@ -1,11 +1,13 @@
 import { ROUTE_NAME } from '@/store/modules/brand'
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { RouteName } from '@/store/modules/app'
 
 // You can declare a mixin as the same style as components.
 @Component
 export default class BaseMixin extends Vue {
-  routeName:{[propName:string]:string} = {
+  routeName:RouteName = {
+    index: `${ROUTE_NAME}.index`,
     show: `${ROUTE_NAME}.show`,
     update: `${ROUTE_NAME}.update`,
     create: `${ROUTE_NAME}.create`

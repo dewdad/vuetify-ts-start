@@ -6,7 +6,7 @@
       show-arrows
     >
       <transition-group name="page" mode="out-in">
-        <v-chip @click="click(view)" v-model="chips[view.name]" outline text-color="white"  label :selected="isActive(view)"  v-for="view in visitedViews"
+        <v-chip @click="click(view)"  outline text-color="white"  label :selected="isActive(view)"  v-for="view in visitedViews"
         :key="view.path" @input="closeSelectedTag(view)" close>
           <v-avatar v-show="isActive(view)">
             <v-icon>check_circle</v-icon>
@@ -25,6 +25,8 @@ export default class Tabs extends Vue {
     public selectedTag = {};
     public chips: any = {};
 
+    activeTag:string = ''
+
     get visitedViews () {
       return this.$store.state.tagsView.visitedViews
     }
@@ -41,7 +43,7 @@ export default class Tabs extends Vue {
       if (!route) {
         return false
       }
-      this.$set(this.chips, (route.name as string), true)
+      // this.$set(this.chips, (route.name as string), true)
       this.$store.dispatch('tagsView/addVisitedViews', route)
     }
 
@@ -51,7 +53,7 @@ export default class Tabs extends Vue {
     }
 
     public click (route: RouteConfigEx) {
-      this.$router.push({ name: route.name })
+      this.$router.push(route.fullPath)
     }
 
     public closeSelectedTag (route: RouteConfigEx) {

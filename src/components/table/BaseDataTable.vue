@@ -7,7 +7,7 @@
       <slot name="storeButton"/>
 
       <v-spacer></v-spacer>
-      <table-search-input v-if="searchable" @searchChangeEvent="searchChangeEvent" :liked="liked"></table-search-input>
+      <!-- <table-search-input v-if="searchable" @searchChangeEvent="searchChangeEvent" :liked="liked"></table-search-input> -->
       </v-layout>
       </v-card-title>
     <v-data-table :headers="headers"

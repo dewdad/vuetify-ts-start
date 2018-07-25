@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- <drawer></drawer> -->
+    <drawer></drawer>
     <toolbar></toolbar>
     <v-content>
       <app-main></app-main>
       <footerbar></footerbar>
     </v-content>
-    <!-- <snackbar></snackbar> -->
+    <snackbar></snackbar>
   </div>
 </template>
 
@@ -20,6 +20,7 @@ import { AppMain, Footerbar, Drawer, Toolbar } from '@/components/layout'
   'toolbar': Toolbar,
   'app-main': AppMain,
   'footerbar': Footerbar,
+  'snackbar':()=>import('@/components/feedbackMessage/SnackBar.vue')
   },
   })
 export default class AppLayout extends Vue {

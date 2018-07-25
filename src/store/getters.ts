@@ -14,10 +14,10 @@ const getters = {
   // setting: (state: any) => state.user.setting,
   // permission_routers: (state: any) => state.permission.routers,
   // // 导航
-  // drawers: (state: any) => state.permission.drawers,
+  drawers: (state: any) => state.app.drawers,
   // addRouters: (state: any) => state.permission.addRouters,
   // errorLogs: (state: any) => state.errorLog.logs,
-  // snackbar: (state: any) => state.app.snackbar,
+  snackbar: (state: any) => state.app.snackbar,
   loading: (state: any) => state.app.loading
 }
 export default getters

@@ -2,15 +2,26 @@ import Cookies from 'js-cookie'
 import { Commit } from 'vuex'
 import { QueryBuild } from '@/api/types'
 import Singleton from '@/utils/Singleton'
+import Drawers from '@/navigation'
 
+export interface RouteName{
+  index:string;
+  show:string;
+  create:string;
+  update:string;
+  // destroy?:string;
+  [propName:string]:string;
+}
 interface State {
   snackbar: Snackbar;
   drawer: boolean;
   loading: Loading;
+  drawers:Navigation[];
+  [propName:string]:any;
 }
 
-interface Snackbar {
-  snackbar: boolean;
+export interface Snackbar {
+  snackbar?: boolean;
   color?: string;
   mode?: string;
   timeout?: number;
@@ -20,6 +31,16 @@ interface Snackbar {
 interface Loading {
   text?: string;
   show: boolean;
+}
+
+interface Meta{
+  title?:string;
+  icon?:string;
+}
+interface Navigation{
+  meta?:Meta;
+  name?:string;
+  routes?:Navigation[]
 }
 
 export const state: State = {
@@ -34,7 +55,8 @@ export const state: State = {
   loading: {
     show: false,
     text: ''
-  }
+  },
+  drawers: Drawers
 }
 
 export const mutations = {

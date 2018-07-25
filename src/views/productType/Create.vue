@@ -59,7 +59,8 @@ export default class ProductTypeCreate extends mixins(Base) {
     if (res) {
       this.createItem = res
       await ProductType.getInstance.create({...res, group_ids: this.$refs.attributeGroupForm.getGroupIds})
-      alert('创建成功')
+      this.$success({text: '创建成功', position: 9})
+      this.$router.replace({name: this.routeName.index})
     }
   }
 

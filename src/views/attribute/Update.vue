@@ -53,7 +53,8 @@ export default class AttributeUpdate extends mixins(Base) {
     const res = await this.$refs.form.submit()
     if (res) {
       await Attribute.getInstance.update({ formData: res, id: this.item.id })
-      alert('更新成功')
+      this.$success({text: '更新成功', position: 9})
+      this.$router.replace({name: this.routeName.index})
     }
   }
 

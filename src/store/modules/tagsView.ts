@@ -1,12 +1,15 @@
-import { RouteConfig } from 'vue-router/types/router'
+import { RouteConfig, Route } from 'vue-router/types/router'
 import { Commit } from 'vuex'
 
 interface State {
     visitedViews: RouteConfigEx[];
     cachedViews: any[];
 }
-export interface RouteConfigEx extends RouteConfig {
+export interface RouteConfigEx {
  title?: string;
+ name:Route['name'];
+ path:Route['path'];
+ fullPath:Route['fullPath'];
 }
 export const state: State = {
   visitedViews: [],
@@ -14,12 +17,13 @@ export const state: State = {
 }
 
 export const mutations = {
-  ADD_VISITED_VIEWS: (state: State, view: RouteConfigEx) => {
+  ADD_VISITED_VIEWS: (state: State, view: Route) => {
     if (state.visitedViews.some(v => v.path === view.path)) { return }
     state.visitedViews.push({
+      fullPath: view.fullPath,
       name: view.name,
       path: view.path,
-      title: view.meta.title || 'no-name'
+      title: view.params.id ? view.meta.title + view.params.id: view.meta.title || 'no-name'
     })
     if (!view.meta.noCache) {
       state.cachedViews.push(view.name)

@@ -6,6 +6,17 @@ import * as AttributeGroupApi from '@/api/attributeGroup'
 
 export const ROUTE_NAME = 'attribute-group'
 
+export interface AttributeGroupItem{
+  'can_upload'?:boolean;
+  'created_at'?:string;
+  customized:boolean;
+  id?:number;
+  name:string;
+  required:boolean;
+  type:string;
+  'updated_at'?:string;
+  variant:boolean
+}
 interface State{
 
 }

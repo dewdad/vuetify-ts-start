@@ -9,6 +9,7 @@
     </v-toolbar>
     <v-card-text v-if="loaded">
       <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData" :disabled="true"></base-form>
+      <attribute-group-form readonly ref="attributeGroupForm" :orginFormData="selected"></attribute-group-form>
     </v-card-text>
   </v-card>
   </v-flex>
@@ -21,10 +22,13 @@ import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
 import Form from '@/components/form/BaseForm.vue'
 import { ProductType } from '@/store/modules/productType'
+import { AttributeGroupItem } from '@/store/modules/attributeGroup'
+import AttributeGroupForm from '@/components/productType/AttributeGroupForm.vue'
 
 @Component({
   components:{
-  'base-form':Form
+  'base-form':Form,
+  'attribute-group-form':AttributeGroupForm
   }
   })
 export default class ProductTypeShow extends mixins(Base) {
@@ -36,12 +40,15 @@ export default class ProductTypeShow extends mixins(Base) {
   loaded = false
   createItem:any = null
   item:any|null = null
-  include = []
+  include = ['attributeGroups']
+
+  selected:number[] = []
 
   async viewInit () {
     const { data } = await ProductType.getInstance.with(this.include).show({id: this.$route.params.id})
     this.item = data
     this.orginFormData = ProductType.getInstance.filterData(data)
+    this.selected = this.orginFormData.attributeGroups.map((item:AttributeGroupItem) => item.id)
   }
 
   async loadFormStructure () {

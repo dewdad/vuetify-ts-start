@@ -7,6 +7,7 @@ import { AttributeGroup } from '@/store/modules/attributeGroup'
 @Component
 export default class BaseMixin extends Vue {
   routeName:{[propName:string]:string} = {
+    index: `${ROUTE_NAME}.index`,
     show: `${ROUTE_NAME}.show`,
     update: `${ROUTE_NAME}.update`,
     create: `${ROUTE_NAME}.create`
