@@ -15,14 +15,14 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
-import { ProductProvider } from '@/store/modules/productProvider'
+import { Brand } from '@/store/modules/brand'
 
 @Component({
   components:{
   'base-data-table':()=>import('@/components/table/BaseDataTable.vue')
   }
   })
-export default class ProductProviderIndex extends mixins(Base) {
+export default class BrandIndex extends mixins(Base) {
   include:string[] = []
   headers = [
     {
@@ -32,21 +32,18 @@ export default class ProductProviderIndex extends mixins(Base) {
       value: 'id'
     },
     { text: 'NAME', value: 'name', align: 'right' },
-    { text: 'CODE', value: 'code', align: 'right' },
-    { text: 'LEVEL', value: 'level', align: 'right' },
+    { text: 'AVATAR', value: 'avatar', align: 'right' },
     { text: 'DESCRIPTION', value: 'description', align: 'right' },
     { text: 'CREATED_AT', value: 'created_at', align: 'right' },
     { text: 'UPDATED_AT', value: 'updated_at', align: 'right' }
   ]
-
-  dialog = false
 
   async createSuccess () {
 
   }
 
   getDataFromApi (queryBuild = null) {
-    return ProductProvider.getInstance.with(this.include).index(queryBuild)
+    return Brand.getInstance.with(this.include).index(queryBuild)
   }
 }
 </script>

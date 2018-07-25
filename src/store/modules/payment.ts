@@ -54,23 +54,32 @@ export const actions = {
 }
 
 export class Payment extends Base {
-  static index (payload:QueryBuild|null = null):Promise<any> {
+  protected static instance:Payment;
+
+  public static get getInstance ():Payment {
+    if (!this.instance) {
+      this.instance = new Payment()
+    }
+    return this.instance
+  }
+
+  index (payload:QueryBuild|null = null):Promise<any> {
     return store.dispatch('payment/index', this.assignQueryBuild(payload))
   }
 
-  static show (payload:Show):Promise<any> {
-    return store.dispatch('payment/show', payload)
+  show (payload:Show):Promise<any> {
+    return store.dispatch('payment/show', this.assignQueryBuild(payload))
   }
 
-  static store (payload:FormData):Promise<any> {
+  create (payload:FormData):Promise<any> {
     return store.dispatch('payment/store', payload)
   }
 
-  static update (payload:Update):Promise<any> {
-    return store.dispatch('payment/store', payload)
+  update (payload:Update):Promise<any> {
+    return store.dispatch('payment/update', payload)
   }
 
-  static destory (id:number|string):Promise<any> {
+  destory (id:number|string):Promise<any> {
     return store.dispatch('payment/destory', id)
   }
 }

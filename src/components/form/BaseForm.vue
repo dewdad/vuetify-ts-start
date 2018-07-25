@@ -55,6 +55,29 @@ export default class BaseForm extends Vue {
     )
   }
 
+  createSwitch (item:any, key:any) {
+    return (
+      <v-switch
+        label={item.label}
+        inputValue={_.get(this.formData, key)}
+        onChange={() => { _.set(this.formData, key, !_.get(this.formData, key)) }}
+        disabled={_.get(item, 'props.disabled', this.disabled)}
+        falseValue={_.get(item, 'props.falseValue', false)}
+      ></v-switch>
+    )
+  }
+
+  createCheckbox (item:any, key:any) {
+    return (
+      <v-checkbox
+        label={item.label}
+        inputValue={_.get(this.formData, key)}
+        onChange={() => { _.set(this.formData, key, !_.get(this.formData, key)) }}
+        disabled={_.get(item, 'props.disabled', this.disabled)}
+      ></v-checkbox>
+    )
+  }
+
   createCard (items:any, propName:any, hasParent = false):VNode {
     const props = {
       xs12: true, sm8: hasParent, md6: hasParent
@@ -102,6 +125,12 @@ export default class BaseForm extends Vue {
             case 'textarea':
               htmlElement = this.createTextarea(item, key)
               break
+            case 'switch':
+              htmlElement = this.createSwitch(item, key)
+              break
+            case 'checkbox':
+              htmlElement = this.createCheckbox(item, key)
+              break
             default:
               htmlElement = []
           }
@@ -130,7 +159,6 @@ export default class BaseForm extends Vue {
   }
   // 动态添加事件
   addEvent (key:any, index:any, ele:any, item:any) {
-    console.log(index)
     this.$watch(`formData.${key}`, (newVal, oldVal) => {
       ele.onChange(newVal, oldVal, ele, item.fields, index, this)
     })

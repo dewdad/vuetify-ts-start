@@ -3,13 +3,24 @@
   <v-flex xs12 sm 12 md12 lg8 xl8>
   <v-card class="mb-3">
     <v-toolbar card dark color="primary">
-      <v-toolbar-title>供应商详情</v-toolbar-title>
+      <v-toolbar-title>属性值修改/更新</v-toolbar-title>
       <v-spacer></v-spacer>
 
     </v-toolbar>
     <v-card-text v-if="loaded">
-      <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData" :disabled="true"></base-form>
+      <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData"></base-form>
     </v-card-text>
+    <v-divider class="mt-5"></v-divider>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+
+      <v-btn flat
+             @click.native="$refs.form.clear()">Reset</v-btn>
+      <v-btn dark
+             color="info"
+             flat
+             @click.native="submit">Save</v-btn>
+    </v-card-actions>
   </v-card>
   </v-flex>
 </v-layout>
@@ -20,14 +31,14 @@ import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
 import Form from '@/components/form/BaseForm.vue'
-import { ProductProvider } from '@/store/modules/productProvider'
+import { Attribute } from '@/store/modules/attribute'
 
 @Component({
   components:{
   'base-form':Form
   }
   })
-export default class ProductProviderShow extends mixins(Base) {
+export default class AttributeUpdate extends mixins(Base) {
   public $refs!: {
     form: Form,
   }
@@ -36,13 +47,20 @@ export default class ProductProviderShow extends mixins(Base) {
   loaded = false
   createItem:any = null
   item:any|null = null
-  include = ['info', 'payment.balance', 'payment.payment', 'addresses']
+  include = []
+
+  async submit () {
+    const res = await this.$refs.form.submit()
+    if (res) {
+      await Attribute.getInstance.update({ formData: res, id: this.item.id })
+      alert('更新成功')
+    }
+  }
 
   async viewInit () {
-    const { data } = await ProductProvider.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await Attribute.getInstance.with(this.include).show({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductProvider.getInstance.filterData(data)
-    this.orginFormData.addresses = this.orginFormData.addresses[0]
+    this.orginFormData = Attribute.getInstance.filterData(data)
   }
 
   async loadFormStructure () {

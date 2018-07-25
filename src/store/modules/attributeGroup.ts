@@ -2,9 +2,9 @@ import { Base } from '@/store/modules/app'
 import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
-import * as BalanceApi from '@/api/balance'
+import * as AttributeGroupApi from '@/api/attributeGroup'
 
-export const ROUTE_NAME = 'balance'
+export const ROUTE_NAME = 'attribute-group'
 
 interface State{
 
@@ -12,7 +12,7 @@ interface State{
 export const actions = {
   async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
-      let {data} = await BalanceApi.index(payload)
+      let {data} = await AttributeGroupApi.index(payload)
       return data
     } catch (error) {
 
@@ -20,7 +20,7 @@ export const actions = {
   },
   async show (ctx: ActionContext<State, any>, payload:Show) {
     try {
-      let {data} = await BalanceApi.show(payload)
+      let {data} = await AttributeGroupApi.show(payload)
       return data
     } catch (error) {
 
@@ -28,7 +28,7 @@ export const actions = {
   },
   async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
-      let {data} = await BalanceApi.store(payload)
+      let {data} = await AttributeGroupApi.store(payload)
       return data
     } catch (error) {
 
@@ -36,7 +36,7 @@ export const actions = {
   },
   async update (ctx: ActionContext<State, any>, payload:Update) {
     try {
-      const { data } = await BalanceApi.update(payload)
+      const { data } = await AttributeGroupApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
@@ -45,7 +45,7 @@ export const actions = {
 
   async destroy (ctx: ActionContext<State, any>, id:string|number) {
     try {
-      const { data } = await BalanceApi.destroy(id)
+      const { data } = await AttributeGroupApi.destroy(id)
       return data
     } catch (error) {
       console.error(error)
@@ -53,33 +53,33 @@ export const actions = {
   }
 }
 
-export class Balance extends Base {
-  protected static instance:Balance;
+export class AttributeGroup extends Base {
+  protected static instance:AttributeGroup;
 
-  public static get getInstance ():Balance {
+  public static get getInstance ():AttributeGroup {
     if (!this.instance) {
-      this.instance = new Balance()
+      this.instance = new AttributeGroup()
     }
     return this.instance
   }
 
   index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('balance/index', this.assignQueryBuild(payload))
+    return store.dispatch('attributeGroup/index', this.assignQueryBuild(payload))
   }
 
   show (payload:Show):Promise<any> {
-    return store.dispatch('balance/show', this.assignQueryBuild(payload))
+    return store.dispatch('attributeGroup/show', this.assignQueryBuild(payload))
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('balance/store', payload)
+    return store.dispatch('attributeGroup/store', payload)
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('balance/update', payload)
+    return store.dispatch('attributeGroup/update', payload)
   }
 
   destory (id:number|string):Promise<any> {
-    return store.dispatch('balance/destory', id)
+    return store.dispatch('attributeGroup/destory', id)
   }
 }

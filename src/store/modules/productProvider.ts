@@ -54,24 +54,33 @@ export const actions = {
 }
 
 export class ProductProvider extends Base {
-  static index (payload:QueryBuild|null = null):Promise<any> {
+  protected static instance:ProductProvider;
+
+  public static get getInstance ():ProductProvider {
+    if (!this.instance) {
+      this.instance = new ProductProvider()
+    }
+    return this.instance
+  }
+
+  index (payload:QueryBuild|null = null):Promise<any> {
     return store.dispatch('productProvider/index', this.assignQueryBuild(payload))
   }
 
-  static show (payload:Show):Promise<any> {
+  show (payload:Show):Promise<any> {
     console.log(this.assignQueryBuild(payload))
     return store.dispatch('productProvider/show', this.assignQueryBuild(payload))
   }
 
-  static create (payload:FormData):Promise<any> {
+  create (payload:FormData):Promise<any> {
     return store.dispatch('productProvider/store', payload)
   }
 
-  static update (payload:Update):Promise<any> {
-    return store.dispatch('productProvider/store', payload)
+  update (payload:Update):Promise<any> {
+    return store.dispatch('productProvider/update', payload)
   }
 
-  static destory (id:number|string):Promise<any> {
+  destory (id:number|string):Promise<any> {
     return store.dispatch('productProvider/destory', id)
   }
 }

@@ -9,7 +9,8 @@ import { Payment } from '@/store/modules/payment'
 export default class BaseMixin extends Vue {
   routeName:{[propName:string]:string} = {
     show: `${ROUTE_NAME}.show`,
-    update: `${ROUTE_NAME}.update`
+    update: `${ROUTE_NAME}.update`,
+    create: `${ROUTE_NAME}.create`
   }
   translation = 'productProvider'
   balances = null
@@ -29,7 +30,7 @@ export default class BaseMixin extends Vue {
   }
 
   async fetchListData () {
-    const [{ data: balances }, { data: payments }] = await Promise.all([Balance.index(), Payment.index()])
+    const [{ data: balances }, { data: payments }] = await Promise.all([Balance.getInstance.index(), Payment.getInstance.index()])
     this.balances = balances
     this.payments = payments
     return { balances, payments }

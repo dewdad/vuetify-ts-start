@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import { Commit } from 'vuex'
 import { QueryBuild } from '@/api/types'
+import Singleton from '@/utils/Singleton'
 
 interface State {
   snackbar: Snackbar;
@@ -68,28 +69,37 @@ export const actions = {
   }
 }
 
-export class Base {
-  static include:string[] = []
+export class Base extends Singleton {
+  protected include:string[] = []
 
-  static with (arg:string[]) {
+  protected static instance:Base;
+
+  public static get getInstance ():Base {
+    if (!this.instance) {
+      this.instance = new Base()
+    }
+    return this.instance
+  }
+
+  with (arg:string[]) {
     this.include = []
     this.include.push(...arg)
     return this
   }
 
-  static parseInclude () {
+  parseInclude () {
     return this.include.join(',')
   }
 
-  static getInclude () {
+  getInclude () {
     return { include: this.parseInclude() }
   }
 
-  static assignQueryBuild (queryBuild:QueryBuild|null) {
+  assignQueryBuild (queryBuild:QueryBuild|null) {
     return Object.assign({}, this.getInclude(), queryBuild)
   }
 
-  static filterData (items:any[]|{[propName:string]:any}, orgin = {}) {
+  filterData (items:any[]|{[propName:string]:any}, orgin = {}) {
     return _.reduce(items, (res:any, item, key) => {
       if (_.isObject(item)) {
         if (_.has(item, 'data')) {

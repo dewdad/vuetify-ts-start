@@ -3,7 +3,7 @@ import store from '@/store'
 import { getToken } from '@/auth'
 // const Accept = `application/x.${process.env.VUE_APP_API_SUBTYPE}.${process.env.VUE_APP_API_VERSION}+json`
 // create an axios instance
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+// axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 const service = axios.create({
   baseURL: `${process.env.VUE_APP_API_URL}/${process.env.VUE_APP_API_PREFIX}`,
