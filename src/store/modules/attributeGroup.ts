@@ -3,19 +3,23 @@ import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
 import * as AttributeGroupApi from '@/api/attributeGroup'
+import { AttributeItem } from '@/store/modules/attribute'
 
 export const ROUTE_NAME = 'attribute-group'
 
-export interface AttributeGroupItem{
-  'can_upload'?:boolean;
-  'created_at'?:string;
+export interface AttributeGroupItem extends LocalAttributeGroupItem{
+  'can_upload':boolean;
+  'created_at':string|null;
+  id:number;
+  'updated_at':string|null;
+}
+
+export interface LocalAttributeGroupItem{
   customized:boolean;
-  id?:number;
   name:string;
   required:boolean;
   type:string;
-  'updated_at'?:string;
-  variant:boolean
+  variant:boolean;
 }
 interface State{
 

@@ -6,6 +6,16 @@ import * as ProductTypeApi from '@/api/productType'
 
 export const ROUTE_NAME = 'product-type'
 
+export interface LocalProductTypeItem{
+  config:null|{};
+  name:string;
+}
+
+export interface ProductTypeItem extends LocalProductTypeItem{
+  'created_at':string|null;
+  id:number;
+  'updated_at':string|null
+}
 interface State{
 
 }

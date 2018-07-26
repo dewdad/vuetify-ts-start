@@ -11,9 +11,14 @@
       <type-form name="选择类型">
         <search-type @change="change" label="选择或搜索" lableName="产品类型" :searchAction="searchAction"></search-type>
       </type-form>
-      <attribute-form name="产品属性" v-if="loadType">
-        <product-attributes :items="attributes.attributeGroups"></product-attributes>
+      <attribute-form name="产品基本属性" v-if="loadType">
+        <product-attributes :items="baseAttributes"></product-attributes>
       </attribute-form>
+      <attribute-form name="产品销售属性"  v-if="loadType">
+        <product-attributes ref="sku" :items="variantAttributes"></product-attributes>
+      </attribute-form>
+      <v-divider></v-divider>
+      <sku-table v-if="genSkuTableSchema.length"  :item="genSkuTableSchema"></sku-table>
     </v-card-text>
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
@@ -33,25 +38,36 @@ import Base from './mixins/Base'
 import { Product } from '@/store/modules/product'
 import FormItemCard from '@/components/card/FormItemCard.vue'
 import AutoComplete from '@/components/form/AutoComplete.vue'
-import {ProductType} from '@/store/modules/productType'
+import {ProductType, ProductTypeItem} from '@/store/modules/productType'
 import ProductAttributes from '@/components/form/ProductAttributes.vue'
+import { AttributeGroupItem } from '@/store/modules/attributeGroup'
+import SkuTable from '@/components/table/SkuTable.vue'
+interface ProductTypeS extends ProductTypeItem{
+  attributeGroups:AttributeGroupItem[]
+}
+
 @Component({
   components:{
   'type-form':FormItemCard,
   'attribute-form':FormItemCard,
   'search-type':AutoComplete,
-  'product-attributes':ProductAttributes
+  'product-attributes':ProductAttributes,
+  'sku-table':SkuTable
   }
   })
 export default class ProductCreate extends mixins(Base) {
   public $refs!: {
-
+    'sku':ProductAttributes
   };
   formSchema:any[]|null = null
   loaded = false
   createItem:any = null
 
-  attributes:any = null
+  productType = {} as ProductTypeS
+
+  baseAttributes:AttributeGroupItem[] = []
+
+  variantAttributes:AttributeGroupItem[] = []
 
   loadType = false
 
@@ -75,8 +91,17 @@ export default class ProductCreate extends mixins(Base) {
 
   async loadProductType (id:number) {
     let {data: attributes} = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
-    this.attributes = ProductType.getInstance.filterData(attributes)
+    this.productType = ProductType.getInstance.filterData(attributes)
+
+    this.productType.attributeGroups.forEach(item => {
+      item.variant ? this.variantAttributes.push(item) : this.baseAttributes.push(item)
+    })
+
     this.loadType = true
+  }
+
+  get genSkuTableSchema () {
+    return this.$refs.sku.cartesian
   }
 
   reset () {

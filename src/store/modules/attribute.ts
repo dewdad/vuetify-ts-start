@@ -6,13 +6,16 @@ import * as AttributeApi from '@/api/attribute'
 
 export const ROUTE_NAME = 'attribute'
 
-export interface AttributeItem{
-  'created_at'?:string;
-  'group_id':number;
+export interface AttributeItem extends LocalAttributeItem{
+  'created_at':string|null;
   id:number;
-  'updated_at'?:string;
-  value:string;
+  'updated_at':string|null;
   variant:boolean
+}
+
+export interface LocalAttributeItem{
+  'group_id':number;
+  value:string;
 }
 interface State{
 

@@ -1,98 +1,115 @@
 <template>
-  <v-container v-if="loaded">
-    <v-layout row
-              wrap>
-      <v-flex xs12>
-        <template v-for="item in items">
-          <!-- select -->
-          <v-select :key="item.id"
-                    v-if="item.type === 'select'"
-                    :items="item.values"
-                    :label="item.name"
-                    item-text="value"
-                    item-value="id"
-                    @change="formItemChange(item)"
-                    v-model="formData[item.id]"></v-select>
-          <!-- text -->
-          <v-text-field :key="item.id"
-                        v-if="item.type === 'text'"
-                        :label="item.name"
-                        @change="formItemChange(item)"
-                        v-model="formData[item.id]"></v-text-field>
-          <!-- checkbox_group -->
-          <v-container fluid
-                       :key="item.id"
-                       v-if="item.type === 'checkbox_group'">
+  <v-layout row
+            wrap
+            v-if="loaded">
+    <v-flex xs12>
+      <template v-for="item in items">
+        <!-- select -->
+        <v-card :key="item.id"
+                v-if="item.type === 'select'"
+                flat
+                tile>
+          <v-card-text>
+            <v-select :items="item.values"
+                      :label="item.name"
+                      item-text="value"
+                      item-value="id"
+                      v-model="formData[item.id].value"></v-select>
+          </v-card-text>
+        </v-card>
+
+        <!-- text -->
+        <v-card :key="item.id"
+                v-if="item.type === 'text'"
+                flat
+                tile>
+
+          <v-card-text>
+            <v-text-field :label="item.name"
+                          v-model="formData[item.id].value"></v-text-field>
+          </v-card-text>
+        </v-card>
+
+        <!-- checkbox_group -->
+        <v-card :key="item.id"
+                flat
+                tile
+                v-if="item.type === 'checkbox_group'">
+          <v-card-title primary-title>{{item.name}}</v-card-title>
+
+          <v-card-text>
             <v-layout row
                       wrap>
-              {{item.name}}
               <v-flex xs6
                       sm3
                       md3
                       v-for="attribute in item.values"
                       :key="attribute.id">
-                <v-checkbox v-model="formData[item.id]"
+                <v-checkbox v-model="formData[item.id].value"
                             :label="attribute.value"
-                            @change="formItemChange(item,attribute)"
-                            :value="attribute.id"></v-checkbox>
+                            :value="attribute">
+                </v-checkbox>
               </v-flex>
             </v-layout>
-          </v-container>
-          <!-- textarea -->
-          <v-textarea v-if="item.type === 'textarea'"
-                      :key="item.id"
-                      :label="item.name"
-                      hint="Hint text"
-                      @change="formItemChange(item)"
-                      v-model="formData[item.id]"></v-textarea>
-          <!-- radio_group -->
-          <v-radio-group v-if="item.type === 'radio_group'"
-                         :key="item.id"
-                         :label="item.name"
-                         @change="formItemChange(item)"
-                         v-model="formData[item.id]">
-            <v-radio v-for="attribute in item.values"
-                     :key="attribute.id"
-                     :label="attribute.value"
-                     :value="attribute.id"></v-radio>
-          </v-radio-group>
-          <!-- toggle -->
-          <v-switch v-if="item.type === 'toggle'"
-                    :key="item.id"
-                    :label="item.name"
-                    @change="formItemChange(item)"
-                    v-model="formData[item.id]"></v-switch>
-        </template>
-      </v-flex>
-    </v-layout>
-  </v-container>
+            <v-divider></v-divider>
+          </v-card-text>
+
+        </v-card>
+
+        <!-- textarea -->
+        <v-card v-if="item.type === 'textarea'"
+                :key="item.id"
+                flat
+                tile>
+          <v-card-text>
+            <v-textarea :label="item.name"
+                        hint="Hint text"
+                        v-model="formData[item.id].value"></v-textarea>
+          </v-card-text>
+        </v-card>
+
+        <!-- radio_group -->
+        <v-card flat
+                tile
+                v-if="item.type === 'radio_group'"
+                :key="item.id">
+          <!-- <v-card-title>{{item.name}}</v-card-title> -->
+          <v-card-text>
+            <v-radio-group :label="item.name"
+                           :mandatory="false"
+                           v-model="formData[item.id].value">
+              <v-radio v-for="attribute in item.values"
+                       :key="attribute.id"
+                       :label="attribute.value"
+                       :value="attribute"></v-radio>
+            </v-radio-group>
+          </v-card-text>
+        </v-card>
+
+        <!-- toggle -->
+        <v-card flat
+                tile
+                v-if="item.type === 'toggle'"
+                :key="item.id">
+          <v-card-text>
+            <v-switch :label="item.name"
+                      v-model="formData[item.id].value"></v-switch>
+          </v-card-text>
+        </v-card>
+
+      </template>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
 
 import { Component, Vue, Prop } from 'vue-property-decorator'
-interface Item{
-  'can_upload':boolean;
-  'created_at'?:string;
-  customized?:boolean;
-  id:number;
-  name:string;
-  required:boolean;
-  type:string;
-  'updated_at'?:string;
-  variant:boolean;
-  values:Value[];
+import { AttributeGroupItem } from '@/store/modules/attributeGroup'
+import { AttributeItem } from '@/store/modules/attribute'
+interface Item extends AttributeGroupItem{
+  values:AttributeItem[]
 }
-
-interface Value{
-  'created_at?':string;
-  'group_id':number;
-  id:number;
-  'updated_at'?:string;
-  value:string;
-  variant:boolean
-}
-
 @Component
 export default class ProductAttributes extends Vue {
   @Prop(Array)
@@ -105,58 +122,52 @@ export default class ProductAttributes extends Vue {
   genFormData () {
     this.formData = _.reduce(this.items, (res:any, item) => {
       if (this.isComment(item)) {
-        res[item.id] = ''
+        res[item.id] = {value: '', item}
+      } else if (item.type === 'radio_group') {
+        res[item.id] = {value: {}, item}
       } else {
-        res[item.id] = []
+        res[item.id] = {value: [], item}
       }
       return res
     }, {})
+  }
+
+  addRadioGroupDefaultValue (item:Item) {
+    return _.cloneDeep(item.values).unshift()
   }
 
   isComment (item:Item) {
     return item.type === 'text' || item.type==='textarea' || item.type==='toggle'
   }
 
-  isAdd (item?:Value, array:number[]) {
-    return (array as any).includes(item.id)
+  isAdd (item:AttributeItem, arr:number[]) {
+    return arr.indexOf(item.id) !== -1
   }
 
-  formItemChange (item:Item, attribute?:Value) {
-    if (item.variant) {
-      console.log(attribute)
-      console.log(this.formData[item.id])
-      console.log(this.isAdd(attribute, this.formData[item.id]))
-      if (!this.isComment(item)) {
-        const attrIds = this.formData[item.id]
-        let variantAttr = this.variantAttribute.find(attr => attr.id === item.id)
-        if (attrIds.length>0) {
-          if (variantAttr) {
-            attrIds.forEach((attributes:Value) => {
-              console.log(variantAttr.attributes.includes(attributes))
-              variantAttr.attributes.includes(attributes) || variantAttr.attributes.push(attribute)
-            })
-          } else {
-            this.variantAttribute.push({id: item.id, name: item.name, attributes: [attribute]})
-          }
-        } else {
-          if (variantAttr) {
-            this.variantAttribute = this.variantAttribute.filter(item => item!==variantAttr)
-          }
-        }
-        /*
-          [
-            {id:1,name:颜色,attributes:[
-
-            ]}
-          ]
-        */
+  get attributes () {
+    return Object.values(this.formData).map(item => {
+      let values = _.isString(item.value) ? {comment: item.value} : {attribute_id: _.isObject(item.value) ? (_.has(item.value, 'id') ? [item.value.id] :[ ]) : item.value.map((attr:AttributeItem) => attr.id)}
+      return {
+        'attribute_group_id': item.item.id,
+        ...values
       }
-    }
+    })
   }
+
+  flatten (arr:any[]) {
+    return [].concat.apply([], arr)
+  }
+
+  get cartesian () {
+    // [...element, {group_name: attr.item.name, group_id: attr.item.id, value_id: value.id, value_name: value.value}]
+    return Object.values(this.formData).reduce((acc, set) =>
+      this.flatten(acc.map((x:any) => set.value.map((y:AttributeItem) => [ ...x,
+        {group_name: set.item.name, group_id: set.item.id, value_id: y.id, value_name: y.value}
+      ]))), [[]])
+  }
+
   mounted () {
     this.$nextTick(() => {
-      // 销售属性放在数组最后
-      this.items.sort(item => +item.variant)
       this.genFormData()
       this.loaded =true
     })

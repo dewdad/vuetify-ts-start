@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true,    
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
@@ -23,6 +23,7 @@
     },
     "lib": [
       "es2015",
+      "es2017",
       "dom",
       "dom.iterable",
       "scripthost"
