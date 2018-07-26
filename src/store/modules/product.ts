@@ -2,25 +2,17 @@ import { Base } from '@/store/modules/app'
 import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
-import * as AttributeApi from '@/api/attribute'
+import * as ProductApi from '@/api/product'
 
-export const ROUTE_NAME = 'attribute'
+export const ROUTE_NAME = 'product'
 
-export interface AttributeItem{
-  'created_at'?:string;
-  'group_id':number;
-  id:number;
-  'updated_at'?:string;
-  value:string;
-  variant:boolean
-}
 interface State{
 
 }
 export const actions = {
   async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
-      let {data} = await AttributeApi.index(payload)
+      let {data} = await ProductApi.index(payload)
       return data
     } catch (error) {
 
@@ -28,7 +20,7 @@ export const actions = {
   },
   async show (ctx: ActionContext<State, any>, payload:Show) {
     try {
-      let {data} = await AttributeApi.show(payload)
+      let {data} = await ProductApi.show(payload)
       return data
     } catch (error) {
 
@@ -36,7 +28,7 @@ export const actions = {
   },
   async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
-      let {data} = await AttributeApi.store(payload)
+      let {data} = await ProductApi.store(payload)
       return data
     } catch (error) {
 
@@ -44,7 +36,7 @@ export const actions = {
   },
   async update (ctx: ActionContext<State, any>, payload:Update) {
     try {
-      const { data } = await AttributeApi.update(payload)
+      const { data } = await ProductApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
@@ -53,7 +45,7 @@ export const actions = {
 
   async destroy (ctx: ActionContext<State, any>, id:string|number) {
     try {
-      const { data } = await AttributeApi.destroy(id)
+      const { data } = await ProductApi.destroy(id)
       return data
     } catch (error) {
       console.error(error)
@@ -61,33 +53,33 @@ export const actions = {
   }
 }
 
-export class Attribute extends Base {
-  protected static instance:Attribute;
+export class Product extends Base {
+  protected static instance:Product;
 
-  public static get getInstance ():Attribute {
+  public static get getInstance ():Product {
     if (!this.instance) {
-      this.instance = new Attribute()
+      this.instance = new Product()
     }
     return this.instance
   }
 
   index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('attribute/index', this.assignQueryBuild(payload))
+    return store.dispatch('product/index', this.assignQueryBuild(payload))
   }
 
   show (payload:Show):Promise<any> {
-    return store.dispatch('attribute/show', this.assignQueryBuild(payload))
+    return store.dispatch('product/show', this.assignQueryBuild(payload))
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('attribute/store', payload)
+    return store.dispatch('product/store', payload)
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('attribute/update', payload)
+    return store.dispatch('product/update', payload)
   }
 
   destory (id:number|string):Promise<any> {
-    return store.dispatch('attribute/destory', id)
+    return store.dispatch('product/destory', id)
   }
 }

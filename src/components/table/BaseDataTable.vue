@@ -60,23 +60,23 @@
               :key="row.text"
               :class="row.class">{{ row.value }}</td>
 
-          <td class="text-xs-right">
-            <v-flex align-content-end>
-              <v-tooltip bottom>
-                <v-btn slot="activator" icon small class="mr-2" @click="showItem(props.item.id)"><v-icon small color="success">insert_drive_file</v-icon></v-btn>
-                <span>查看</span>
-              </v-tooltip>
+          <td class="justify-center layout px-0">
 
-              <v-tooltip bottom>
-                <v-btn slot="activator" icon small class="mr-2" @click="editItem(props.item.id)"><v-icon small color="info">edit</v-icon></v-btn>
-                <span>编辑</span>
-              </v-tooltip>
+                <v-tooltip bottom>
+                  <v-btn slot="activator" icon small class="mr-2" @click="showItem(props.item.id)"><v-icon small color="success">insert_drive_file</v-icon></v-btn>
+                  <span>查看</span>
+                </v-tooltip>
 
-              <v-tooltip bottom>
-                <v-btn slot="activator"  icon small class="mr-2" @click="deleteItem(props.item)"><v-icon small color="error">delete</v-icon></v-btn>
-                <span>删除</span>
-              </v-tooltip>
-            </v-flex>
+                <v-tooltip bottom>
+                  <v-btn slot="activator" icon small class="mr-2" @click="editItem(props.item.id)"><v-icon small color="info">edit</v-icon></v-btn>
+                  <span>编辑</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <v-btn slot="activator"  icon small class="mr-2" @click="deleteItem(props.item)"><v-icon small color="error">delete</v-icon></v-btn>
+                  <span>删除</span>
+                </v-tooltip>
+
           </td>
 
       </template>

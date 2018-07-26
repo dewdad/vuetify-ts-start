@@ -1,6 +1,8 @@
 import request from '@/utils/request'
 import { QueryBuild, Show, Update, FormData } from './types'
-const END_POINT = 'product_providers'
+
+const END_POINT = 'products'
+
 export function index (payload:QueryBuild|null = null) {
   return request({
     url: `${END_POINT}`,

@@ -3,7 +3,7 @@
   <v-flex xs12 sm 12 md12 lg8 xl8>
   <v-card class="mb-3">
     <v-toolbar card dark color="primary">
-      <v-toolbar-title>属性组详情</v-toolbar-title>
+      <v-toolbar-title>产品详情</v-toolbar-title>
       <v-spacer></v-spacer>
 
     </v-toolbar>
@@ -21,7 +21,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
 import Form from '@/components/form/BaseForm.vue'
-import { AttributeGroup } from '@/store/modules/attributeGroup'
+import { Product } from '@/store/modules/product'
 import AttributeForm from '@/components/form/AttributeForm.vue'
 
 @Component({
@@ -30,7 +30,7 @@ import AttributeForm from '@/components/form/AttributeForm.vue'
   'attribute-form':AttributeForm
   }
   })
-export default class AttributeGroupShow extends mixins(Base) {
+export default class ProductShow extends mixins(Base) {
   public $refs!: {
     form: Form,
   }
@@ -42,9 +42,9 @@ export default class AttributeGroupShow extends mixins(Base) {
   include = ['values']
 
   async viewInit () {
-    const { data } = await AttributeGroup.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await Product.getInstance.with(this.include).show({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = AttributeGroup.getInstance.filterData(data)
+    this.orginFormData = Product.getInstance.filterData(data)
   }
 
   async loadFormStructure () {

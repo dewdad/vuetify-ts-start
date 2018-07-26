@@ -11,7 +11,7 @@ export function index (payload:QueryBuild|null = null) {
   })
 }
 
-export function show ({ id, queryBuild = null }:Show) {
+export function show ({ id, ...queryBuild }:Show) {
   return request({
     url: `${END_POINT}/${id}`,
     method: 'get',

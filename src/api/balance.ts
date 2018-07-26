@@ -1,17 +1,18 @@
 import request from '@/utils/request'
 import { QueryBuild, Show, Update, FormData } from './types'
+const END_POINT = 'balances'
 
 export function index (payload:QueryBuild|null = null) {
   return request({
-    url: '/balances',
+    url: `${END_POINT}`,
     method: 'get',
     params: payload
   })
 }
 
-export function show ({ id, queryBuild = null }:Show) {
+export function show ({ id, ...queryBuild }:Show) {
   return request({
-    url: `/balances/${id}`,
+    url: `${END_POINT}/${id}`,
     method: 'get',
     params: queryBuild
   })
@@ -19,7 +20,7 @@ export function show ({ id, queryBuild = null }:Show) {
 
 export function store (formData:FormData) {
   return request({
-    url: `/balances`,
+    url: `${END_POINT}`,
     method: 'post',
     data: formData
   })
@@ -27,7 +28,7 @@ export function store (formData:FormData) {
 
 export function update ({ formData, id }:Update) {
   return request({
-    url: `/balances/${id}`,
+    url: `${END_POINT}/${id}`,
     method: 'put',
     data: formData
   })
@@ -35,7 +36,7 @@ export function update ({ formData, id }:Update) {
 
 export function destroy (id:string|number) {
   return request({
-    url: `/balances/${id}`,
+    url: `${END_POINT}/${id}`,
     method: 'delete'
   })
 }

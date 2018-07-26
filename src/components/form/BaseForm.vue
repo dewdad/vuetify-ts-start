@@ -67,6 +67,27 @@ export default class BaseForm extends Vue {
     )
   }
 
+  craeteCheckboxGroup (item:any, key:any) {
+    return (
+      <v-layout row wrap>
+        {
+          item.values.map((attribute:any) => {
+            return (
+              <v-flex xs6 sm3 md3>
+                <v-checkbox
+                  inputValue={_.get(this.formData, key)}
+                  label={attribute.value}
+                  value={attribute.id}
+                >
+                </v-checkbox>
+              </v-flex>
+            )
+          })
+        }
+      </v-layout>
+    )
+  }
+
   createCheckbox (item:any, key:any) {
     return (
       <v-checkbox

@@ -3,10 +3,10 @@ import store from '@/store'
 import { getToken } from '@/auth'
 // const Accept = `application/x.${process.env.VUE_APP_API_SUBTYPE}.${process.env.VUE_APP_API_VERSION}+json`
 // create an axios instance
-// axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 const service = axios.create({
-  baseURL: `${process.env.VUE_APP_API_URL}/${process.env.VUE_APP_API_PREFIX}`,
+  baseURL: `/${process.env.VUE_APP_API_PREFIX}`,
   timeout: 5000 // request timeout
   // headers: {Accept}
 })
@@ -26,6 +26,7 @@ service.interceptors.request.use(config => {
 
 // respone interceptor
 service.interceptors.response.use(
+
   response => response,
   /**
   * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
@@ -62,7 +63,7 @@ service.interceptors.response.use(
     //   type: 'error',
     //   duration: 5 * 1000
     // })
-    return Promise.reject(error.response)
+    return Promise.reject(error)
   })
 
 export default service

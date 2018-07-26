@@ -3,7 +3,7 @@
   <v-flex xs12 sm 12 md12 lg8 xl8>
   <v-card class="mb-3">
     <v-toolbar card dark color="primary">
-      <v-toolbar-title>属性组修改/更新</v-toolbar-title>
+      <v-toolbar-title>产品修改/更新</v-toolbar-title>
       <v-spacer></v-spacer>
 
     </v-toolbar>
@@ -32,7 +32,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
 import Form from '@/components/form/BaseForm.vue'
-import { AttributeGroup } from '@/store/modules/attributeGroup'
+import { Product } from '@/store/modules/product'
 import AttributeForm from '@/components/form/AttributeForm.vue'
 
 @Component({
@@ -41,7 +41,7 @@ import AttributeForm from '@/components/form/AttributeForm.vue'
   'attribute-form':AttributeForm
   }
   })
-export default class AttributeGroupUpdate extends mixins(Base) {
+export default class ProductUpdate extends mixins(Base) {
   public $refs!: {
     form: Form,
     attributeForm:AttributeForm
@@ -56,16 +56,16 @@ export default class AttributeGroupUpdate extends mixins(Base) {
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await AttributeGroup.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
+      await Product.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
       this.$success({text: '更新成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
   }
 
   async viewInit () {
-    const { data } = await AttributeGroup.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await Product.getInstance.with(this.include).show({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = AttributeGroup.getInstance.filterData(data)
+    this.orginFormData = Product.getInstance.filterData(data)
   }
 
   reset () {
