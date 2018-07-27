@@ -15,15 +15,15 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
-import { Product } from '@/store/modules/product'
+import { Category } from '@/store/modules/category'
 
 @Component({
   components:{
   'base-data-table':()=>import('@/components/table/BaseDataTable.vue')
   }
   })
-export default class ProductIndex extends mixins(Base) {
-  include:string[] = ['brand', 'type']
+export default class CategoryIndex extends mixins(Base) {
+  include:string[] = []
   headers = [
     {
       text: 'ID',
@@ -31,11 +31,8 @@ export default class ProductIndex extends mixins(Base) {
       sortable: true,
       value: 'id'
     },
-    { text: '属性组名称', value: 'name', align: 'right' },
-    { text: '可为销售属性', value: 'variant', align: 'right' },
-    { text: '选择方式', value: 'type', align: 'right' },
-    { text: '是否必填', value: 'required', align: 'right' },
-    { text: '可自定义', value: 'customized', align: 'right' },
+    { text: 'NAME', value: 'name', align: 'right' },
+    { text: 'PARENT_ID', value: 'parent_id', align: 'right' },
     { text: 'CREATED_AT', value: 'created_at', align: 'right' },
     { text: 'UPDATED_AT', value: 'updated_at', align: 'right' }
   ]
@@ -45,7 +42,7 @@ export default class ProductIndex extends mixins(Base) {
   }
 
   getDataFromApi (queryBuild = null) {
-    return Product.getInstance.with(this.include).index(queryBuild)
+    return Category.getInstance.with(this.include).index(queryBuild)
   }
 }
 </script>

@@ -8,8 +8,21 @@
 
     </v-toolbar>
     <v-card-text v-if="loaded">
-      <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData"></base-form>
-      <attribute-form ref="attributeForm" :orginFormData="orginFormData.values"></attribute-form>
+
+      <type-form name="选择类型">
+        <search-type @change="change" :defaultType="orginFormData.type_id" label="选择或搜索" lableName="产品类型" :searchAction="searchAction"></search-type>
+      </type-form>
+      <base-form v-if="loadType" ref="form" :schema="formSchema" :orginFormData="orginFormData"></base-form>
+      <attribute-form name="产品基本属性" v-if="loadType">
+        <product-attributes :items="baseAttributes" ref="baseAttr" :orginFormData="orginAttribute"></product-attributes>
+      </attribute-form>
+      <attribute-form name="产品销售属性"  v-if="loadType">
+        <product-attributes @change="skuChange" ref="sku" :items="variantAttributes" :orginFormData="orginVariant" sku></product-attributes>
+      </attribute-form>
+      <attribute-form name="产品变体组合"  v-if="tableSchema.length>0">
+        <sku-table  :items="tableSchema"></sku-table>
+      </attribute-form>
+
     </v-card-text>
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
@@ -31,34 +44,77 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
+
 import Form from '@/components/form/BaseForm.vue'
+
 import { Product } from '@/store/modules/product'
-import AttributeForm from '@/components/form/AttributeForm.vue'
+
+import FormItemCard from '@/components/card/FormItemCard.vue'
+
+import AutoComplete from '@/components/form/AutoComplete.vue'
+
+import {ProductType, ProductTypeItem} from '@/store/modules/productType'
+
+import ProductAttributes from '@/components/form/ProductAttributes.vue'
+
+import { AttributeGroupItem } from '@/store/modules/attributeGroup'
+
+import SkuTable from '@/components/table/SkuTable.vue'
+
+interface ProductTypeS extends ProductTypeItem{
+  attributeGroups:AttributeGroupItem[]
+}
 
 @Component({
   components:{
+  'type-form':FormItemCard,
   'base-form':Form,
-  'attribute-form':AttributeForm
+  'attribute-form':FormItemCard,
+  'search-type':AutoComplete,
+  'product-attributes':ProductAttributes,
+  'sku-table':SkuTable
   }
   })
 export default class ProductUpdate extends mixins(Base) {
   public $refs!: {
-    form: Form,
-    attributeForm:AttributeForm
+    'baseAttr':ProductAttributes,
+    'sku':ProductAttributes,
+    'form':Form
   }
   formSchema:any[]|null = null
-  orginFormData:any|null = null
+
   loaded = false
+
+  orginFormData:any|null = null
+
+  orginAttribute:any = null
+
+  orginVariant:any = null
+
   createItem:any = null
+
   item:any|null = null
-  include = ['values']
+
+  productType = {} as ProductTypeS
+
+  baseAttributes:AttributeGroupItem[] = []
+
+  variantAttributes:AttributeGroupItem[] = []
+
+  loadType = false
+
+  skuSet:any = []
+
+  orginTableSchemaData:Map<string, {price:number, sku:string}> = new Map()
+
+  include = ['brand', 'type', 'attributes.group', 'attributes.value', 'variants.attributes.group', 'variants.attributes.value']
 
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await Product.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
-      this.$success({text: '更新成功', position: 9})
-      this.$router.replace({name: this.routeName.index})
+      // await Product.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
+      // this.$success({text: '更新成功', position: 9})
+      // this.$router.replace({name: this.routeName.index})
     }
   }
 
@@ -66,17 +122,70 @@ export default class ProductUpdate extends mixins(Base) {
     const { data } = await Product.getInstance.with(this.include).show({id: this.$route.params.id})
     this.item = data
     this.orginFormData = Product.getInstance.filterData(data)
+    this.setOrginAttribute()
+    this.setOrginVariant()
+    this.setOrginTableSchema()
+  }
+
+  setOrginAttribute () {
+    this.orginAttribute = this.orginFormData.attributes.filter((item:any) => !item.variant)
+  }
+
+  setOrginVariant () {
+    this.orginVariant = this.orginFormData.attributes.filter((item:any) => item.variant)
+  }
+
+  setOrginTableSchema () {
+    this.orginFormData.variants.forEach(variant => {
+      const key = (variant.attributes.map(item => item.value.value)).join('')
+      const {price, sku} = variant
+      this.orginTableSchemaData.set(key, {price, sku})
+    })
   }
 
   reset () {
     this.$refs.form.clear()
-    this.$refs.attributeForm.clear()
   }
 
   async loadFormStructure () {
     this.$loading({ show: true, text: '正在生成表单。。。' })
     this.formSchema = await this.createSchema()
     this.$loading({ show: false })
+  }
+
+  searchAction () {
+    return ProductType.getInstance.index()
+  }
+  // 产品类型选择改变事件
+  async change (id:number|null) {
+    if (_.isNull(id)) {
+      return
+    }
+    await this.loadProductType(id)
+  }
+
+  async loadProductType (id:number) {
+    let {data: attributes} = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
+    this.productType = ProductType.getInstance.filterData(attributes)
+    this.variantAttributes = []
+    this.baseAttributes = []
+    this.productType.attributeGroups.forEach(item => {
+      item.variant ? this.variantAttributes.push(item) : this.baseAttributes.push(item)
+    })
+
+    this.loadType = true
+  }
+
+  skuChange (set:any) {
+    this.skuSet = set
+  }
+
+  get tableSchema () {
+    const base = {sku: '', price: 0}
+    return this.skuSet.map((item:any) => {
+      const key = (item.map((attr:any) => attr.value_name)).join('')
+      return {attributes: item, ...this.orginTableSchemaData.get(key), key}
+    })
   }
 
   async created () {

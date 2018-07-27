@@ -42,6 +42,11 @@ export default ({ authGuard, guestGuard }: {authGuard: Guard, guestGuard: Guard 
   {path: '/attributes/:id', name: 'attribute.show', meta: {title: '属性值详情'}, component: () => import('@/views/attribute/Show.vue')},
   {path: '/attributes/:id/update', name: 'attribute.update', meta: {title: '属性值修改/更新'}, component: () => import('@/views/attribute/Update.vue')},
 
+  {path: '/categories', name: 'category.index', meta: {title: '分类管理'}, component: () => import('@/views/category/Index.vue')},
+  {path: '/categories/create', name: 'category.create', meta: {title: '创建分类'}, component: () => import('@/views/category/Create.vue')},
+  {path: '/categories/:id', name: 'category.show', meta: {title: '分类详情'}, component: () => import('@/views/category/Show.vue')},
+  {path: '/categories/:id/update', name: 'category.update', meta: {title: '分类修改/更新'}, component: () => import('@/views/category/Update.vue')},
+
   {path: '/products', name: 'product.index', meta: {title: '产品管理'}, component: () => import('@/views/product/Index.vue')},
   {path: '/products/create', name: 'product.create', meta: {title: '创建产品'}, component: () => import('@/views/product/Create.vue')},
   {path: '/products/:id', name: 'product.show', meta: {title: '产品详情'}, component: () => import('@/views/product/Show.vue')},

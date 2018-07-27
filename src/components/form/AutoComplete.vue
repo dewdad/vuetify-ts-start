@@ -4,8 +4,10 @@
       :items="items"
       :loading="isLoading"
       :search-input.sync="search"
+      :disabled="disabled"
+      :readonly="readonly"
       chips
-      clearable
+      :clearable="clearable"
       hide-details
       hide-selected
       item-text="name"
@@ -64,7 +66,7 @@ import { Pagination } from '@/store/modules/app'
 export default class AutoComplete extends Vue {
   isLoading = false
   items:any[] = []
-  model = null
+  model:number|null = null
   search:string|null = null
   pagination:Pagination|null = null;
 
@@ -76,6 +78,15 @@ export default class AutoComplete extends Vue {
 
   @Prop(Function)
   searchAction!:()=>Promise<any>
+
+  @Prop(Number)
+  defaultType!:number
+
+  @Prop({type: Boolean, default: false})
+  readonly!:boolean
+
+  @Prop({type: Boolean, default: false})
+  disabled!:boolean
 
   @Watch('search')
   async onSearchChange (val:string|null) {
@@ -102,6 +113,10 @@ export default class AutoComplete extends Vue {
     return this.model
   }
 
+  get clearable () {
+    return !this.disabled && !this.readonly
+  }
+
   async init () {
     this.isLoading = true
     let {data, meta} = await this.searchAction()
@@ -112,6 +127,9 @@ export default class AutoComplete extends Vue {
 
   async created () {
     await this.init()
+    if (this.defaultType) {
+      this.model = this.defaultType
+    }
   }
 }
 </script>

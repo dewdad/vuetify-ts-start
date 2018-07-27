@@ -2,6 +2,7 @@ import { RouteName } from '@/store/modules/app'
 import { ROUTE_NAME } from '@/store/modules/product'
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { Brand } from '@/store/modules/brand'
 
 // You can declare a mixin as the same style as components.
 @Component
@@ -19,37 +20,43 @@ export default class BaseMixin extends Vue {
   }
 
   async createSchema () {
+    const {data: brands} = await Brand.getInstance.index()
     return [
       { name: '基本',
         fields: [
           { field: 'name',
-            label: '属性组名称',
+            label: '产品名称',
             type: 'input',
             rule: 'required',
             props: { clearable: true }
           },
-          { field: 'variant',
-            label: '是否为销售属性',
-            type: 'switch',
+          { field: 'name_cn',
+            label: '产品中文名称',
+            type: 'input',
             rule: 'required',
-            default: false,
-            props: {falseValue: false}
+            props: { clearable: true }
           },
-          { field: 'type',
-            label: '选择方式',
+          { field: 'name_en',
+            label: '产品英文名称',
+            type: 'input',
+            rule: 'required',
+            props: { clearable: true }
+          },
+          { field: 'code',
+            label: '产品编码',
+            type: 'input',
+            rule: 'required',
+            props: { clearable: true }
+          },
+          { field: 'brand_id',
+            label: '产品品牌',
             type: 'select',
-            items: ['text', 'textarea', 'select', 'radio', 'richtext', 'checkbox', 'date', 'time', 'checkbox_group', 'radio_group', 'toggle'],
-            default: 'text',
-            rule: 'required'
+            items: brands,
+            itemText: 'name',
+            itemValue: 'id'
           },
-          { field: 'required',
-            label: '是否必填',
-            type: 'switch',
-            default: false,
-            rule: 'required'
-          },
-          { field: 'customized',
-            label: '是否支持自定义',
+          { field: 'enabled',
+            label: 'ENABLED',
             type: 'switch',
             default: false,
             rule: 'required'

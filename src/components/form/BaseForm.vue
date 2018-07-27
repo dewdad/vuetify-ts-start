@@ -5,11 +5,12 @@ import { VNode, VNodeChildren } from 'vue'
 @Component
 export default class BaseForm extends Vue {
   @Prop({type: Array, required: true}) schema!:any[]
-  @Prop({default: false}) clearable!:boolean
-  @Prop({default: false}) box!:boolean
-  @Prop({default: false}) solo!:boolean
-  @Prop({default: false}) outline!:boolean
-  @Prop({default: false}) disabled!:boolean
+  @Prop({type: Boolean, default: false}) clearable!:boolean
+  @Prop({type: Boolean, default: false}) box!:boolean
+  @Prop({type: Boolean, default: false}) solo!:boolean
+  @Prop({type: Boolean, default: false}) outline!:boolean
+  @Prop({type: Boolean, default: false}) disabled!:boolean
+  @Prop({type: Boolean, default: false}) readonly!:boolean
   @Prop(Object) orginFormData!:object
 
   valid= true
@@ -51,6 +52,7 @@ export default class BaseForm extends Vue {
         onChange={(e:any) => { _.set(this.formData, key, e) }}
         clearable={_.get(item, 'props.disabled', this.disabled) ? false : _.get(item, 'props.clearable', this.clearable)}
         disabled={_.get(item, 'props.disabled', this.disabled)}
+        readonly={_.get(item, 'props.readonly', this.readonly)}
       ></v-textarea>
     )
   }
@@ -62,6 +64,7 @@ export default class BaseForm extends Vue {
         inputValue={_.get(this.formData, key)}
         onChange={() => { _.set(this.formData, key, !_.get(this.formData, key)) }}
         disabled={_.get(item, 'props.disabled', this.disabled)}
+        readonly={_.get(item, 'props.readonly', this.readonly)}
         falseValue={_.get(item, 'props.falseValue', false)}
       ></v-switch>
     )
@@ -78,6 +81,9 @@ export default class BaseForm extends Vue {
                   inputValue={_.get(this.formData, key)}
                   label={attribute.value}
                   value={attribute.id}
+                  disabled={_.get(item, 'props.disabled', this.disabled)}
+                  readonly={_.get(item, 'props.readonly', this.readonly)}
+                  falseValue={_.get(item, 'props.falseValue', false)}
                 >
                 </v-checkbox>
               </v-flex>
@@ -95,6 +101,8 @@ export default class BaseForm extends Vue {
         inputValue={_.get(this.formData, key)}
         onChange={() => { _.set(this.formData, key, !_.get(this.formData, key)) }}
         disabled={_.get(item, 'props.disabled', this.disabled)}
+        readonly={_.get(item, 'props.readonly', this.readonly)}
+        falseValue={_.get(item, 'props.falseValue', false)}
       ></v-checkbox>
     )
   }
@@ -235,13 +243,14 @@ export default class BaseForm extends Vue {
         box={_.get(item, 'props.box', this.box)}
 
         browserAutocomplete={_.get(item, 'props.browserAutocomplete', 'on')}
-        clearable={_.get(item, 'props.disabled', this.disabled) ? false : _.get(item, 'props.clearable', this.clearable)}
+        clearable={_.get(item, 'props.disabled', this.disabled || this.readonly) ? false : _.get(item, 'props.clearable', this.clearable)}
         clearIcon={_.get(item, 'props.clearIcon')}
         clearIconCb={_.get(item, 'props.clearIconCb', null)}
         color={_.get(item, 'props.color')}
         counter={_.get(item, 'props.counter')}
 
         disabled={_.get(item, 'props.disabled', this.disabled)}
+        readonly={_.get(item, 'props.readonly', this.readonly)}
 
         flat={_.get(item, 'props.flat')}
         fullWidth={_.get(item, 'props.fullWidth')}
@@ -300,7 +309,7 @@ export default class BaseForm extends Vue {
         clearIcon={_.get(item, 'props.clearIcon')}
         clearIconCb={_.get(item, 'props.clearIconCb', null)}
 
-        clearable={_.get(item, 'props.disabled', this.disabled) ? false : _.get(item, 'props.clearable', this.clearable)}
+        clearable={_.get(item, 'props.disabled', this.disabled || this.readonly) ? false : _.get(item, 'props.clearable', this.clearable)}
         closeOnClick={_.get(item, 'props.closeOnClick', true)}
         closeOnContentClick={_.get(item, 'props.closeOnContentClick', true)}
 
@@ -311,6 +320,7 @@ export default class BaseForm extends Vue {
         dense={_.get(item, 'props.dense', false)}
 
         disabled={_.get(item, 'props.disabled', this.disabled)}
+        readonly={_.get(item, 'props.readonly', this.readonly)}
 
         filter={_.get(item, 'props.filter')}
 

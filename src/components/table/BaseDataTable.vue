@@ -252,8 +252,10 @@ export default class BaseDataTable extends Vue {
   fill (requestData:any) {
     const { data, meta } = requestData
     this.dataList = data
-    this.totalDesserts = meta.pagination.total
-    this.fillPagination(meta.pagination)
+    if (meta) {
+      this.totalDesserts = meta.pagination.total
+      this.fillPagination(meta.pagination)
+    }
   }
 
   /**
