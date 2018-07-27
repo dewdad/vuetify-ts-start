@@ -151,7 +151,7 @@ export default class ProductAttributes extends Vue {
       if (this.isComment(item)) {
         res[item.id] = {value: _.get(this.orginData, `${[index]}.0.value`, ''), item}
       } else if (item.type === 'radio_group') {
-        res[item.id] = {value: {}, item}
+        res[item.id] = {value: [], item}
       } else {
         res[item.id] = {value: _.get(this.orginData, `${[index]}`, []), item}
       }
@@ -160,42 +160,18 @@ export default class ProductAttributes extends Vue {
     this.onFormDataChanged()
   }
 
-  // @Watch('formData', {immediate: true, deep: true})
-  // onFormDataChanged () {
-  //   if (this.sku) {
-  //     this.$emit('change', this.cartesian)
-  //   }
-  // }
-
-  addRadioGroupDefaultValue (item:Item) {
-    return _.cloneDeep(item.values).unshift()
-  }
-
   isComment (item:Item) {
     return item.type === 'text' || item.type==='textarea' || item.type==='toggle'
   }
 
-  isAdd (item:AttributeItem, arr:number[]) {
-    return arr.indexOf(item.id) !== -1
-  }
-
   get attributes () {
-    return Object.values(this.formData).map(item => {
-      let values:any = null
-      if (_.isString(item.value)) {
-        values = {comment: item.value}
-      }
-      if (_.isObject(item.vaule)) {
-        values = _.has(item.value, 'id') ? {attribute_id: [item.value.id]} : []
-      }
-      if (_.isArray(item.value)) {
-        values = {attribute_id: item.value.map((attr:AttributeItem) => attr.id)}
-      }
-      return {
+    const paserValue = (value:string|boolean|AttributeItem[]) => _.isString(value) || _.isBoolean(value) ? {comment: value} : {attribute_id: ([].concat.apply([], [value])).map((attr:AttributeItem) => attr.id)}
+    return Object.values(this.formData).map(item => (
+      {
         'attribute_group_id': item.item.id,
-        ...values
+        ...paserValue(item.value)
       }
-    })
+    ))
   }
 
   groupByGroupId () {
@@ -203,14 +179,11 @@ export default class ProductAttributes extends Vue {
     this.orginData = Object.values(collect).map(item => item.map(attr => attr.value))
   }
 
-  flatten (arr:any[]) {
-    return [].concat.apply([], arr)
-  }
-
   get cartesian () {
+    const flatten = (arr:any) => [].concat.apply([], arr)
     // [...element, {group_name: attr.item.name, group_id: attr.item.id, value_id: value.id, value_name: value.value}]
     return this.sku ? Object.values(this.formData).reduce((acc, set) =>
-      this.flatten(acc.map((x:any) => set.value.map((y:AttributeItem) => [ ...x,
+      flatten(acc.map((x:any) => set.value.map((y:AttributeItem) => [ ...x,
         {group_name: set.item.name, group_id: set.item.id, value_id: y.id, value_name: y.value}
       ]))), [[]]) : []
   }

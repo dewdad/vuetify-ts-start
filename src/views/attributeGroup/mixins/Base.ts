@@ -37,8 +37,11 @@ export default class BaseMixin extends Vue {
           { field: 'type',
             label: '选择方式',
             type: 'select',
-            items: ['text', 'textarea', 'select', 'radio', 'richtext', 'checkbox', 'date', 'time', 'checkbox_group', 'radio_group', 'toggle'],
+            // items: ['text', 'textarea', 'select', 'radio', 'richtext', 'checkbox', 'date', 'time', 'checkbox_group', 'radio_group', 'toggle'],
+            items: [{type: 'text', name: '输入框'}, {type: 'textarea', name: '文本域'}, {type: 'select', name: '下拉列表'}, {type: 'checkbox_group', name: '复选组'}, {type: 'radio_group', name: '单项选择'}, {type: 'toggle', name: '开关'}],
             default: 'text',
+            itemText: 'name',
+            itemValue: 'type',
             rule: 'required'
           },
           { field: 'required',

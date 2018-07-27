@@ -29,7 +29,9 @@ import Base from './mixins/Base'
 import Form from '@/components/form/BaseForm.vue'
 import AttributeForm from '@/components/form/AttributeForm.vue'
 import { AttributeGroup } from '@/store/modules/attributeGroup'
-
+/**
+ * 以下type不支持属性值 ['toggle','text','textarea','richtext','date','time','checkbox']
+ */
 @Component({
   components:{
   'base-form':Form,

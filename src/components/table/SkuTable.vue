@@ -14,7 +14,7 @@
       <template slot="items" slot-scope="props">
 
         <td class="text-xs-left" v-for="attribute in props.item.attributes" :key="attribute.group_name+ '' +attribute.value_name">{{ attribute.value_name }}</td>
-        <td v-if="!readonly || !disabled">{{ props.item.sku }}</td>
+        <td v-if="readonly || disabled">{{ props.item.sku }}</td>
         <td v-else>
           <v-edit-dialog
             :return-value.sync="props.item.sku"
@@ -38,7 +38,7 @@
           </v-edit-dialog>
         </td>
 
-        <td v-if="!readonly || !disabled">{{ props.item.price }}</td>
+        <td v-if="readonly || disabled">{{ props.item.price }}</td>
         <td v-else>
           <v-edit-dialog
             :return-value.sync="props.item.price"
