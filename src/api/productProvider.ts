@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import { QueryBuild, Show, Update, FormData } from './types'
+import { RelationProducts } from '@/store/modules/productProvider'
 const END_POINT = 'product_providers'
 export function index (payload:QueryBuild|null = null) {
   return request({
@@ -37,5 +38,13 @@ export function destroy (id:string|number) {
   return request({
     url: `${END_POINT}/${id}`,
     method: 'delete'
+  })
+}
+
+export function products ({id, products}:{id:number, products:RelationProducts}) {
+  return request({
+    url: `${END_POINT}/${id}/products`,
+    method: 'post',
+    data: {products}
   })
 }

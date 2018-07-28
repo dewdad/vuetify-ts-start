@@ -31,11 +31,10 @@ export default class ProductIndex extends mixins(Base) {
       sortable: true,
       value: 'id'
     },
-    { text: '属性组名称', value: 'name', align: 'right' },
-    { text: '可为销售属性', value: 'variant', align: 'right' },
-    { text: '选择方式', value: 'type', align: 'right' },
-    { text: '是否必填', value: 'required', align: 'right' },
-    { text: '可自定义', value: 'customized', align: 'right' },
+    { text: '产品名称', value: 'name', align: 'right' },
+    { text: '产品编号', value: 'code', align: 'right' },
+    { text: '品牌', value: 'brand.data.name', align: 'right' },
+    { text: '产品类型', value: 'type.data.name', align: 'right' },
     { text: 'CREATED_AT', value: 'created_at', align: 'right' },
     { text: 'UPDATED_AT', value: 'updated_at', align: 'right' }
   ]

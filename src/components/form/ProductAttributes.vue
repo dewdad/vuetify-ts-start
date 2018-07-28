@@ -165,7 +165,7 @@ export default class ProductAttributes extends Vue {
   }
 
   get attributes () {
-    const paserValue = (value:string|boolean|AttributeItem[]) => _.isString(value) || _.isBoolean(value) ? {comment: value} : {attribute_id: ([].concat.apply([], [value])).map((attr:AttributeItem) => attr.id)}
+    const paserValue = (value:string|boolean|AttributeItem[]) => _.isString(value) || _.isBoolean(value) ? {comment: value} : {attribute_id: (Array.prototype.concat.apply([], [value])).map((attr:AttributeItem) => attr.id)}
     return Object.values(this.formData).map(item => (
       {
         'attribute_group_id': item.item.id,

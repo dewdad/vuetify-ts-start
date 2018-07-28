@@ -136,8 +136,8 @@ export default class ProductUpdate extends mixins(Base) {
   }
 
   setOrginTableSchema () {
-    this.orginFormData.variants.forEach(variant => {
-      const key = (variant.attributes.map(item => item.value.value)).join('')
+    this.orginFormData.variants.forEach((variant:any) => {
+      const key = (variant.attributes.map((item:any) => item.value.value)).join('')
       const {price, sku} = variant
       this.orginTableSchemaData.set(key, {price, sku})
     })

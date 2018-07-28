@@ -26,20 +26,79 @@ declare namespace ApiResponse{
     value:string;
   }
 
-  export interface ProductItem{
-    body:string|null;
-    brand:Object;
-    'brand_id':number;
-    code:string;
-    'created_at':string;
-    'deleted_at':null|string;
-    enabled:boolean;
-    id:number;
-    name:string;
-    'name_cn':string;
-    'name_en':string;
-    type:Object;
-    'type_id':number;
-    'updated_at':string;
+  export interface ProductVariant {
+    data: ProductVariantData[];
+  }
+
+  export interface PivotPrice {
+    'product_provider_id': number;
+    'product_variant_id': number;
+    'price': number;
+    'created_at': string;
+    'updated_at': string;
+  }
+
+  export interface ProductVariantData {
+    'id': number;
+    'product_id': number;
+    'sku': string;
+    'options'?: any;
+    'price': number;
+    'created_at': string;
+    'updated_at': string;
+    'deleted_at'?: any;
+    'pivot': PivotPrice;
+    'name':string;
+  }
+
+  export interface Payment {
+    data: PaymentData;
+  }
+
+  export interface PaymentData {
+    'id': number;
+    'balance_id': number;
+    'description': string;
+    'payment_id': number;
+    'options': PaymentOptions;
+    'product_provider_id': number;
+    'created_at': string;
+    'updated_at': string;
+  }
+
+  export interface PaymentOptions {
+    account: string;
+  }
+
+  export interface ProductVariantInfoData {
+    'id': number;
+    'email': string;
+    'qq': string;
+    'wechat': string;
+    'product_provider_id': number;
+    'created_at': string;
+    'updated_at': string;
+  }
+
+  export interface ProductProviderInfo{
+    data: ProductVariantInfoData;
+  }
+
+  export interface ProductProviderData {
+    'id': number;
+    'name': string;
+    'code': string;
+    'level': number;
+    'description': string;
+    'created_at': string;
+    'updated_at': string;
+    'deleted_at'?: any;
+    'info': ProductProviderInfo;
+    'payment': Payment;
+    'products': ProductVariant;
+  }
+
+  export interface ProductProvider {
+    data: ProductProviderData;
   }
 }
