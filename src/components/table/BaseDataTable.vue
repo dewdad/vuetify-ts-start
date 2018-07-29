@@ -101,20 +101,20 @@
             <v-spacer></v-spacer>
 
             <v-btn
-              color="green darken-1"
+              color="grey lighten-1"
               flat="flat"
               @click="deleteDialog.status = false"
             >
-              Disagree
+              取消
             </v-btn>
 
             <v-btn
               :loading="deleting"
-              color="green darken-1"
+              color="primary"
               flat="flat"
               @click="deleteHandle"
             >
-              Agree
+              确认
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -139,17 +139,19 @@ export default class BaseDataTable extends Vue {
   @Prop(Function) editItem!:Function
   @Prop({type: Boolean, default: true}) searchable!:boolean
   @Prop(Boolean) liked!:boolean
+  @Prop(Function) delItem!:Function
 
-  selected= []
+  selected:any[]= []
   deleteDialog= {
     status: false,
     title: null,
-    description: null
+    description: null,
+    item: null
   }
   deleting= false
   rowsPerPageItems= [10, 15, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }]
   totalDesserts= 0
-  dataList= []
+  dataList:any[]= []
   loading= true
   pagination:{[propName:string]:any}= {}
   // queryBuild= {},
@@ -165,28 +167,33 @@ export default class BaseDataTable extends Vue {
   }
 
   deleteItem (item:any) {
-    const dialog = {
-      title: `是否删除${item.name}？`,
-      description: 'Is it sure to delete this record',
-      status: !this.deleteDialog.status
-    }
-    this.setDeleteDialog(dialog)
-  }
-
-  deleteHandle () {
-    this.deleting = true
-    // 发请求进行删除
-    setTimeout(() => {
-      this.deleting = false
+    if (this.delItem instanceof Function) {
       const dialog = {
-        title: null,
-        description: null,
-        status: !this.deleteDialog.status
+        title: `是否删除${item.name}？`,
+        description: 'Is it sure to delete this record',
+        status: !this.deleteDialog.status,
+        item
       }
       this.setDeleteDialog(dialog)
+    }
+  }
 
-      // this.$store.commit('app/TOGGLE_SNACKBAR', { status: true, text: '删除成功', color: 'success' })
-    }, 3000)
+  async deleteHandle () {
+    this.deleting = true
+    // 发请求进行删除
+    const id = (this.deleteDialog.item as any).id
+    await this.delItem(id)
+    this.deleting = false
+    const dialog = {
+      title: null,
+      description: null,
+      status: !this.deleteDialog.status,
+      item: null
+    }
+    this.setDeleteDialog(dialog)
+    this.$success({text: '删除成功'})
+    this.dataList = this.dataList.filter(item => item.id!==id)
+    // this.$store.commit('app/TOGGLE_SNACKBAR', { status: true, text: '删除成功', color: 'success' })
   }
 
   setDeleteDialog (item:any) {

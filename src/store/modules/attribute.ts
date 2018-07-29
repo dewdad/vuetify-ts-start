@@ -90,7 +90,7 @@ export class Attribute extends Base {
     return store.dispatch('attribute/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('attribute/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('attribute/destroy', id)
   }
 }

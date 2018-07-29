@@ -7,8 +7,8 @@ import { products } from '../../api/productProvider'
 
 export const ROUTE_NAME = 'product-provider'
 
-type delProductParams = {productProviderId:number, variantId:number}
-type addProductParams = {productProviderId:number, variantId:number, price:number}
+type delProductParams = {providerId:number, variantId:number}
+type addProductParams = {providerId:number, variantId:number, price:number}
 export interface RelationProducts{
   [propName:string]:{[propName:string]:{price:number}}
 }
@@ -23,8 +23,11 @@ export const state: State = {
 }
 
 export const mutations = {
-  ADD_PROVIDER: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
+  SET_PROVIDER: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
     state.providers[payload.data.id] = payload
+    state.products[payload.data.id] = {}
+  },
+  SET_PRODUCT: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
     state.products[payload.data.id] = {}
     state.providers[payload.data.id].data.products.data.forEach(variant => {
       state.products[payload.data.id][variant.id] = {price: variant.pivot.price}
@@ -34,24 +37,24 @@ export const mutations = {
     delete state.providers[id]
     delete state.products[id]
   },
-  ADD_PRODUCT: (state:State, {productProviderId, variantId, price}:addProductParams) => (state.products[productProviderId] = Object.assign({}, state.products[productProviderId], {variantId: {price}})),
-  DEL_PRODUCT: (state:State, {productProviderId, variantId}:delProductParams) => delete state.products[productProviderId][variantId],
-  SYNC_PRODUCT: (state:State, {res, payload, productProviderId}:any) => {
+  ADD_PRODUCT: (state:State, {providerId, variantId, price}:addProductParams) => (state.products[providerId] = Object.assign({}, state.products[providerId], {variantId: {price}})),
+  DEL_PRODUCT: (state:State, {providerId, variantId}:delProductParams) => delete state.products[providerId][variantId],
+  SYNC_PRODUCT: (state:State, {res, payload, providerId}:any) => {
     const {attached, detached, updated} =res
     // add
     attached.forEach((id:number) => {
       if (payload[id]) {
-        state.products[productProviderId][id] = payload[id]
+        state.products[providerId][id] = payload[id]
       }
     })
     // del
     detached.forEach((id:number) => {
-      delete state.products[productProviderId][id]
+      delete state.products[providerId][id]
     })
     // updated
     updated.forEach((id:number) => {
       if (payload[id]) {
-        state.products[productProviderId][id] = payload[id]
+        state.products[providerId][id] = payload[id]
       }
     })
   }
@@ -69,7 +72,9 @@ export const actions = {
     try {
       if (!ctx.state.providers[payload.id]) {
         let {data} = await ProductProviderApi.show(payload)
-        ctx.commit('ADD_PROVIDER', data)
+        const {include} = payload
+        ctx.commit('SET_PROVIDER', data)
+        include && include.includes('products') && ctx.commit('SET_PRODUCT', data)
       }
 
       return ctx.state.providers[payload.id]
@@ -85,15 +90,31 @@ export const actions = {
 
     }
   },
-  async products (ctx: ActionContext<State, any>, payload:{id:number, products:RelationProducts}) {
+  async products (ctx: ActionContext<State, any>, payload:{providerId:number, products:RelationProducts}) {
     try {
-      let {data} = await ProductProviderApi.products({id: payload.id, products: {...payload.products, ...ctx.state.products[payload.id]}} as any)
-      ctx.commit('SYNC_PRODUCT', {res: data.data, payload: payload.products, productProviderId: payload.id})
+      let {data} = await ProductProviderApi.products({id: payload.providerId, products: {...payload.products, ...ctx.state.products[payload.providerId]}} as any)
+      ctx.commit('SYNC_PRODUCT', {res: data.data, payload: payload.products, providerId: payload.providerId})
       return data
     } catch (error) {
 
     }
   },
+
+  async cancelProducts (ctx: ActionContext<State, any>, payload:{providerId:number, variantId:number}) {
+    try {
+      const products = _.cloneDeep(ctx.state.products[payload.providerId])
+      console.log(products)
+      delete products[payload.variantId]
+      console.log(products)
+      let {data} = await ProductProviderApi.products({id: payload.providerId, products} as any)
+
+      ctx.commit('SYNC_PRODUCT', {res: data.data, payload: payload.variantId, providerId: payload.providerId})
+      return data
+    } catch (error) {
+
+    }
+  },
+
   async update (ctx: ActionContext<State, any>, payload:Update) {
     try {
       const { data } = await ProductProviderApi.update(payload)
@@ -116,7 +137,8 @@ export const actions = {
 
 export const getters = {
   products: (state:State) => (id:number) => state.providers[id].data.products.data,
-  productIds: (state:State) => (id:number) => state.products[id]
+  productIds: (state:State) => (id:number) => state.products[id],
+  provider: (state:State) => (id:number) => Base.getInstance.filterData(state.providers[id].data)
 }
 
 export class ProductProvider extends Base {
@@ -145,11 +167,14 @@ export class ProductProvider extends Base {
     return store.dispatch('productProvider/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('productProvider/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('productProvider/destroy', id)
   }
 
-  products (payload:{id:number, products:RelationProducts}):Promise<any> {
+  products <T> (payload:T, cancel = false):Promise<any> {
+    if (cancel) {
+      return store.dispatch('productProvider/cancelProducts', payload)
+    }
     return store.dispatch('productProvider/products', payload)
   }
 
@@ -166,5 +191,9 @@ export class ProductProvider extends Base {
 
   productIds (id:number|string) {
     return store.getters['productProvider/productIds'](id)
+  }
+
+  provider (id:number|string) {
+    return store.getters['productProvider/provider'](id)
   }
 }

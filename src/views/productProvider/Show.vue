@@ -1,6 +1,6 @@
 <template>
 <v-layout fill-height  justify-center>
-  <v-flex xs12 sm12 md12 lg8 xl8>
+  <v-flex xs12 sm12 md8 lg8 xl8>
     <v-expansion-panel
       v-model="panel"
 
@@ -32,7 +32,7 @@
               <template v-for="variant in products">
 
                 <v-list-tile
-                  :key="variant.sku"
+                  :key="variant.id"
                   avatar
                   :to="{name:'product.show',params:{id:variant.product_id}}"
                 >
@@ -69,7 +69,7 @@
     </v-expansion-panel>
   </v-flex>
 
-  <v-flex xs12 sm12 md12 lg4 xl8>
+  <v-flex md4 lg4 xl4 v-show="!showBtn">
     <v-card tile class="mb-3">
       <v-progress-linear
           :value="50"
@@ -80,10 +80,24 @@
         点击这里可以为产品供应商添加关联产品
       </v-card-text>
       <v-card-actions>
-        <v-btn block color="info" @click="openDialog">添加产品</v-btn>
+        <v-btn block color="info" @click="openDialog">添加/更新关联产品</v-btn>
       </v-card-actions>
     </v-card>
   </v-flex>
+    <v-fab-transition>
+      <v-btn
+        v-show="showBtn"
+        color="primary"
+        dark
+        fixed
+        bottom
+        right
+        fab
+        @click="openDialog"
+      >
+        <v-icon>add</v-icon>
+      </v-btn>
+    </v-fab-transition>
   <relation-product ref="relationProduct"></relation-product>
 </v-layout>
 </template>
@@ -139,6 +153,10 @@ export default class ProductProviderShow extends mixins(Base) {
 
   get products () {
     return ProductProvider.getInstance.getProducts(this.$route.params.id)
+  }
+
+  get showBtn () {
+    return this.$vuetify.breakpoint.xs
   }
 
   async created () {

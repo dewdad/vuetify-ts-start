@@ -1,7 +1,7 @@
 <template>
 <v-layout fill-height  justify-center>
   <v-flex xs12 sm 12 md12 lg8 xl8>
-  <base-data-table ref="table" :headers="headers" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
+  <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
         <!-- 创建表单 -->
         <v-btn color="info" slot="storeButton" @click="$router.push({name:routeName.create})">创建</v-btn>
         <!-- 更新表单 -->
@@ -41,8 +41,8 @@ export default class ProductProviderIndex extends mixins(Base) {
 
   dialog = false
 
-  async createSuccess () {
-
+  delItem (id:number) {
+    return ProductProvider.getInstance.destroy(id)
   }
 
   getDataFromApi (queryBuild = null) {

@@ -79,7 +79,7 @@ export class Category extends Base {
     return store.dispatch('category/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('category/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('category/destroy', id)
   }
 }

@@ -13,10 +13,6 @@ export default class BaseMixin extends Vue {
   }
   translation = 'attributeGroup'
 
-  testChange (newVal:any, oldVal:any, ele:any, items:any, index:any, vm:Vue) {
-
-  }
-
   async createSchema () {
     return [
       { name: '基本',
@@ -42,7 +38,8 @@ export default class BaseMixin extends Vue {
             default: 'text',
             itemText: 'name',
             itemValue: 'type',
-            rule: 'required'
+            rule: 'required',
+            onChange: (this as any).onTypeChange
           },
           { field: 'required',
             label: '是否必填',

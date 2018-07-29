@@ -21,14 +21,20 @@ Vue.mixin({
      * @description 成功提示
      *
      */
-    $success (params:{text:string, position:number}) {
+    $success (params:{text:string, position?:number}) {
+      if (!params.position) {
+        params.position = 9
+      }
       this.$store.commit('app/TOGGLE_SNACKBAR', { status: true, color: 'success', ...params })
     },
     /**
      * @description 失败提示
      *
      */
-    $fail (params:{text:string, position:number}) {
+    $fail (params:{text:string, position?:number}) {
+      if (!params.position) {
+        params.position = 9
+      }
       this.$store.commit('app/TOGGLE_SNACKBAR', { status: true, color: 'error', ...params })
     }
 

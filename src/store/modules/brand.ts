@@ -79,7 +79,7 @@ export class Brand extends Base {
     return store.dispatch('brand/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('brand/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('brand/destroy', id)
   }
 }

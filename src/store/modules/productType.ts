@@ -89,7 +89,7 @@ export class ProductType extends Base {
     return store.dispatch('productType/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('productType/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('productType/destroy', id)
   }
 }

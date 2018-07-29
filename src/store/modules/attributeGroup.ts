@@ -94,7 +94,7 @@ export class AttributeGroup extends Base {
     return store.dispatch('attributeGroup/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('attributeGroup/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('attributeGroup/destroy', id)
   }
 }

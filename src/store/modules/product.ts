@@ -9,6 +9,7 @@ export const ROUTE_NAME = 'product'
 interface State{
 
 }
+
 export const actions = {
   async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
@@ -79,7 +80,7 @@ export class Product extends Base {
     return store.dispatch('product/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('product/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('product/destroy', id)
   }
 }

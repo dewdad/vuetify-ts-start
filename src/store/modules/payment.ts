@@ -79,7 +79,7 @@ export class Payment extends Base {
     return store.dispatch('payment/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('payment/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('payment/destroy', id)
   }
 }

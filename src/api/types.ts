@@ -1,14 +1,14 @@
 export interface QueryBuild {
-  [propName:string]:any
+  include?:string;
+  [propName:string]:any;
 }
 
 export interface FormData{
-  [propName:string]:any
+  [propName:string]:any;
 }
 
-export interface Show {
+export interface Show extends QueryBuild{
   id:number|string;
-  queryBuild?:QueryBuild|null
 }
 export interface Update {
   id:Show['id'];

@@ -14,8 +14,8 @@ declare module 'vue/types/vue' {
     $loading:({show, text}:({show:boolean, text?:string}))=>void;
     $validator: Validator;
     errors: ErrorBag;
-    $success:(arg:{text:string, position:number})=>void;
-    $fail:(arg:{text:string, position:number})=>void;
+    $success:(arg:{text:string, position?:number})=>void;
+    $fail:(arg:{text:string, position?:number})=>void;
   }
 
   interface VueConstructor{

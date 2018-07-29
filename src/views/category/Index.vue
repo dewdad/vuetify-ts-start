@@ -1,7 +1,7 @@
 <template>
 <v-layout fill-height  justify-center>
   <v-flex xs12 sm 12 md12 lg8 xl8>
-  <base-data-table ref="table" :headers="headers" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
+  <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
         <!-- 创建表单 -->
         <v-btn color="info" slot="storeButton" @click="$router.push({name:routeName.create})">创建</v-btn>
         <!-- 更新表单 -->
@@ -32,13 +32,13 @@ export default class CategoryIndex extends mixins(Base) {
       value: 'id'
     },
     { text: 'NAME', value: 'name', align: 'right' },
-    { text: 'PARENT_ID', value: 'parent_id', align: 'right' },
+    { text: 'PARENT_NAME', value: 'parent_name', align: 'right' },
     { text: 'CREATED_AT', value: 'created_at', align: 'right' },
     { text: 'UPDATED_AT', value: 'updated_at', align: 'right' }
   ]
 
-  async createSuccess () {
-
+  delItem (id:number) {
+    return Category.getInstance.destroy(id)
   }
 
   getDataFromApi (queryBuild = null) {

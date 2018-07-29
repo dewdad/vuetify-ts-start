@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-layout>
+    <!-- <v-layout>
       <v-flex>
         <v-btn color="info">填充</v-btn>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
     <v-data-table
       :headers="headers"
       :items="items"

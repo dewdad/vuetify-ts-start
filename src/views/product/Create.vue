@@ -102,16 +102,27 @@ export default class ProductCreate extends mixins(Base) {
 
   // 产品类型选择改变事件
   async change (id:number|null) {
-    if (_.isNull(id)) {
+    if (!id) {
+      this.pageInit()
       return
     }
     await this.loadProductType(id)
   }
 
+  pageInit () {
+    this.loadType = false
+    this.productType = {} as ProductTypeS
+    this.variantAttributes = []
+    this.baseAttributes = []
+    this.skuSet = []
+  }
+
   async loadProductType (id:number) {
+    this.loadType = false
     let {data: attributes} = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
     this.productType = ProductType.getInstance.filterData(attributes)
-
+    this.variantAttributes = []
+    this.baseAttributes = []
     this.productType.attributeGroups.forEach(item => {
       item.variant ? this.variantAttributes.push(item) : this.baseAttributes.push(item)
     })

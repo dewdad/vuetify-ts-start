@@ -43,6 +43,12 @@ Validator.extend('username', {
   }
 })
 
+Validator.extend('parentNotSelf', (value:any, [otherValue]:any) => {
+  return value !== otherValue
+}, {
+  hasTarget: true
+})
+
 Vue.mixin({
   $_veeValidate: {
     validator: 'new'

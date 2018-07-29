@@ -222,7 +222,7 @@ export default class BaseForm extends Vue {
   createTextField (item:any, key:any) {
     return (
       <v-text-field
-
+        ref={_.get(item, 'ref')}
         value={_.get(this.formData, key)}
         onInput={(e:any) => { _.set(this.formData, key, e) }}
         name={key}

@@ -18,16 +18,7 @@ export default class BaseMixin extends Vue {
   payments = null
 
   testChange (newVal:any, oldVal:any, ele:any, items:any, index:any, vm:Vue) {
-    console.log(newVal)
-    // console.log(oldVal)
-    console.log(ele)
-    // console.log(items)
-    // console.log(index)
-    // if (newVal === 4 && !items.find(item => item.field === 'options')) {
-    //   const { options } = this.balances.find(item => item.id === newVal)
-    //   const fields = { field: 'options.cycle', label: '周期', type: 'select', items: options.cycle }
-    //   items.splice(index + 1, 0, fields)
-    // }
+
   }
 
   async fetchListData () {

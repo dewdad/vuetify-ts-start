@@ -79,7 +79,7 @@ export class Balance extends Base {
     return store.dispatch('balance/update', payload)
   }
 
-  destory (id:number|string):Promise<any> {
-    return store.dispatch('balance/destory', id)
+  destroy (id:number|string):Promise<any> {
+    return store.dispatch('balance/destroy', id)
   }
 }

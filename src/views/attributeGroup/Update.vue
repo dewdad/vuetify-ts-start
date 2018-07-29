@@ -9,7 +9,7 @@
     </v-toolbar>
     <v-card-text v-if="loaded">
       <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData"></base-form>
-      <attribute-form ref="attributeForm" :orginFormData="orginFormData.values"></attribute-form>
+      <attribute-form v-show="showAttributeForm"  ref="attributeForm" :orginFormData="orginFormData.values"></attribute-form>
     </v-card-text>
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
@@ -53,10 +53,15 @@ export default class AttributeGroupUpdate extends mixins(Base) {
   item:any|null = null
   include = ['values']
 
+  showAttributeForm = true
+
+  formProp:any = {}
+
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await AttributeGroup.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
+      const attributes = this.showAttributeForm ? this.$refs.attributeForm.getAttributes : {}
+      await AttributeGroup.getInstance.update({ formData: {...res, attributes}, id: this.item.id })
       this.$success({text: '更新成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
@@ -79,6 +84,13 @@ export default class AttributeGroupUpdate extends mixins(Base) {
     this.$loading({ show: false })
   }
 
+  onTypeChange (newVal:any, oldVal:any, ele:any, items:any, index:any, vm:Vue) {
+    this.showAttributeForm = !['text', 'textarea', 'toggle'].includes(newVal)
+  }
+
+  get attributes () {
+    return this.$refs.attributeForm.getAttributes
+  }
   async created () {
     this.$nextTick(async () => {
       await Promise.all([this.viewInit(), this.loadFormStructure()])

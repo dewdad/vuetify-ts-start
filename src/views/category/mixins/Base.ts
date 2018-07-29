@@ -20,6 +20,7 @@ export default class BaseMixin extends Vue {
 
   async createSchema () {
     const {data: category} = await Category.getInstance.index()
+
     return [
       { name: '基本',
         fields: [
@@ -27,6 +28,7 @@ export default class BaseMixin extends Vue {
             label: '分类名称',
             type: 'input',
             rule: 'required',
+            ref: 'categoryName',
             props: { clearable: true }},
           { field: 'parent_id',
             label: '父分类',
@@ -34,6 +36,7 @@ export default class BaseMixin extends Vue {
             items: category,
             itemText: 'name',
             itemValue: 'id',
+            rule: 'parentNotSelf:categoryName',
             props: {default: 0},
             onChange: this.testChange }
         ]
