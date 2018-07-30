@@ -3,7 +3,7 @@
   <v-flex xs12 sm 12 md12 lg8 xl8>
   <v-card class="mb-3">
     <v-toolbar card dark color="primary">
-      <v-toolbar-title>产品修改/更新</v-toolbar-title>
+      <v-toolbar-title>产品详情</v-toolbar-title>
       <v-spacer></v-spacer>
 
     </v-toolbar>
