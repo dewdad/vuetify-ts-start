@@ -43,7 +43,7 @@
                               <v-icon slot="activator" color="grey lighten-1">info</v-icon>
                               <span>{{variant.pivot.updated_at}}</span>
                             </v-tooltip>
-                            报价: {{variant.price}}
+                            报价: {{variant.pivot.price}}
                           </v-flex>
                         </v-layout>
                   </v-list-tile-action>
