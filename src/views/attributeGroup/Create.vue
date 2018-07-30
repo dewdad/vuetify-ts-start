@@ -9,7 +9,7 @@
     </v-toolbar>
     <v-card-text v-if="loaded">
       <base-form ref="form" :schema="formSchema"></base-form>
-      <attribute-form ref="attributeForm"></attribute-form>
+      <attribute-form v-show="showAttributeForm" ref="attributeForm"></attribute-form>
     </v-card-text>
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
@@ -46,6 +46,7 @@ export default class AttributeGroupCreate extends mixins(Base) {
   formSchema:any[]|null = null
   loaded = false
   createItem:any = null
+  showAttributeForm = true
   async loadFormStructure () {
     this.$loading({ show: true, text: '正在生成表单。。。' })
     this.formSchema = await this.createSchema()
@@ -57,11 +58,16 @@ export default class AttributeGroupCreate extends mixins(Base) {
     this.$refs.attributeForm.clear()
   }
 
+  onTypeChange (newVal:any, oldVal:any, ele:any, items:any, index:any, vm:Vue) {
+    this.showAttributeForm = !['text', 'textarea', 'toggle'].includes(newVal)
+  }
+
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
       this.createItem = res
-      await AttributeGroup.getInstance.create({...res, attributes: this.$refs.attributeForm.getAttributes})
+      const attributes = this.showAttributeForm ? this.$refs.attributeForm.getAttributes : {}
+      await AttributeGroup.getInstance.create({...res, attributes})
       this.$success({text: '创建成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
