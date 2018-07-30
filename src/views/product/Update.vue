@@ -112,9 +112,17 @@ export default class ProductUpdate extends mixins(Base) {
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      // await Product.getInstance.update({ formData: {...res, attributes: this.$refs.attributeForm.getAttributes}, id: this.item.id })
-      // this.$success({text: '更新成功', position: 9})
-      // this.$router.replace({name: this.routeName.index})
+      const variants= this.tableSchema.map((item:any) => {
+        let {price, sku, attributes} = item
+        attributes = attributes.map((attr:any) => attr.value_id)
+        return {price, sku, attributes}
+      })
+
+      const formData = {...res, type_id: this.productType.id, attributes: [...this.$refs.baseAttr.attributes, ...this.$refs.sku.attributes], variants}
+      // // this.createItem = res
+      await Product.getInstance.update({id: this.$route.params.id, formData})
+      this.$success({text: '更新成功', position: 9})
+      this.$router.replace({name: this.routeName.index})
     }
   }
 

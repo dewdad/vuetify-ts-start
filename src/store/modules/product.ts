@@ -7,7 +7,7 @@ import * as ProductApi from '@/api/product'
 export const ROUTE_NAME = 'product'
 
 interface State{
-
+  // products:ApiResponse.product
 }
 
 export const actions = {

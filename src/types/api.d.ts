@@ -101,4 +101,73 @@ declare namespace ApiResponse{
   export interface ProductProvider {
     data: ProductProviderData;
   }
+
+  export interface CategoryData{
+    _lft:number;
+    _rgt:number;
+    avatar:null|string;
+    'created_at':string;
+    description:null|string;
+    icon:null|string;
+    id:number;
+    name:string;
+    'parent_id':null|number;
+    'parent_name':null|string;
+    products?:Products;
+    'updated_at':string;
+  }
+
+  export interface Category {
+    data:CategoryData;
+  }
+
+  export interface Products{
+    data:ProductData[];
+  }
+
+  export interface Product{
+    data:ProductData;
+  }
+
+  export interface ProductData{
+    body:null|string;
+    brand:Brand;
+    'brand_id':number;
+    code:string;
+    'created_at':string;
+    'deleted_at':null|string;
+    enabled:boolean;
+    id:number;
+    name:string;
+    'name_cn':string;
+    'name_en':string;
+    type:ProductType;
+    'type_id':number;
+    'updated_at':string;
+  }
+
+  export interface Brand{
+    data:BrandData;
+  }
+
+  export interface BrandData{
+    avatar:null|string;
+    'created_at':string;
+    description:string;
+    id:number;
+    name:string;
+    'updated_at':string;
+  }
+
+  export interface ProductType{
+    data:ProductTypeData;
+  }
+
+  export interface ProductTypeData{
+    config:null|object;
+    'created_at':string;
+    id:number;
+    name:string;
+    'updated_at':string;
+  }
 }
