@@ -2,9 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from '@/router'
 import store from '@/store'
+import { sync } from 'vuex-router-sync'
 
 import '@/plugins'
 import i18n from '@/i18n'
+
+sync(store, router, { moduleName: 'RouteModule' })
 
 Vue.config.productionTip = false
 new Vue({

@@ -14,3 +14,10 @@ export function me () {
     method: 'get'
   })
 }
+
+export function logout () {
+  return request({
+    url: '/logout',
+    method: 'post'
+  })
+}

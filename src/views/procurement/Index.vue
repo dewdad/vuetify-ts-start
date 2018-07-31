@@ -13,7 +13,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
+import {User} from '@/store/modules/user'
 @Component({
   components:{
   'base-form-item':BaseFormItem
@@ -61,5 +63,10 @@ export default class Procurement extends Vue {
       requeired: true
     }
   ]
+
+  async mounted () {
+    let data = await User.getInstance.login({email: '290621352@qq.com', password: '1234567'})
+    console.log(data)
+  }
 }
 </script>
