@@ -121,6 +121,19 @@ declare namespace ApiResponse{
     data:CategoryData;
   }
 
+  export interface Attribute{
+    date:AttributeData | {value:string};
+  }
+
+  export interface AttributeData{
+    'created_at':string;
+    'group_id':number;
+    id:number;
+    'updated_at':number;
+    value:string;
+    variant:boolean;
+  }
+
   export interface Products{
     data:ProductData[];
   }

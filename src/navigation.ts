@@ -14,5 +14,10 @@ export default [
     routes: [
       {name: 'product-provider.index', meta: {title: '供应商管理'}}
     ]
+  },
+  {meta: {title: '采购管理', icon: 'event'},
+    routes: [
+      {name: 'procurement.index', meta: {title: '采购管理'}}
+    ]
   }
 ]

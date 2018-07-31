@@ -52,6 +52,8 @@ export default ({ authGuard, guestGuard }: {authGuard: Guard, guestGuard: Guard 
   {path: '/products/:id', name: 'product.show', meta: {title: '产品详情'}, component: () => import('@/views/product/Show.vue')},
   {path: '/products/:id/update', name: 'product.update', meta: {title: '产品修改/更新'}, component: () => import('@/views/product/Update.vue')},
 
+  {path: '/procurements', name: 'procurement.index', meta: {title: '采购管理'}, component: () => import('@/views/procurement/Index.vue')},
+
   { path: '*', name: 'error404', component: () => import('@/views/error/404.vue'), hidden: true }
 
 ]
