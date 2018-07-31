@@ -43,9 +43,11 @@ Validator.extend('username', {
   }
 })
 
-Validator.extend('parentNotSelf', (value:any, [otherValue]:any) => {
-  return value !== otherValue
-}, {
+Validator.extend('categroyNameNotEqParentId', {
+  getMessage: (field:string) => `当前分类不能与父分类一致`,
+  validate: (value:any, [otherValue]:any) => value.name !== otherValue
+},
+{
   hasTarget: true
 })
 

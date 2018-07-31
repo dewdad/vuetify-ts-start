@@ -7154,6 +7154,12 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "http://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+types-vue@^1.0.6:
+  version "1.0.6"
+  resolved "http://registry.npm.taobao.org/types-vue/download/types-vue-1.0.6.tgz#1a774fdd7597db1b8133fa8a0290f5e646843bee"
+  dependencies:
+    vue-class-component "^6.2.0"
+
 typescript-eslint-parser@^16.0.0:
   version "16.0.1"
   resolved "http://registry.npm.taobao.org/typescript-eslint-parser/download/typescript-eslint-parser-16.0.1.tgz#b40681c7043b222b9772748b700a000b241c031b"

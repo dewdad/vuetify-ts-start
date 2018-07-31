@@ -51,6 +51,8 @@ export default ({ authGuard, guestGuard }: {authGuard: Guard, guestGuard: Guard 
 
   {path: '/login', name: 'login', component: () => import('@/views/auth/Login.vue')},
 
+  {path: '/procurements', name: 'procurement.index', meta: {title: '采购管理'}, component: () => import('@/views/procurement/Index.vue')},
+
   { path: '*', name: 'error404', component: () => import('@/views/error/404.vue'), hidden: true }
 
 ]

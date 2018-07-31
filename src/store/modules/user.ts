@@ -1,7 +1,8 @@
 import store from '@/store'
-import { getToken, setToken } from '@/auth'
-import { Commit } from 'vuex'
+import { getToken, setToken, removeToken } from '@/auth'
+import { Commit, ActionContext } from 'vuex'
 import * as UserApi from '@/api/user'
+import { Base } from './app'
 
 interface UserInterface {
   [propNmae:string]:any
@@ -21,9 +22,14 @@ export const mutations = {
     setToken(token)
     state.token = token
   },
+  REMOVE_TOKEN: (state:State) => {
+    removeToken()
+    state.token = undefined
+  },
   SET_USER: (state:State, user:UserInterface) => {
     state.user = user
-  }
+  },
+  REMOVE_USER: (state:State) => (state.user=null)
 }
 
 export const actions = {
@@ -35,10 +41,11 @@ export const actions = {
    */
   async login ({commit}: ({commit: Commit}), payload:{email:string, password:string}) {
     try {
-      let {data} = await UserApi.login(payload)
-      commit('SET_TOKEN', data.access_token)
+      let data = await UserApi.login(payload)
+      commit('SET_TOKEN', data.data.access_token)
+      return data
     } catch (error) {
-
+      return error
     }
   },
 
@@ -54,10 +61,34 @@ export const actions = {
     } catch (error) {
 
     }
+  },
+
+  async logout ({commit}: ({commit: Commit})) {
+    try {
+      await UserApi.logout()
+      commit('REMOVE_TOKEN')
+      commit('REMOVE_USER')
+      commit('app/GO', {router: {name: 'login'}, type: 'replace'}, {root: true})
+    } catch (error) {
+
+    }
+  },
+
+  async refreshToken ({commit}: ({commit: Commit}), token:string) {
+    commit('SET_TOKEN', token)
   }
 }
 
-export class User {
+export class User extends Base {
+  protected static instance:User;
+
+  public static get getInstance ():User {
+    if (!this.instance) {
+      this.instance = new User()
+    }
+    return this.instance
+  }
+
   /**
    *
    * 用户登录
@@ -66,7 +97,7 @@ export class User {
    * @returns {Promise<any>}
    * @memberof User
    */
-  static login (formData:{email:string, password:string}):Promise<any> {
+  public login (formData:{email:string, password:string}):Promise<any> {
     return store.dispatch('user/login', formData)
   }
 
@@ -77,7 +108,11 @@ export class User {
    * @returns {Promise<User>}
    * @memberof User
    */
-  static me ():Promise<User> {
+  public me ():Promise<User> {
     return store.dispatch('user/me')
+  }
+
+  public logout () {
+    return store.dispatch('user/logout')
   }
 }

@@ -3,9 +3,7 @@
   <v-flex xs12 sm12 md8 lg8 xl8>
     <v-expansion-panel
       v-model="panel"
-
     >
-
       <v-expansion-panel-content>
         <div slot="header">
           供应商详情</div>
@@ -19,15 +17,6 @@
         <div slot="header">产品</div>
         <v-card class="mb-3">
           <v-card-text v-if="loaded">
-            <!-- <v-card tile v-for="variant in products" :key="variant.sku">
-                <v-card-title>
-                      {{variant.name+' '+getAttribute(variant.attributes)}}
-                </v-card-title>
-                <v-card-text>
-                  <div class="text-xs-right grey--text">￥{{variant.price}}</div>
-                  <div class="text-xs-right grey--text">最后报价日期{{variant.pivot.updated_at}}</div>
-                </v-card-text>
-            </v-card> -->
             <v-list two-line>
               <template v-for="variant in products">
 
@@ -54,7 +43,7 @@
                               <v-icon slot="activator" color="grey lighten-1">info</v-icon>
                               <span>{{variant.pivot.updated_at}}</span>
                             </v-tooltip>
-                            报价: {{variant.price}}
+                            报价: {{variant.pivot.price}}
                           </v-flex>
                         </v-layout>
                   </v-list-tile-action>

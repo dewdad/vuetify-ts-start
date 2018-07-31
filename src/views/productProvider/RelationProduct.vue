@@ -320,7 +320,7 @@ export default class RelationProduct extends Vue {
   searchHandel () {
     if (this.search === this.lastSearch || this.search.length === 0) return
     // this.cacheList()
-    const queryBuild = {search: this.search, search_fields: 'name:like;name_en:like;code:lik'}
+    const queryBuild = {search: this.search, search_fields: 'name:like;name_en:like;code:like'}
     const throttle = (fn:any) => _.throttle(async (arg) => await fn(arg), 300)
     throttle(this.fetchProductList)(queryBuild)
     this.lastSearch = this.search

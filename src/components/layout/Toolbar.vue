@@ -80,7 +80,7 @@
           </v-list-tile>
 
           <v-list-tile>
-            <v-list-tile-title>登出</v-list-tile-title>
+            <v-list-tile-title @click="logout">登出</v-list-tile-title>
           </v-list-tile>
 
         </v-list>
@@ -100,6 +100,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Tabs from './Tabs.vue'
+import { User } from '@/store/modules/user'
 @Component({
   components: {
   tabs: Tabs,
@@ -118,6 +119,10 @@ export default class ToolBar extends Vue {
 
     get drawer () {
       return this.$store.getters.drawer
+    }
+
+    async logout () {
+      return await this.$store.dispatch('user/logout')
     }
 }
 </script>

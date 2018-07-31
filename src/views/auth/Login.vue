@@ -15,7 +15,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="login">Login</v-btn>
+          <v-btn color="primary" @keydown.enter="login" @click="login">Login</v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -38,9 +38,14 @@ export default class Login extends Vue {
 
   async login () {
     this.$loading({show: true, text: '登录中'})
-    await User.login(this.formData)
+    let res = await User.getInstance.login(this.formData)
+    if (res.status === 200) {
+      this.$router.push({name: 'home'})
+      this.$success({text: 'Welcome back!'})
+    } else {
+      this.$fail({text: res.data.error})
+    }
     this.$loading({show: false})
-    this.$router.push({name: 'home'})
   }
 }
 </script>

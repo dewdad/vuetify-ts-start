@@ -3,7 +3,7 @@ import { Commit } from 'vuex'
 import { QueryBuild } from '@/api/types'
 import Singleton from '@/utils/Singleton'
 import Drawers from '@/navigation'
-
+import Router from '@/router'
 export interface RouteName{
   index:string;
   show:string;
@@ -84,6 +84,15 @@ export const mutations = {
       state.loading.show = show
     } else {
       state.loading = Object.assign({}, state.loading, { show, text })
+    }
+  },
+  GO: (state:State, {router, type='push'}:{router:any, type:string}) => {
+    if (type === 'push') {
+      Router.push(router)
+    }
+
+    if (type === 'replace') {
+      Router.replace(router)
     }
   }
 }

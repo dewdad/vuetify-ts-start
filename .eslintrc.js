@@ -17,6 +17,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     "space-infix-ops": "off",
     'no-return-await':'off',
-    "no-useless-call":"off"
+    "no-useless-call":"off",
+    "no-use-before-define":"off"
   }
 }
