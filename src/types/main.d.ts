@@ -16,6 +16,7 @@ declare module 'vue/types/vue' {
     errors: ErrorBag;
     $success:(arg:{text:string, position?:number})=>void;
     $fail:(arg:{text:string, position?:number})=>void;
+    $setErrorsFromResponse:(arg:any)=>void;
   }
 
   interface VueConstructor{

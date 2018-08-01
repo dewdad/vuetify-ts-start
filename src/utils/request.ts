@@ -17,7 +17,7 @@ const service = axios.create({
 service.interceptors.request.use(config => {
   // Do something before request is sent
   if (store.getters.token) {
-    config.headers['Authorization'] = `Bearer ${getToken()}` // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+    config.headers['Authorization'] = getToken() // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
   }
   return config
 }, error => {
@@ -34,6 +34,7 @@ service.interceptors.response.use(
     if (token) {
       // 如果 header 中存在 token，那么触发 refreshToken 方法，替换本地的 token
       console.log(token)
+      store.commit('app/TOGGLE_SNACKBAR', { status: true, color: 'success', text: token, position: 8 })
     }
     return response
   },
@@ -64,14 +65,11 @@ service.interceptors.response.use(
   //     } else {
   //       return response.data;
   //     }
-  error => {
+  async error => {
     switch (error.response.status) {
       // 如果响应中的 http code 为 401，那么则此用户可能 token 失效了之类的，我会触发 logout 方法，清除本地的数据并将用户重定向至登录页面
       case 401:
-        console.log('logout')
-        User.getInstance.logout().then(() => {
-
-        })
+        await User.getInstance.unauthorized()
         break
       // 如果响应中的 http code 为 400，那么就弹出一条错误提示给用户
     }

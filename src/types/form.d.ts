@@ -24,6 +24,7 @@ declare namespace FormInterface{
   export interface Field{
     field:string;
     label:string;
+    fieldType?:string;
     type:string;
     rule:any;
     props?:any;

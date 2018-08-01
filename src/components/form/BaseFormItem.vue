@@ -19,17 +19,23 @@ export default class BaseFormItem extends Vue {
   }
   attributes = []
 
-  get fieldAttr () {
+  get filterFieldAttrs () {
     return (propField:FormInterface.Field) => {
-      const {type, props, value, ...arg} = propField
+      const {fieldType, props, value, itemEvent, ...arg} = propField
       return {...props, ...arg}
     }
   }
 
   get listeners () {
-    return {
-      ...this.$listeners
+    return (propField:FormInterface.Field) => {
+      const {itemEvent} = propField
+      return itemEvent
     }
+  }
+
+  async submit () {
+    const res = await this.$validator.validateAll()
+    return res
   }
 }
 </script>
@@ -38,34 +44,36 @@ export default class BaseFormItem extends Vue {
   <template v-for="propField in propFields">
     <v-text-field
       :key="propField.field"
-      v-if="propField.type === 'text'"
+      v-if="propField.fieldType === 'text'"
       v-validate="propField.rule"
-      :error-messages="errors.first(propField.field)"
-      :name="propField.field"
+      :error-messages="errors.first(propField.name || propField.field)"
+      :name="propField.name || propField.field"
       v-model="propField.value"
-      v-bind="fieldAttr(propField)"
-
+      v-bind="filterFieldAttrs(propField)"
+      v-on="listeners(propField)"
     ></v-text-field>
 
     <v-textarea
       :key="propField.field"
-      v-if="propField.type === 'textarea'"
+      v-if="propField.fieldType === 'textarea'"
       v-validate="propField.rule"
-      :error-messages="errors.collect(propField.field)"
-      :name="propField.field"
+      :error-messages="errors.collect(propField.name || propField.field)"
+      :name="propField.name || propField.field"
       v-model="propField.value"
-      v-bind="propField"
+      v-bind="filterFieldAttrs(propField)"
+      v-on="listeners(propField)"
 
       ></v-textarea>
 
     <v-select
       :key="propField.field"
-      v-if="propField.type === 'select'"
+      v-if="propField.fieldType === 'select'"
       v-validate="propField.rule"
-      :error-messages="errors.collect(propField.field)"
-      :name="propField.field"
+      :error-messages="errors.collect(propField.name || propField.field)"
+      :name="propField.name || propField.field"
       v-model="propField.value"
-      v-bind="propField"
+      v-bind="filterFieldAttrs(propField)"
+      v-on="listeners(propField)"
       >
         <!-- <template v-if="propField.isSlot">
           <template slot="item" slot-scope="{item}" >
@@ -77,14 +85,15 @@ export default class BaseFormItem extends Vue {
         </template> -->
       </v-select>
 
-    <template  v-if="propField.type === 'checkbox_group'">
+    <template  v-if="propField.fieldType === 'checkbox_group'">
       <v-checkbox
         v-for="(value,index) in propField.values"
         :key="index"
         v-validate="propField.rule"
-        :error-messages="errors.collect(propField.field)"
-        :name="propField.field"
-        v-bind="propField"
+        :error-messages="errors.collect(propField.name || propField.field)"
+        :name="propField.name || propField.field"
+        v-bind="filterFieldAttrs(propField)"
+        v-on="listeners(propField)"
         v-model="propField.value"
         :value="value"
         :label="value[propField.itemText]"

@@ -18,7 +18,9 @@ export const state:State = {
 }
 
 export const mutations = {
-  SET_TOKEN: (state:State, token:string) => {
+  SET_TOKEN: (state:State, payload:({access_token:string, token_type?:string})) => {
+    const type = payload.token_type || process.env.VUE_APP_TOKEN_TYPE
+    const token = `${_.upperFirst(type)} ${payload.access_token}`
     setToken(token)
     state.token = token
   },
@@ -42,7 +44,7 @@ export const actions = {
   async login ({commit}: ({commit: Commit}), payload:{email:string, password:string}) {
     try {
       let data = await UserApi.login(payload)
-      commit('SET_TOKEN', data.data.access_token)
+      commit('SET_TOKEN', data.data)
       return data
     } catch (error) {
       return error
@@ -72,6 +74,12 @@ export const actions = {
     } catch (error) {
 
     }
+  },
+
+  unauthorized ({commit}: ({commit: Commit})) {
+    commit('REMOVE_TOKEN')
+    commit('REMOVE_USER')
+    commit('app/GO', {router: {name: 'login'}, type: 'replace'}, {root: true})
   },
 
   async refreshToken ({commit}: ({commit: Commit}), token:string) {
@@ -114,5 +122,9 @@ export class User extends Base {
 
   public logout () {
     return store.dispatch('user/logout')
+  }
+
+  public unauthorized () {
+    return store.dispatch('user/unauthorized')
   }
 }
