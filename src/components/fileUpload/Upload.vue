@@ -9,20 +9,29 @@
           xs4
         >
           <v-card flat tile>
-            <v-progress-linear
+            <!-- <v-progress-linear
               v-if="file.active || file.progress !== '0.00'"
               :value="file.progress"
               :color="file.progress !== '100.00' ? 'secondary' : 'success' "
               height="5"
               class="my-0"
-            ></v-progress-linear>
-
+            ></v-progress-linear> -->
+            <!-- <img v-if="file.thumb" height="150px" :src="file.thumb" style="object-fit: cover;" alt=""> -->
             <v-card-media
-              contain
+              :style="progress(file.progress)"
+              class="white--text"
               v-if="file.thumb"
               :src="file.thumb"
               height="150px"
-            ></v-card-media>
+            >
+              <v-container fill-height fluid>
+                <v-layout fill-height>
+                  <v-flex xs12 align-center flexbox>
+                    <span class="headline">Top 10 Australian beaches</span>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-media>
             <v-card-text>
               <v-flex>
                 <div>Error: {{file.error}}</div>
@@ -36,7 +45,10 @@
         </v-flex>
       </v-layout>
     </v-container>
+
     <file-upload
+      v-ripple
+      class="v-btn upload-btn"
       ref="upload"
       :name="name"
       :data="data"
@@ -47,7 +59,11 @@
       multiple
       :headers="header"
     >
-      <v-btn>上传文件</v-btn>
+
+        <div class="v-btn__content">
+        上传文件
+        <v-icon right dark>cloud_upload</v-icon>
+        </div>
     </file-upload>
     <v-card-actions>
       <v-btn v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">开始上传</v-btn>
@@ -80,6 +96,10 @@ export default class Upload extends Vue {
   header = {
     'X-Requested-With': 'XMLHttpRequest',
     'Authorization': getToken()
+  }
+
+  open () {
+    this.$refs.upload.$el.dispatchEvent(new MouseEvent('click'))
   }
 
   files:any[] = []
@@ -120,5 +140,20 @@ export default class Upload extends Vue {
   blobToUrl (blob:Blob) {
     return URL.createObjectURL(blob)
   }
+
+  get progress () {
+    return (percent:number) => {
+      const num = percent || 0
+      return {
+        filter: `opacity(${+num+50}%)`
+      }
+    }
+  }
 }
 </script>
+
+<style scoped>
+.upload-btn {
+  cursor: pointer;
+}
+</style>
