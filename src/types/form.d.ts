@@ -18,20 +18,22 @@ declare namespace FormInterface{
     'time',
     'checkbox_group',
     'radio_group',
-    'toggle'
+    'toggle',
+    'file'
   }
 
   export interface Field{
     field:string;
     label:string;
     fieldType?:string;
-    type:string;
-    rule:any;
+    type?:string;
+    rule?:any;
     props?:any;
     items?: any[];
     values?:any[];
     itemText?: string|Array<any>|Function;
     itemValue?: string|Array<any>|Function;
+    itemEvent?:any;
     [propName:string]:any;
   }
 }

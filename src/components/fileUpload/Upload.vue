@@ -1,52 +1,59 @@
 <template>
   <v-card>
-    <v-card-title>图片上传</v-card-title>
-    <v-container grid-list-xs fluid>
+    <v-progress-linear
+          :value="50"
+          class="my-0"
+          height="3"
+    ></v-progress-linear>
+    <v-card-title>{{label}}</v-card-title>
+    <v-divider></v-divider>
+    <!-- <v-container  fluid grid-list-xs v-if="urls.length>0">
       <v-layout row wrap>
+        <v-flex
+          v-for="url in urls"
+          :key="url"
+          xs3
+        >
+          <uploaded-item
+            :url="url"
+            @active-menu="activeMenu"
+            @image-remove="onImageRemove"
+          ></uploaded-item>
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <v-divider></v-divider> -->
+    <v-container  fluid grid-list-xs>
+      <v-layout row wrap>
+        <v-alert
+          v-if="files.length === 0"
+          :value="true"
+          color="info"
+          icon="priority_high"
+          outline
+        >
+          暂无图片
+        </v-alert>
+
         <v-flex
           v-for="file in files"
           :key="file.id"
-          xs4
+          xs3
         >
-          <v-card flat tile>
-            <!-- <v-progress-linear
-              v-if="file.active || file.progress !== '0.00'"
-              :value="file.progress"
-              :color="file.progress !== '100.00' ? 'secondary' : 'success' "
-              height="5"
-              class="my-0"
-            ></v-progress-linear> -->
-            <!-- <img v-if="file.thumb" height="150px" :src="file.thumb" style="object-fit: cover;" alt=""> -->
-            <v-card-media
-              :style="progress(file.progress)"
-              class="white--text"
-              v-if="file.thumb"
-              :src="file.thumb"
-              height="150px"
-            >
-              <v-container fill-height fluid>
-                <v-layout fill-height>
-                  <v-flex xs12 align-center flexbox>
-                    <span class="headline">Top 10 Australian beaches</span>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-media>
-            <v-card-text>
-              <v-flex>
-                <div>Error: {{file.error}}</div>
-                <div>Error: {{file.success}}</div>
-              </v-flex>
-            </v-card-text>
-            <v-card-actions>
-
-            </v-card-actions>
-          </v-card>
+          <upload-item
+            :file="file"
+            @active-menu="activeMenu"
+            @image-edit="onEditFileShow"
+            @image-remove="onImageRemove"
+          ></upload-item>
         </v-flex>
       </v-layout>
     </v-container>
 
-    <file-upload
+    <v-card-actions>
+      <v-btn flat @click="clear">清空</v-btn>
+      <v-spacer></v-spacer>
+      <file-upload
       v-ripple
       class="v-btn upload-btn"
       ref="upload"
@@ -61,25 +68,36 @@
     >
 
         <div class="v-btn__content">
-        上传文件
-        <v-icon right dark>cloud_upload</v-icon>
+        选择图片
         </div>
     </file-upload>
-    <v-card-actions>
-      <v-btn v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">开始上传</v-btn>
-      <v-btn v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false">停止上传</v-btn>
+      <v-btn v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+        开始上传
+        <v-icon right dark>cloud_upload</v-icon>
+      </v-btn>
+      <v-btn v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false">
+        停止上传
+        <v-icon right dark>check_circle</v-icon>
+      </v-btn>
     </v-card-actions>
+    <edit-image v-model="editFile"></edit-image>
   </v-card>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch, Model } from 'vue-property-decorator'
 import VueUploadComponent from 'vue-upload-component'
 import { getToken } from '@/auth'
+import UploadItem from './UploadItem.vue'
+import EditImage from './EditImage.vue'
+import UploadedItem from './UploadedItem.vue'
 
 @Component({
   components:{
-  'file-upload':VueUploadComponent
+  'file-upload':VueUploadComponent,
+  'upload-item':UploadItem,
+  'edit-image':EditImage,
+  'uploaded-item':UploadedItem
   }
   })
 export default class Upload extends Vue {
@@ -87,67 +105,153 @@ export default class Upload extends Vue {
     'upload':VueUploadComponent
   }
 
+  @Model('input', {type: Array, default: () => []}) urls!:string[]
+
   @Prop({default: 'avatar', type: String})
   name!:string
 
   @Prop({default: () => ({ path: 'product' }), type: Object})
   data!:{}
 
+  @Prop({type: String, default: '图片上传'}) label!:string
+
+  @Watch('editFile.show')
+  onEditShowChange (newValue:boolean, oldValue:boolean) {
+    // 关闭了 自动删除 error
+    if (!newValue && oldValue) {
+      // this.$emit('image-uploaded')
+      this.$refs.upload.update(this.editFile.id, { error: this.editFile.error || '' })
+    }
+  }
+
+  uploadAuto = false
+
+  showMenuStacks:any[] = []
+
   header = {
     'X-Requested-With': 'XMLHttpRequest',
     'Authorization': getToken()
   }
 
+  // 选择上传图片
   open () {
     this.$refs.upload.$el.dispatchEvent(new MouseEvent('click'))
   }
 
   files:any[] = []
 
+  editFile= {
+    id: '',
+    error: '',
+    show: false,
+    name: ''
+  }
+
+  // 激活编辑页面
+  onEditFileShow (file:any) {
+    this.editFile = { ...file, show: true }
+    this.$refs.upload.update(file, { error: 'edit' })
+  }
+
+  // 图片删除事件
+  onImageRemove (file:any) {
+    this.$refs.upload.remove(file)
+  }
+
   inputFile (newFile:any, oldFile:any) {
-    if (newFile && oldFile && !newFile.active && oldFile.active) {
-      // 获得相应数据
-      console.log('response', newFile.response)
+    if (newFile && oldFile) {
+      // update
+
+      if (newFile.active && !oldFile.active) {
+        // beforeSend
+
+        // min size
+        // if (newFile.size >= 0 && this.minSize > 0 && newFile.size < this.minSize) {
+        //   this.$refs.upload.update(newFile, { error: 'size' })
+        // }
+      }
+
+      if (newFile.progress !== oldFile.progress) {
+        // progress
+      }
+
+      if (newFile.error && !oldFile.error) {
+        // error
+      }
+
+      if (newFile.success && !oldFile.success) {
+        // success
+      }
+
       if (newFile.xhr) {
         //  获得响应状态码
-        console.log('status', newFile.xhr.status)
+        if (newFile.xhr.status === 200) {
+          if (!this.urls.includes(newFile.response.data.url)) {
+            this.$emit('input', [...this.urls, newFile.response.data.url])
+          }
+        }
+      }
+    }
+
+    if (!newFile && oldFile) {
+      // remove
+      if (oldFile.success && oldFile.response.id) {
+        // $.ajax({
+        //   type: 'DELETE',
+        //   url: '/upload/delete?id=' + oldFile.response.id,
+        // })
+      }
+    }
+
+    // Automatically activate upload
+    if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
+      if (this.uploadAuto && !this.$refs.upload.active) {
+        this.$refs.upload.active = true
       }
     }
   }
 
   inputFilter (newFile:any, oldFile:any, prevent:any) {
+    // 添加文件
     if (newFile && !oldFile) {
       // 过滤不是图片后缀的文件
       if (!/\.(jpeg|jpe|jpg|gif|png|webp)$/i.test(newFile.name)) {
         return prevent()
       }
-    }
 
-    // 创建 blob 字段 用于图片预览
-    newFile.blob = ''
-    let URL = window.URL || (window as any).webkitURL
-    if (URL && URL.createObjectURL) {
-      newFile.blob = URL.createObjectURL(newFile.file)
-    }
+      if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+        // Create a blob field
+        // 创建 blob 字段
+        newFile.blob = ''
+        let URL = window.URL || (window as any).webkitURL
+        if (URL && URL.createObjectURL) {
+          newFile.blob = URL.createObjectURL(newFile.file)
+        }
 
-    // Thumbnails
-    newFile.thumb = ''
-    if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
-      newFile.thumb = newFile.blob
-    }
-  }
-
-  blobToUrl (blob:Blob) {
-    return URL.createObjectURL(blob)
-  }
-
-  get progress () {
-    return (percent:number) => {
-      const num = percent || 0
-      return {
-        filter: `opacity(${+num+50}%)`
+        // Thumbnails
+        // 缩略图
+        newFile.thumb = ''
+        if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
+          newFile.thumb = newFile.blob
+        }
       }
     }
+  }
+
+  // 鼠标右键状态栈
+  activeMenu (vm:any) {
+    const id = vm._uid
+    const current = this.showMenuStacks.find(item => item._uid===vm._uid)
+    if (!current) this.showMenuStacks.push(vm)
+
+    this.showMenuStacks.forEach(item => {
+      if (item._uid!==id) item.showMenu = false
+    })
+  }
+
+  clear () {
+    this.$emit('clear')
+    this.$refs.upload.clear()
   }
 }
 </script>

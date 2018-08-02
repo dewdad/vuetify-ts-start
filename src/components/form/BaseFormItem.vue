@@ -4,6 +4,7 @@ import { Component, Vue, Prop, Model } from 'vue-property-decorator'
 @Component({
   name:'base-form-item',
   components:{
+  'file-upload':()=>import('@/components/fileUpload/Upload.vue')
   }
   })
 export default class BaseFormItem extends Vue {
@@ -15,7 +16,8 @@ export default class BaseFormItem extends Vue {
     'switch': 'v-toggle',
     'select': 'v-select',
     'checkbox_group': 'v-checkbox',
-    'radio-group': 'v-radio-group'
+    'radio-group': 'v-radio-group',
+    'file': 'file-upload'
   }
   attributes = []
 
@@ -64,6 +66,17 @@ export default class BaseFormItem extends Vue {
       v-on="listeners(propField)"
 
       ></v-textarea>
+
+    <file-upload
+      :key="propField.field"
+      v-if="propField.fieldType === 'file'"
+      v-validate="propField.rule"
+      :error-messages="errors.first(propField.name || propField.field)"
+      :name="propField.name || propField.field"
+      v-model="propField.value"
+      v-bind="filterFieldAttrs(propField)"
+      v-on="listeners(propField)"
+    ></file-upload>
 
     <v-select
       :key="propField.field"

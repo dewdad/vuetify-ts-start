@@ -29,12 +29,12 @@ service.interceptors.request.use(config => {
 // respone interceptor
 service.interceptors.response.use(
 
-  response => {
+  async response => {
     const token = response.headers.authorization
     if (token) {
       // 如果 header 中存在 token，那么触发 refreshToken 方法，替换本地的 token
-      console.log(token)
-      store.commit('app/TOGGLE_SNACKBAR', { status: true, color: 'success', text: token, position: 8 })
+      await store.dispatch('user/refreshToken', token)
+      // store.commit('app/TOGGLE_SNACKBAR', { status: true, color: 'success', text: token, position: 8 })
     }
     return response
   },

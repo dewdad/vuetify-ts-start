@@ -18,6 +18,10 @@ export const state:State = {
 }
 
 export const mutations = {
+  REFRESH_TOKEN: (state: State, token:string) => {
+    setToken(token)
+    state.token = token
+  },
   SET_TOKEN: (state:State, payload:({access_token:string, token_type?:string})) => {
     const type = payload.token_type || process.env.VUE_APP_TOKEN_TYPE
     const token = `${_.upperFirst(type)} ${payload.access_token}`
@@ -83,7 +87,7 @@ export const actions = {
   },
 
   async refreshToken ({commit}: ({commit: Commit}), token:string) {
-    commit('SET_TOKEN', token)
+    commit('REFRESH_TOKEN', token)
   }
 }
 

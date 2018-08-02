@@ -1,22 +1,26 @@
 <template>
 <v-layout fill-height  justify-center>
   <v-flex xs12 sm 12 md12 lg8 xl8>
-  <v-card class="mb-3">
-    <v-toolbar card dark color="primary">
-      <v-toolbar-title>创建品牌</v-toolbar-title>
-      <v-spacer></v-spacer>
+  <v-form ref="vform" @keyup.native.enter="submit" @submit.prevent="submit">
+    <v-card class="mb-3">
+      <v-toolbar card dark color="primary">
+        <v-toolbar-title>创建品牌</v-toolbar-title>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+      <v-card-text>
 
-    </v-toolbar>
-    <v-card-text v-if="loaded">
-      <base-form ref="form" :schema="formSchema"></base-form>
-    </v-card-text>
-    <v-divider class="mt-5"></v-divider>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn flat @click.native="$refs.form.clear()">重置</v-btn>
-      <v-btn flat color="info" @click.native="submit">提交</v-btn>
-    </v-card-actions>
-  </v-card>
+        <base-form-item  v-model="formSchema" ref="form"></base-form-item>
+
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn @click="clear" flat>清空</v-btn>
+        <v-btn color="primary" type="submit">提交</v-btn>
+        <!-- <submit-button color="primary" block="true" label="Login"></submit-button> -->
+      </v-card-actions>
+    </v-card>
+    </v-form>
   </v-flex>
 </v-layout>
 </template>
@@ -24,41 +28,79 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import Base from './mixins/Base'
-import Form from '@/components/form/BaseForm.vue'
+import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import { Brand } from '@/store/modules/brand'
-
+import Base from './mixins/Base'
 @Component({
   components:{
-  'base-form':Form
+  'base-form-item':BaseFormItem
   }
   })
 export default class BrandCreate extends mixins(Base) {
   public $refs!: {
-    form: Form,
+    'form':BaseFormItem,
+    'vform':any
   };
-  formSchema:any[]|null = null
-  loaded = false
-  createItem:any = null
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在生成表单。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
+
+  clear () {
+    this.$refs.vform.reset()
   }
 
+  onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
+    item.value = []
+  }
+
+  formSchema:FormInterface.Field[] = [
+    {
+      field: 'name',
+      label: '品牌名称',
+      value: '',
+      type: 'text',
+      fieldType: 'text',
+      rule: 'required',
+      requeired: true
+    },
+    {
+      field: 'avatar',
+      label: '品牌LOGO',
+      fieldType: 'file',
+      value: [],
+      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
+    },
+    {
+      field: 'description',
+      label: '品牌描述',
+      fieldType: 'textarea',
+      rule: 'max:200',
+      counter: true
+    }
+  ]
+
   async submit () {
-    const res = await this.$refs.form.submit()
-    if (res) {
-      this.createItem = res
-      await Brand.getInstance.create(res)
-      this.$success({text: '创建成功', position: 9})
-      this.$router.replace({name: this.routeName.index})
+    if (await this.$refs.form.submit()) {
+      await this.create()
     }
   }
 
-  async created () {
-    await this.loadFormStructure()
-    this.loaded = true
+  paserFormData () {
+    return this.formSchema.reduce((formData:any, field) => {
+      formData[field.field] = field.value
+      return formData
+    }, {})
+  }
+
+  async create () {
+    this.$loading({show: true, text: '提交中'})
+    let res = await Brand.getInstance.create(this.paserFormData())
+    console.log(res)
+    // if (res.status === 201) {
+    //   this.$router.push({name: this.routeName.show,params:{}})
+    //   this.$success({text: 'Welcome back!'})
+    // } else {
+    //   this.$refs.form.$setErrorsFromResponse(res.data)
+    //   this.$fail({text: res.data.message})
+    // }
+    this.$loading({show: false})
   }
 }
 </script>
