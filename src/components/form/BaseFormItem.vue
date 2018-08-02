@@ -42,7 +42,7 @@ export default class BaseFormItem extends Vue {
 }
 </script>
 <template>
-<v-layout column>
+<v-container fluid>
   <template v-for="propField in propFields">
     <v-text-field
       :key="propField.field"
@@ -113,5 +113,5 @@ export default class BaseFormItem extends Vue {
         ></v-checkbox>
     </template>
   </template>
-</v-layout>
+</v-container>
 </template>
