@@ -1,0 +1,3 @@
+[submodule "vuex-module-decorators"]
+	path = vuex-module-decorators
+	url = git@github.com:zhouchang2017/vuex-module-decorators.git
