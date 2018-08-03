@@ -7,7 +7,7 @@
     ></v-progress-linear>
     <v-card-title>{{label}}</v-card-title>
     <v-divider></v-divider>
-    <!-- <v-container  fluid grid-list-xs v-if="urls.length>0">
+    <v-container  fluid grid-list-xs v-if="urls.length>0">
       <v-layout row wrap>
         <v-flex
           v-for="url in urls"
@@ -22,7 +22,7 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-divider></v-divider> -->
+    <v-divider></v-divider>
     <v-container  fluid grid-list-xs>
       <v-layout row wrap>
         <v-alert

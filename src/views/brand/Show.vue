@@ -1,60 +1,89 @@
 <template>
-<v-layout fill-height  justify-center>
-  <v-flex xs12 sm 12 md12 lg8 xl8>
-  <v-card class="mb-3">
-    <v-toolbar card dark color="primary">
-      <v-toolbar-title>品牌详情</v-toolbar-title>
-      <v-spacer></v-spacer>
+  <v-layout fill-height
+            justify-center>
+    <v-flex xs12
+            sm
+            12
+            md12
+            lg8
+            xl8>
+      <name-card v-bind="attrs">
+        <v-list slot="after-card-text" two-line>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon color="indigo">phone</v-icon>
+            </v-list-tile-action>
 
-    </v-toolbar>
-    <v-card-text v-if="loaded">
-      <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData" :disabled="true"></base-form>
-    </v-card-text>
-  </v-card>
-  </v-flex>
-</v-layout>
+            <v-list-tile-content>
+              <v-list-tile-title>{{attrs.name}}</v-list-tile-title>
+              <v-list-tile-sub-title>品牌名称</v-list-tile-sub-title>
+            </v-list-tile-content>
+
+          </v-list-tile>
+
+          <v-divider inset></v-divider>
+
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon color="indigo">mail</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{attrs.description}}</v-list-tile-title>
+              <v-list-tile-sub-title>品牌描述</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </name-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
-import Form from '@/components/form/BaseForm.vue'
 import { Brand } from '@/store/modules/brand'
+import NameCard from '@/components/card/NameCard.vue'
 
 @Component({
   components:{
-  'base-form':Form
+  'name-card':NameCard
   }
   })
 export default class BrandShow extends mixins(Base) {
-  public $refs!: {
-    form: Form,
-  }
-  formSchema:any[]|null = null
-  orginFormData:any|null = null
   loaded = false
-  createItem:any = null
+
   item:any|null = null
-  include = []
+
+  images:object = {}
+
+  include = ['images']
 
   async viewInit () {
-    const { data } = await Brand.getInstance.with(this.include).show({id: this.$route.params.id})
+    const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
     this.item = data
-    this.orginFormData = Brand.getInstance.filterData(data)
+    this.images = _.groupBy(this.item.images.data, item => item.type)
   }
 
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在加载。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
+  get attrs () {
+    const avatar = _.get(this.images, 'thumb[0].url', null)
+    const cardBgImage = _.get(this.images, 'origin[0].url', null)
+    return Object.assign({}, this.item, {avatar}, {cardBgImage})
   }
 
   async created () {
     this.$nextTick(async () => {
-      await Promise.all([this.viewInit(), this.loadFormStructure()])
+      await this.viewInit()
       this.loaded = true
     })
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+  .mt-45
+    margin-top: -45px
+  .mt-56
+    margin-top: -56px
+</style>

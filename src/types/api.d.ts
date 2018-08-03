@@ -163,13 +163,52 @@ declare namespace ApiResponse{
     data:BrandData;
   }
 
+  export type BrandList = Map<string, Brands>
+
+  export interface Brands{
+    data:BrandData[];
+    meta:Meta;
+  }
+
+  export interface Meta{
+    pagination:Pagination
+  }
+
+  export interface Pagination{
+    count:number;
+    'current_page':number;
+    links:any[];
+    'per_page':number;
+    total:number;
+    'total_pages':number;
+  }
+
   export interface BrandData{
-    avatar:null|string;
+    avatar:null|string|string[];
     'created_at':string;
     description:string;
     id:number;
     name:string;
+    images:Images;
     'updated_at':string;
+  }
+
+  export interface Images{
+    data:ImageData[]
+  }
+
+  export interface ImageData{
+    id: number;
+    url: string;
+    height: number;
+    width: number;
+    size?: string;
+    'assetable_type': string;
+    'assetable_id': number;
+    'created_at': string;
+    'updated_at': string;
+    'deleted_at'?: any;
+    type: string;
   }
 
   export interface ProductType{

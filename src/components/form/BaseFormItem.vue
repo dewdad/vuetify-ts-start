@@ -67,16 +67,29 @@ export default class BaseFormItem extends Vue {
 
       ></v-textarea>
 
-    <file-upload
-      :key="propField.field"
-      v-if="propField.fieldType === 'file'"
-      v-validate="propField.rule"
-      :error-messages="errors.first(propField.name || propField.field)"
-      :name="propField.name || propField.field"
-      v-model="propField.value"
-      v-bind="filterFieldAttrs(propField)"
-      v-on="listeners(propField)"
-    ></file-upload>
+    <v-input
+        :key="propField.field"
+        v-if="propField.fieldType === 'file'"
+        v-bind="filterFieldAttrs(propField)"
+        v-validate="propField.rule"
+        :error-messages="errors.first(propField.name || propField.field)"
+        :name="propField.name || propField.field"
+        :value="propField.value"
+        v-on="listeners(propField)"
+      >
+      <v-container>
+        <v-layout>
+          <v-flex>
+            <file-upload
+              v-model="propField.value"
+              v-bind="filterFieldAttrs(propField)"
+              v-on="listeners(propField)"
+            ></file-upload>
+          </v-flex>
+        </v-layout>
+      </v-container>
+
+    </v-input>
 
     <v-select
       :key="propField.field"

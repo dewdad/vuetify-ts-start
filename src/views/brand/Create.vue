@@ -64,6 +64,7 @@ export default class BrandCreate extends mixins(Base) {
       field: 'avatar',
       label: '品牌LOGO',
       fieldType: 'file',
+      rule: 'required',
       value: [],
       itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
     },
