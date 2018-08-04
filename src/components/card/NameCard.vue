@@ -1,6 +1,6 @@
 <template>
 <div class="name-card">
-  <v-card flat :color="color" ref="card" :dark="dark" :img="cardBgImage">
+  <v-card flat :color="color" ref="card"  :dark="dark">
     <v-card-media v-if="showTopNav">
       <v-layout row justify-space-between class="ma-0">
         <v-flex xs2>
@@ -11,17 +11,17 @@
         </v-flex>
       </v-layout>
     </v-card-media>
+    <v-img
+      :src="bigBgImg"
+      aspect-ratio="2.75"
+      id="bg_image"
+      :lazy-src="lazyBigBgImg"
+      class="grey lighten-2"
+    >
+      <avatar v-bind="$props"></avatar>
+    </v-img>
     <v-card-text>
-      <div class="layout ma-0 align-center" :class="computeCardLayout">
-        <v-avatar :size="computeAvatarSize" color="primary">
-          <img v-bind:src="avatar" v-bind:alt="name" v-if="showAvatar">
-          <span v-else class="white--text headline">{{ name.charAt(0) }}</span>
-        </v-avatar>
-        <div class="flex" :class="computeTextAlgin">
-          <div class="white--text subheading">{{name}}</div>
-          <span class="white--text caption">{{description}}</span>
-        </div>
-      </div>
+
       <slot name="card-text"></slot>
     </v-card-text>
   </v-card>
@@ -47,6 +47,9 @@
 import { Component, Vue, Prop } from 'vue-property-decorator'
 
 @Component({
+  components:{
+  'avatar':()=>import('./NameCardAvatar.vue')
+  }
   })
 export default class NameCard extends Vue {
   @Prop({type: String, default: ''}) name!:string
@@ -70,9 +73,7 @@ export default class NameCard extends Vue {
   get computeCardLayout () {
     return (this.mini) ? 'row' : 'column'
   }
-  get computeTextAlgin () {
-    return (this.mini) ? 'text-sm-right' : 'text-sm-center'
-  }
+
   get computeAvatarSize () {
     return (this.mini) ? '48' : '96'
   }
@@ -85,6 +86,14 @@ export default class NameCard extends Vue {
   get showTopNav () {
     return (this.mini === false && this.topNav)
   }
+
+  get bigBgImg () {
+    return this.cardBgImage || 'https://photo.tuchong.com/280776/f/484573381.jpg'
+  }
+
+  get lazyBigBgImg () {
+    return this.avatar || 'https://photo.tuchong.com/280776/f/484573381.jpg'
+  }
 }
 </script>
 
@@ -92,4 +101,11 @@ export default class NameCard extends Vue {
   .caption, .subheading {
     font-weight:200;
   }
+  .blur {
+    filter:blur(3px);
+  }
+  .no-blur {
+    filter:blur(0);
+  }
+
 </style>

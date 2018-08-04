@@ -11,7 +11,7 @@
       <v-layout row wrap>
         <v-flex
           v-for="url in urls"
-          :key="url"
+          :key="url.thumb"
           v-bind="{'xs3':urls.length>2}"
         >
           <uploaded-item
@@ -92,6 +92,11 @@ import UploadItem from './UploadItem.vue'
 import EditImage from './EditImage.vue'
 import UploadedItem from './UploadedItem.vue'
 
+interface InputRequest{
+  src:string;
+  thumb:string;
+}
+
 @Component({
   components:{
   'file-upload':VueUploadComponent,
@@ -105,7 +110,7 @@ export default class Upload extends Vue {
     'upload':VueUploadComponent
   }
 
-  @Model('input', {type: Array, default: () => []}) urls!:string[]
+  @Model('input', {type: Array, default: () => []}) urls!:InputRequest[]
 
   @Prop({default: 'avatar', type: String})
   name!:string
@@ -186,8 +191,8 @@ export default class Upload extends Vue {
       if (newFile.xhr) {
         //  获得响应状态码
         if (newFile.xhr.status === 200) {
-          if (!this.urls.includes(newFile.response.data.url)) {
-            this.$emit('input', [...this.urls, newFile.response.data.url])
+          if (!this.urls.includes(newFile.response.data)) {
+            this.$emit('input', [...this.urls, newFile.response.data])
           }
         }
       }

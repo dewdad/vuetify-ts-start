@@ -1,8 +1,9 @@
 <template>
   <v-card flat tile @contextmenu="show">
-    <v-card-media
+    <v-img
       class="white--text"
-      :src="url"
+      :src="url.src"
+      :lazy-src="url.thumb"
       height="150px"
     >
       <v-menu
@@ -23,7 +24,7 @@
         </v-list-tile>
       </v-list>
     </v-menu>
-    </v-card-media>
+    </v-img>
   </v-card>
 </template>
 
@@ -36,13 +37,13 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
   }
   })
 export default class UploadEdItem extends Vue {
-  @Prop(String) url!:string
+  @Prop(Object) url!:object
 
   showMenu = false
   x = 0
   y = 0
 
-  deleteItem (url:string) {
+  deleteItem (url:object) {
     this.$emit('uploaded-image-remove', url)
   }
 
