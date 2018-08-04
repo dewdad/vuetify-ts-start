@@ -42,7 +42,7 @@ interface Images{
   'base-form-item':BaseFormItem
   }
   })
-export default class BrandCreate extends mixins(Base) {
+export default class BrandUpdate extends mixins(Base) {
   public $refs!: {
     'form':BaseFormItem,
     'vform':any
@@ -133,7 +133,7 @@ export default class BrandCreate extends mixins(Base) {
     const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
     this.item = data
     this.images = this.imageGroupByType(this.item.images)
-    this.item.avatar = this.images.origin.map(item => item.url)
+    this.item.avatar = this.images.origin ? this.images.origin.map(item => item.url) : []
     this.assignmentFormSchema(this.item)
   }
 

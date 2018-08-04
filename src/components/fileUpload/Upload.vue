@@ -5,14 +5,14 @@
           class="my-0"
           height="3"
     ></v-progress-linear>
-    <v-card-title>{{label}}</v-card-title>
-    <v-divider></v-divider>
+    <!-- <v-card-title>{{label}}</v-card-title>
+    <v-divider></v-divider> -->
     <v-container  fluid grid-list-xs v-if="urls.length>0">
       <v-layout row wrap>
         <v-flex
           v-for="url in urls"
           :key="url"
-          xs3
+          v-bind="{'xs3':urls.length>2}"
         >
           <uploaded-item
             :url="url"

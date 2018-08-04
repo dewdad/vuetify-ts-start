@@ -45,6 +45,7 @@ export default class BaseFormItem extends Vue {
 <v-container fluid>
   <template v-for="propField in propFields">
     <v-text-field
+      outline
       :key="propField.field"
       v-if="propField.fieldType === 'text'"
       v-validate="propField.rule"
@@ -56,6 +57,7 @@ export default class BaseFormItem extends Vue {
     ></v-text-field>
 
     <v-textarea
+      outline
       :key="propField.field"
       v-if="propField.fieldType === 'textarea'"
       v-validate="propField.rule"
@@ -68,6 +70,7 @@ export default class BaseFormItem extends Vue {
       ></v-textarea>
 
     <v-input
+        outline
         :key="propField.field"
         v-if="propField.fieldType === 'file'"
         v-bind="filterFieldAttrs(propField)"
