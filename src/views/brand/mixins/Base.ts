@@ -14,32 +14,35 @@ export default class BaseMixin extends Vue {
   }
   translation = 'brand'
 
-  testChange (newVal:any, oldVal:any, ele:any, items:any, index:any, vm:Vue) {
+  formSchema:FormInterface.Field[] = [
+    {
+      field: 'name',
+      label: '品牌名称',
+      value: '',
+      type: 'text',
+      fieldType: 'text',
+      rule: 'required',
+      requeired: true
+    },
+    {
+      field: 'avatars',
+      label: '品牌LOGO',
+      fieldType: 'file',
+      rule: 'required',
+      value: [],
+      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
+    },
+    {
+      field: 'description',
+      label: '品牌描述',
+      fieldType: 'textarea',
+      rule: 'max:200',
+      counter: true
+    }
+  ]
 
-  }
-
-  async createSchema () {
-    return [
-      { name: '基本',
-        fields: [
-          { field: 'name',
-            label: '品牌名称',
-            type: 'input',
-            rule: 'required',
-            props: { clearable: true }},
-          { field: 'avatar',
-            label: '品牌LOGO',
-            type: 'input',
-
-            props: { clearable: true }},
-          { field: 'description',
-            label: '品牌描述',
-            type: 'textarea',
-
-            props: { clearable: true }}
-        ]
-      }
-    ]
+  onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
+    item.value = []
   }
 
   showItem (id:any) {

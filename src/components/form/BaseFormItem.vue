@@ -115,6 +115,7 @@ export default class BaseFormItem extends Vue {
       </v-select>
 
     <template  v-if="propField.fieldType === 'checkbox_group'">
+
       <v-checkbox
         v-for="(value,index) in propField.values"
         :key="index"
@@ -126,7 +127,8 @@ export default class BaseFormItem extends Vue {
         v-model="propField.value"
         :value="value"
         :label="value[propField.itemText]"
-        ></v-checkbox>
+        >
+        </v-checkbox>
     </template>
   </template>
 </v-container>

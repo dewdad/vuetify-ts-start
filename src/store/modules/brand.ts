@@ -38,7 +38,7 @@ export default class BrandModule extends VuexModule {
   @CacheAction
   async store (payload:FormData) {
     try {
-      let {data} = await BrandApi.store(payload)
+      let data = await BrandApi.store(payload)
       return data
     } catch (error) {
 
@@ -48,7 +48,7 @@ export default class BrandModule extends VuexModule {
   @CacheAction
   async update (payload:Update) {
     try {
-      const { data } = await BrandApi.update(payload)
+      const data = await BrandApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
@@ -85,11 +85,11 @@ export class Brand extends Base {
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('brand/store', payload)
+    return store.dispatch('brand/store', this.assignQueryBuild(payload))
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('brand/update', payload)
+    return store.dispatch('brand/update', this.assignQueryBuild(payload))
   }
 
   destroy (id:number|string):Promise<any> {

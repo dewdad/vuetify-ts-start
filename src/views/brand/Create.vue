@@ -42,6 +42,8 @@ export default class BrandCreate extends mixins(Base) {
     'vform':any
   };
 
+  include = ['avatars']
+
   clear () {
     this.$refs.vform.reset()
   }
@@ -49,33 +51,6 @@ export default class BrandCreate extends mixins(Base) {
   onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
     item.value = []
   }
-
-  formSchema:FormInterface.Field[] = [
-    {
-      field: 'name',
-      label: '品牌名称',
-      value: '',
-      type: 'text',
-      fieldType: 'text',
-      rule: 'required',
-      requeired: true
-    },
-    {
-      field: 'avatar',
-      label: '品牌LOGO',
-      fieldType: 'file',
-      rule: 'required',
-      value: [],
-      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
-    },
-    {
-      field: 'description',
-      label: '品牌描述',
-      fieldType: 'textarea',
-      rule: 'max:200',
-      counter: true
-    }
-  ]
 
   async submit () {
     if (await this.$refs.form.submit()) {
@@ -92,15 +67,14 @@ export default class BrandCreate extends mixins(Base) {
 
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await Brand.getInstance.create(this.paserFormData())
-    console.log(res)
-    // if (res.status === 201) {
-    //   this.$router.push({name: this.routeName.show,params:{}})
-    //   this.$success({text: 'Welcome back!'})
-    // } else {
-    //   this.$refs.form.$setErrorsFromResponse(res.data)
-    //   this.$fail({text: res.data.message})
-    // }
+    let res = await Brand.getInstance.with(this.include).create(this.paserFormData())
+    if (res.status === 201) {
+      this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
+      this.$success({text: 'create success!'})
+    } else {
+      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$fail({text: res.data.message})
+    }
     this.$loading({show: false})
   }
 }

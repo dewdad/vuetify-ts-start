@@ -48,7 +48,7 @@ export default class BrandUpdate extends mixins(Base) {
     'vform':any
   };
 
-  include = ['images']
+  include = ['avatars']
 
   item = {} as ApiResponse.BrandData
 
@@ -61,34 +61,6 @@ export default class BrandUpdate extends mixins(Base) {
   onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
     item.value = []
   }
-
-  formSchema:FormInterface.Field[] = [
-    {
-      field: 'name',
-      label: '品牌名称',
-      value: '',
-      type: 'text',
-      fieldType: 'text',
-      rule: 'required',
-      requeired: true
-    },
-    {
-      field: 'avatar',
-      label: '品牌LOGO',
-      fieldType: 'file',
-      rule: 'required',
-      value: [],
-      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
-    },
-    {
-      field: 'description',
-      label: '品牌描述',
-      value: '',
-      fieldType: 'textarea',
-      rule: 'max:200',
-      counter: true
-    }
-  ]
 
   async submit () {
     if (await this.$refs.form.submit()) {
@@ -108,18 +80,14 @@ export default class BrandUpdate extends mixins(Base) {
     let res = await Brand.getInstance.update({id: +this.$route.params.id, formData: this.paserFormData()})
 
     console.log(res)
-    // if (res.status === 201) {
-    //   this.$router.push({name: this.routeName.show,params:{}})
-    //   this.$success({text: 'Welcome back!'})
-    // } else {
-    //   this.$refs.form.$setErrorsFromResponse(res.data)
-    //   this.$fail({text: res.data.message})
-    // }
+    if (res.status === 204) {
+      this.$router.push({name: this.routeName.show, params: {id: this.$route.params.id}})
+      this.$success({text: 'update success!'})
+    } else {
+      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$fail({text: res.data.message})
+    }
     this.$loading({show: false})
-  }
-
-  imageGroupByType (images:ApiResponse.Images):any {
-    return _.groupBy(images.data, item => item.type)
   }
 
   // 表单赋值
@@ -129,11 +97,18 @@ export default class BrandUpdate extends mixins(Base) {
     })
   }
 
+  getAvatars () {
+    return (this.item.avatars as ApiResponse.Images).data.map(img => {
+      const {id, url: src} = img
+      const thumb = img.thumb ? img.thumb.url : null
+      return {id, src, thumb}
+    })
+  }
+
   async viewInit () {
     const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
     this.item = data
-    this.images = this.imageGroupByType(this.item.images)
-    this.item.avatar = this.images.origin ? this.images.origin.map(item => item.url) : []
+    this.item.avatars = this.getAvatars()
     this.assignmentFormSchema(this.item)
   }
 

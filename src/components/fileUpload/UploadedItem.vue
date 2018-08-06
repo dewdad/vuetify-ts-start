@@ -3,7 +3,7 @@
     <v-img
       class="white--text"
       :src="url.src"
-      :lazy-src="url.thumb"
+      :lazy-src="lazySrc"
       height="150px"
     >
       <v-menu
@@ -16,7 +16,7 @@
 
       >
       <v-list>
-        <v-list-tile @click="deleteItem(file)">
+        <v-list-tile @click="deleteItem(url)">
           <v-list-tile-title>删除</v-list-tile-title>
           <v-list-tile-action>
             <v-icon>cancel</v-icon>
@@ -37,7 +37,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
   }
   })
 export default class UploadEdItem extends Vue {
-  @Prop(Object) url!:object
+  @Prop(Object) url!:ApiResponse.UploadEdItemUrl
 
   showMenu = false
   x = 0
@@ -56,6 +56,10 @@ export default class UploadEdItem extends Vue {
       this.$emit('active-menu', this)
       this.showMenu = true
     })
+  }
+
+  get lazySrc () {
+    return this.url.thumb ? this.url.thumb : this.url.src
   }
 }
 </script>

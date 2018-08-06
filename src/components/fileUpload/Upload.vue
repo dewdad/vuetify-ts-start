@@ -17,7 +17,7 @@
           <uploaded-item
             :url="url"
             @active-menu="activeMenu"
-            @image-remove="onImageRemove"
+            @uploaded-image-remove="onUploadedImageRemove"
           ></uploaded-item>
         </v-flex>
       </v-layout>
@@ -52,6 +52,7 @@
 
     <v-card-actions>
       <v-btn flat @click="clear">清空</v-btn>
+      <recycle-btn v-model="willDestoryImages" @upload-image-restore="onUploadImageRestore"></recycle-btn>
       <v-spacer></v-spacer>
       <file-upload
       v-ripple
@@ -102,7 +103,8 @@ interface InputRequest{
   'file-upload':VueUploadComponent,
   'upload-item':UploadItem,
   'edit-image':EditImage,
-  'uploaded-item':UploadedItem
+  'uploaded-item':UploadedItem,
+  'recycle-btn':()=>import('./RecycleBtn.vue')
   }
   })
 export default class Upload extends Vue {
@@ -110,7 +112,7 @@ export default class Upload extends Vue {
     'upload':VueUploadComponent
   }
 
-  @Model('input', {type: Array, default: () => []}) urls!:InputRequest[]
+  @Model('input', {type: Array, default: () => []}) urls!:ApiResponse.UploadEdItemUrl[]
 
   @Prop({default: 'avatar', type: String})
   name!:string
@@ -138,6 +140,8 @@ export default class Upload extends Vue {
     'Authorization': getToken()
   }
 
+  willDestoryImages:any[] = []
+
   // 选择上传图片
   open () {
     this.$refs.upload.$el.dispatchEvent(new MouseEvent('click'))
@@ -161,6 +165,21 @@ export default class Upload extends Vue {
   // 图片删除事件
   onImageRemove (file:any) {
     this.$refs.upload.remove(file)
+  }
+
+  // 已上传图片删除
+  onUploadedImageRemove (url:ApiResponse.UploadEdItemUrl) {
+    // this.$emit('input', [...this.urls, newFile.response.data])
+    const index = this.urls.findIndex(item => item===url)
+    const images = _.cloneDeep(this.urls)
+    images.splice(index, 1)
+    this.$emit('input', images)
+    this.willDestoryImages.push(url)
+  }
+
+  // 已上传图片恢复
+  onUploadImageRestore (image:ApiResponse.UploadEdItemUrl) {
+    this.urls.push(image)
   }
 
   inputFile (newFile:any, oldFile:any) {

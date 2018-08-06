@@ -182,14 +182,17 @@ declare namespace ApiResponse{
     total:number;
     'total_pages':number;
   }
-
+  export interface UploadEdItemUrl{
+    id:number|null;
+    thumb:string|null;
+    src:string;
+  }
   export interface BrandData{
-    avatar:null|string|string[];
+    avatars:Images|UploadEdItemUrl[];
     'created_at':string;
     description:string;
     id:number;
     name:string;
-    images:Images;
     'updated_at':string;
   }
 
@@ -203,6 +206,12 @@ declare namespace ApiResponse{
     height: number;
     width: number;
     size?: string;
+    thumb:{
+      url: string;
+      height: number;
+      width: number;
+      size?: string;
+    };
     'assetable_type': string;
     'assetable_id': number;
     'created_at': string;

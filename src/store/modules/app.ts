@@ -10,7 +10,7 @@ export interface RouteName{
   create:string;
   update:string;
   // destroy?:string;
-  [propName:string]:string;
+  [propName:string]:any;
 }
 
 export interface Pagination{

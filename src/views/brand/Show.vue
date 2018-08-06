@@ -56,19 +56,16 @@ export default class BrandShow extends mixins(Base) {
 
   item:any|null = null
 
-  images:object = {}
-
-  include = ['images']
+  include = ['avatars']
 
   async viewInit () {
     const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
     this.item = data
-    this.images = _.groupBy(this.item.images.data, item => item.type)
   }
 
   get attrs () {
-    const avatar = _.get(this.images, 'thumb[0].url', null)
-    const cardBgImage = _.get(this.images, 'origin[0].url', null)
+    const avatar = _.get(this.item, 'avatars.data[0].thumb.url', null)
+    const cardBgImage = _.get(this.item, 'avatars.data[0].url', null)
     return Object.assign({}, this.item, {avatar}, {cardBgImage})
   }
 
