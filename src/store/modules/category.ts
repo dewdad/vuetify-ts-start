@@ -58,6 +58,14 @@ export const mutations = {
 }
 
 export const actions = {
+  async toTree (ctx: ActionContext<State, any>) {
+    try {
+      let {data} = await CategoryApi.toTree()
+      return data
+    } catch (error) {
+
+    }
+  },
   async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
       let {data} = await CategoryApi.index(payload)
@@ -142,6 +150,10 @@ export class Category extends Base {
       this.instance = new Category()
     }
     return this.instance
+  }
+
+  toTree ():Promise<any> {
+    return store.dispatch('category/toTree')
   }
 
   index (payload:QueryBuild|null = null):Promise<any> {

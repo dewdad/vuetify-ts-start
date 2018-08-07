@@ -3,6 +3,13 @@ import { QueryBuild, Show, Update, FormData } from './types'
 
 const END_POINT = 'categories'
 
+export function toTree () {
+  return request({
+    url: `${END_POINT}/tree`,
+    method: 'get'
+  })
+}
+
 export function index (payload:QueryBuild|null = null) {
   return request({
     url: `${END_POINT}`,
