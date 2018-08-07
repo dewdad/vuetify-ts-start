@@ -34,6 +34,8 @@ declare namespace FormInterface{
     itemText?: string|Array<any>|Function;
     itemValue?: string|Array<any>|Function;
     itemEvent?:any;
+    custom?:boolean;
+    slotName?:string;
     [propName:string]:any;
   }
 }

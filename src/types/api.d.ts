@@ -1,4 +1,22 @@
 declare namespace ApiResponse{
+  export interface AttributeGroups{
+    data:AttributeGroupData[];
+  }
+
+  export type AttributeGroupType ='text'|'textarea'|'select'|'radio'|'richtext'|'checkbox'|'date'|'time'|'checkbox_group'|'radio_group'|'toggle'|'file'
+  export interface AttributeGroupData{
+    'can__upload':boolean;
+    'created_at':string;
+    'customized':boolean;
+    id:number;
+    name:string;
+    required:boolean;
+    type:AttributeGroupType;
+    'updated_at':string;
+    variant:boolean;
+    values:{data:AttributeData[]};
+  }
+
   export interface AttributeGroupItem extends LocalAttributeGroupItem{
     'can_upload':boolean;
     'created_at':string|null;
@@ -225,6 +243,7 @@ declare namespace ApiResponse{
   }
 
   export interface ProductTypeData{
+    attributeGroups?:AttributeGroups;
     config:null|object;
     'created_at':string;
     id:number;

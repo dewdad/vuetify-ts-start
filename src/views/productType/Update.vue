@@ -1,93 +1,183 @@
 <template>
-<v-layout fill-height  justify-center>
-  <v-flex xs12 sm 12 md12 lg8 xl8>
-  <v-card class="mb-3">
-    <v-toolbar card dark color="primary">
-      <v-toolbar-title>产品类型修改/更新</v-toolbar-title>
-      <v-spacer></v-spacer>
+  <v-layout fill-height
+            justify-center>
+    <v-flex xs12>
+      <v-form ref="vform"
+              @keyup.native.enter="submit"
+              @submit.prevent="submit">
+        <form-body-card title="编辑/更新产品类型">
+          <v-card-text>
+            <base-form-item v-model="formSchema"
+                            ref="form">
+              <div class="mt-3"
+                   slot="attribute-group"
+                   slot-scope="{propField}">
 
-    </v-toolbar>
-    <v-card-text v-if="loaded">
-      <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData"></base-form>
-      <attribute-group-form ref="attributeGroupForm" :orginFormData="selected"></attribute-group-form>
-    </v-card-text>
-    <v-divider class="mt-5"></v-divider>
-    <v-card-actions>
-      <v-spacer></v-spacer>
+                <v-subheader>
+                  可包含属性
+                  <v-spacer></v-spacer>
+                  <v-icon color="primary">add_shopping_cart</v-icon>
+                  销售属性
+                  <v-icon>bookmark_border</v-icon>
+                  普通属性
+                </v-subheader>
+                <v-divider></v-divider>
+                <v-layout row
+                          wrap>
+                  <v-flex xs6
+                          sm3
+                          md3
+                          v-for="group in propField.values"
+                          :key="group.id">
+                    <v-checkbox v-model="propField.value"
+                                :label="group.name"
+                                :value="group">
+                      <v-tooltip slot="prepend"
+                                 fixed
+                                 bottom>
+                        <v-icon v-if="group.variant"
+                                slot="activator"
+                                color="primary">add_shopping_cart</v-icon>
+                        <v-icon v-else
+                                slot="activator">bookmark_border</v-icon>
+                        <div>
+                          <ul>
+                            <li v-for="(item,key) in group"
+                                :key="key">
+                              <i>{{key}}</i>
+                              <i>:{{item}}</i>
+                            </li>
+                          </ul>
+                        </div>
+                      </v-tooltip>
+                    </v-checkbox>
 
-      <v-btn flat
-             @click.native="reset">Reset</v-btn>
-      <v-btn dark
-             color="info"
-             flat
-             @click.native="submit">Save</v-btn>
-    </v-card-actions>
-  </v-card>
-  </v-flex>
-</v-layout>
+                  </v-flex>
+                </v-layout>
+              </div>
+            </base-form-item>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="clear"
+                   flat>清空</v-btn>
+            <v-btn color="primary"
+                   type="submit">提交</v-btn>
+            <!-- <submit-button color="primary" block="true" label="Login"></submit-button> -->
+          </v-card-actions>
+        </form-body-card>
+      </v-form>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import Base from './mixins/Base'
-import Form from '@/components/form/BaseForm.vue'
+import BaseFormItem from '@/components/form/BaseFormItem.vue'
+import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
-import AttributeGroupForm from '@/components/productType/AttributeGroupForm.vue'
-import { AttributeGroupItem } from '@/store/modules/attributeGroup'
+import Base from './mixins/Base'
+import FormMixin from '@/components/form/mixins/Form'
+import { AttributeGroup } from '@/store/modules/attributeGroup'
 
 @Component({
   components:{
-  'base-form':Form,
-  'attribute-group-form':AttributeGroupForm
+  'base-form-item':BaseFormItem,
+  'form-body-card':FormBodyCard
   }
   })
-export default class ProductTypeUpdate extends mixins(Base) {
+export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
   public $refs!: {
-    form: Form,
-    attributeGroupForm:AttributeGroupForm,
-  }
-  formSchema:any[]|null = null
-  orginFormData:any|null = null
-  loaded = false
-  createItem:any = null
-  item:any|null = null
+    form:BaseFormItem,
+    vform:any
+  };
+
   include = ['attributeGroups']
 
-  selected:number[] = []
+  item = {} as ApiResponse.ProductTypeData
+
+  groups = [] as ApiResponse.AttributeGroupItem[]
+
+  mapping = {
+    'group_ids': {key: 'attributeGroups', handle: (item:ApiResponse.AttributeGroups) => item.data}
+  }
+
+  paserMapping = {
+    'group_ids': {handle: (item:ApiResponse.AttributeGroupData[]) => item.map(group => group.id)}
+  }
+
+  formSchema:FormInterface.Field[] = [
+    {
+      field: 'name',
+      label: '类型名称',
+      value: '',
+      type: 'text',
+      fieldType: 'text',
+      rule: 'required',
+      requeired: true,
+      clearable: true
+    },
+    {
+      field: 'group_ids',
+      label: '属性组',
+      value: [],
+      itemText: 'name',
+      itemValue: (item:any) => item,
+      fieldType: 'checkbox_group',
+      values: [],
+      custom: true,
+      slotName: 'attribute-group'
+    }
+  ]
+
+  setGroups (groups:ApiResponse.AttributeGroupItem[]) {
+    this.formSchema[1].values = groups
+  }
+
+  async fetchGroups () {
+    const {data} = await AttributeGroup.getInstance.index()
+    this.groups = data
+  }
+
+  clear () {
+    this.$refs.vform.reset()
+  }
+
+  onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
+    item.value = []
+  }
 
   async submit () {
-    const res = await this.$refs.form.submit()
-    if (res) {
-      await ProductType.getInstance.update({ formData: {...res, group_ids: this.$refs.attributeGroupForm.getGroupIds}, id: this.item.id })
-      this.$success({text: '更新成功', position: 9})
-      this.$router.replace({name: this.routeName.index})
+    if (await this.$refs.form.submit()) {
+      await this.update()
     }
   }
 
-  reset () {
-    this.$refs.form.clear()
-    this.$refs.attributeGroupForm.clear()
+  async update () {
+    this.$loading({show: true, text: '提交中'})
+    let res = await ProductType.getInstance.with(this.include).update({id: +this.$route.params.id, formData: this.paserFormData()})
+    if (res.status === 201) {
+      this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
+      this.$success({text: 'update success!'})
+    } else {
+      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$fail({text: res.data.message})
+    }
+    this.$loading({show: false})
   }
 
   async viewInit () {
-    const { data } = await ProductType.getInstance.with(this.include).show({id: this.$route.params.id})
+    const {data} = await ProductType.getInstance.with(this.include).show({id: +this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductType.getInstance.filterData(data)
-    this.selected = this.orginFormData.attributeGroups.map((item:AttributeGroupItem) => item.id)
-  }
-
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在生成表单。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
+    this.assignmentFormSchema(this.item)
   }
 
   async created () {
-    this.$nextTick(async () => {
-      await Promise.all([this.viewInit(), this.loadFormStructure()])
-      this.loaded = true
-    })
+    await this.viewInit()
+    await this.fetchGroups()
+    this.setGroups(this.groups)
   }
 }
 </script>

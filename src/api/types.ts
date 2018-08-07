@@ -13,4 +13,5 @@ export interface Show extends QueryBuild{
 export interface Update {
   id:Show['id'];
   formData:QueryBuild;
+  include?:string;
 }

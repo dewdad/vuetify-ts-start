@@ -38,7 +38,7 @@ export const actions = {
   },
   async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
-      let {data} = await ProductTypeApi.store(payload)
+      let data = await ProductTypeApi.store(payload)
       return data
     } catch (error) {
 
@@ -46,7 +46,8 @@ export const actions = {
   },
   async update (ctx: ActionContext<State, any>, payload:Update) {
     try {
-      const { data } = await ProductTypeApi.update(payload)
+      console.log(payload)
+      const data = await ProductTypeApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
@@ -82,11 +83,11 @@ export class ProductType extends Base {
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('productType/store', payload)
+    return store.dispatch('productType/store', this.assignQueryBuild(payload))
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('productType/update', payload)
+    return store.dispatch('productType/update', this.assignQueryBuild(payload))
   }
 
   destroy (id:number|string):Promise<any> {

@@ -3,24 +3,9 @@ import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
 import * as AttributeGroupApi from '@/api/attributeGroup'
-import { AttributeItem } from '@/store/modules/attribute'
 
 export const ROUTE_NAME = 'attribute-group'
 
-export interface AttributeGroupItem extends LocalAttributeGroupItem{
-  'can_upload':boolean;
-  'created_at':string|null;
-  id:number;
-  'updated_at':string|null;
-}
-
-export interface LocalAttributeGroupItem{
-  customized:boolean;
-  name:string;
-  required:boolean;
-  type:string;
-  variant:boolean;
-}
 interface State{
 
 }
@@ -43,7 +28,7 @@ export const actions = {
   },
   async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
-      let {data} = await AttributeGroupApi.store(payload)
+      let data = await AttributeGroupApi.store(payload)
       return data
     } catch (error) {
 
@@ -51,7 +36,7 @@ export const actions = {
   },
   async update (ctx: ActionContext<State, any>, payload:Update) {
     try {
-      const { data } = await AttributeGroupApi.update(payload)
+      const data = await AttributeGroupApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
@@ -87,11 +72,11 @@ export class AttributeGroup extends Base {
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('attributeGroup/store', payload)
+    return store.dispatch('attributeGroup/store', this.assignQueryBuild(payload))
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('attributeGroup/update', payload)
+    return store.dispatch('attributeGroup/update', this.assignQueryBuild(payload))
   }
 
   destroy (id:number|string):Promise<any> {

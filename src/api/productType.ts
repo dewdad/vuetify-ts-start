@@ -27,7 +27,7 @@ export function store (formData:FormData) {
   })
 }
 
-export function update ({ formData, id }:Update) {
+export function update ({ id, ...formData }:Update) {
   return request({
     url: `${END_POINT}/${id}`,
     method: 'put',

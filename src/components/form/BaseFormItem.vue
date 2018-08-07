@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue, Prop, Model } from 'vue-property-decorator'
+import { Component, Vue, Prop, Model, Watch } from 'vue-property-decorator'
 
 @Component({
   name:'base-form-item',
@@ -9,6 +9,8 @@ import { Component, Vue, Prop, Model } from 'vue-property-decorator'
   })
 export default class BaseFormItem extends Vue {
   @Model('input') propFields!:FormInterface.Field[]
+
+  @Prop({type: Boolean, default: false}) loading!:boolean
 
   allowFieldType = {
     'text': 'v-text-field',
@@ -21,8 +23,20 @@ export default class BaseFormItem extends Vue {
   }
   attributes = []
 
+  @Watch('loading')
+  onLoadingChange (val:boolean) {
+    const propFields = _.cloneDeep(this.propFields)
+    propFields.forEach(item => {
+      if (_.has(item, 'loading')) {
+        item.loading = val
+      }
+    })
+    this.$emit('input', propFields)
+  }
+
   get filterFieldAttrs () {
     return (propField:FormInterface.Field) => {
+      _.set(propField, 'loading', _.get(propField, 'loading', this.loading))
       const {fieldType, props, value, itemEvent, ...arg} = propField
       return {...props, ...arg}
     }
@@ -45,7 +59,6 @@ export default class BaseFormItem extends Vue {
 <v-container fluid>
   <template v-for="propField in propFields">
     <v-text-field
-      outline
       :key="propField.field"
       v-if="propField.fieldType === 'text'"
       v-validate="propField.rule"
@@ -55,6 +68,17 @@ export default class BaseFormItem extends Vue {
       v-bind="filterFieldAttrs(propField)"
       v-on="listeners(propField)"
     ></v-text-field>
+
+    <v-switch
+      :key="propField.field"
+      v-if="propField.fieldType === 'switch'"
+      v-validate="propField.rule"
+      :error-messages="errors.first(propField.name || propField.field)"
+      :name="propField.name || propField.field"
+      v-model="propField.value"
+      v-bind="filterFieldAttrs(propField)"
+      v-on="listeners(propField)"
+      ></v-switch>
 
     <v-textarea
       outline
@@ -70,7 +94,6 @@ export default class BaseFormItem extends Vue {
       ></v-textarea>
 
     <v-input
-        outline
         :key="propField.field"
         v-if="propField.fieldType === 'file'"
         v-bind="filterFieldAttrs(propField)"
@@ -116,7 +139,9 @@ export default class BaseFormItem extends Vue {
 
     <template  v-if="propField.fieldType === 'checkbox_group'">
 
-      <v-checkbox
+      <slot v-if="propField.custom" :name="propField.slotName" :propField="propField"></slot>
+      <template v-else>
+        <v-checkbox
         v-for="(value,index) in propField.values"
         :key="index"
         v-validate="propField.rule"
@@ -129,7 +154,11 @@ export default class BaseFormItem extends Vue {
         :label="value[propField.itemText]"
         >
         </v-checkbox>
+      </template>
+
     </template>
+    <slot v-if="propField.fieldType === 'any'" :name="propField.slotName" :propField="propField"></slot>
   </template>
+  <slot></slot>
 </v-container>
 </template>
