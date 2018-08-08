@@ -1,9 +1,9 @@
 <template>
   <v-container fluid fill-height grid-list-lg>
       <transition name="fade-transform" mode="out-in">
-        <keep-alive :include="cachedViews">
-          <router-view :key="key"></router-view>
-        </keep-alive>
+        <!-- <keep-alive :include="cachedViews"> -->
+          <router-view></router-view>
+        <!-- </keep-alive> -->
       </transition>
   </v-container>
 </template>

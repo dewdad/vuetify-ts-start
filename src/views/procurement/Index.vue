@@ -4,22 +4,35 @@
     <v-card>
       <v-card-title>采购管理</v-card-title>
       <v-card-text>
-        <upload></upload>
+        <v-flex>
+          <v-btn @click="click(1)">id1</v-btn>
+          <v-btn @click="click(2)">id2</v-btn>
+        </v-flex>
       </v-card-text>
     </v-card>
   </v-flex>
   </v-layout>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import Upload from '@/components/fileUpload/Upload.vue'
-@Component({
-  components:{
-  'upload':Upload
+<script>
+export default{
+  data () {
+    return {
+      queryId: 0
+    }
+  },
+  methods: {
+    click (id) {
+      this.queryId = id
+    }
+  },
+  watch: {
+    'queryId': function (val) {
+      this.$router.push({path: this.$route.path, query: {id: val}})
+    }
+  },
+  mounted () {
+    console.log('mounted')
   }
-  })
-export default class Procurement extends Vue {
-
 }
 </script>

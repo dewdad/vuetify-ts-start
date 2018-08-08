@@ -4,7 +4,8 @@ import { Component, Vue, Prop, Model, Watch } from 'vue-property-decorator'
 @Component({
   name:'base-form-item',
   components:{
-  'file-upload':()=>import('@/components/fileUpload/Upload.vue')
+  'file-upload':()=>import('@/components/fileUpload/Upload.vue'),
+  'v-search':()=>import('@/components/form/BaseFormSearch.vue')
   }
   })
 export default class BaseFormItem extends Vue {
@@ -157,6 +158,16 @@ export default class BaseFormItem extends Vue {
       </template>
 
     </template>
+
+    <v-search
+      v-if="propField.fieldType === 'search'"
+      :key="propField.field"
+      :propField="propField"
+      v-on="listeners(propField)"
+      v-model="propField.value"
+    >
+
+    </v-search>
     <slot v-if="propField.fieldType === 'any'" :name="propField.slotName" :propField="propField"></slot>
   </template>
   <slot></slot>

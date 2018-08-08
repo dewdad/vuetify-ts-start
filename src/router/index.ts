@@ -71,6 +71,7 @@ const beforeEach:NavigationGuard = async (to, from, next) => {
   callMiddleware(middleware, to, from, (...args:any[]) => {
     // Set the application layout only if "next()" was called with no args.
     if (args.length === 0) {
+      // router.app.$children[0].setLayout((components[0] as any).layout || '')
       router.app.$bus.$emit('setLayout', (components[0] as any).layout)
     }
 
@@ -163,9 +164,10 @@ async function resolveComponents (components:Component[]):Promise<Component[]> {
         if (_.has(component, 'options')) {
           return (component as any).options
         }
-        return (await (component as Function)()).default.options
+        let res = (await (component as Function)())
+        return res.default.options || res.default
       } else {
-        console.dir(component)
+        // console.dir(component)
         return component
       }
       // return typeof component === 'function' ? await (component as Function)() : component

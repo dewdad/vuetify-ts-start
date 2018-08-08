@@ -94,7 +94,9 @@ interface Item{
   color?:string;
   value:string;
 }
-@Component
+@Component({
+  inheritAttrs:true
+  })
 export default class AutoComplete extends Vue {
   @Prop(Object) propField!:FormInterface.Field
 
