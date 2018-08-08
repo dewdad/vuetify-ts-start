@@ -9,7 +9,7 @@
           <v-card-text>
             <base-form-item v-model="formSchema"
                             ref="form">
-
+            <attribute-form v-if="variantAttributes.length>0" :items="variantAttributes" sku></attribute-form>
             </base-form-item>
           </v-card-text>
           <v-divider></v-divider>
@@ -28,18 +28,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
 import Base from './mixins/Base'
 import FormMixin from '@/components/form/mixins/Form'
-
+// import AttributeForm from './components/AttributeForm.vue';
 @Component({
   components:{
   'base-form-item':BaseFormItem,
-  'form-body-card':FormBodyCard
+  'form-body-card':FormBodyCard,
+  'attribute-form':()=>import('./components/AttributeForm.vue')
   }
   })
 export default class ProductCreate extends mixins(Base, FormMixin) {
@@ -61,7 +62,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
       field: 'type_id',
       label: '产品类型',
       value: '',
-      items: [{name: '手机', id: 1}],
+      items: [],
       itemText: 'name',
       itemValue: 'id',
       fieldType: 'search',
@@ -71,6 +72,14 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
       itemEvent: {change: this.onProductSearchChange}
     }
   ]
+
+  variantAttributes = [] as ApiResponse.AttributeData[]
+
+  @Watch('formSchema.0.value')
+  async onProductTypeChange (id:number) {
+    let {data: {attributeGroups: {data: attributes}}} = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
+    this.variantAttributes = attributes.filter((item:ApiResponse.AttributeData) => item.variant)
+  }
 
   async onProductSearchChange (val:string) {
     await this.searchProductType(val)

@@ -35,7 +35,23 @@ export default class BaseFormSearch extends mixins(FormItem) {
 
   @Watch('search')
   onSearchChange (val:string) {
-    val && val !== this.value && this.throttle(val)
+    val && this.verifySearchValue(val) && this.throttle(val)
+  }
+
+  verifySearchValue (search:string) {
+    const key = this.propField.itemText
+    if (_.isObject(this.value)) {
+      return this.value[(key as string)] !==search
+    } else {
+      const valueKey = this.propField.itemValue
+      const items = this.propField.items
+      if (items) {
+        const res = items.find(item => item[valueKey as string]===this.value)
+        if (!res) return true
+        return res[key as string] !==search
+      }
+      return true
+    }
   }
 
   throttle = _.throttle(function (this:any, val) {

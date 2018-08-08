@@ -1,8 +1,5 @@
 <template>
-  <v-layout row
-            wrap
-            v-if="loaded">
-    <v-flex xs12>
+  <v-container fluid>
       <template v-for="item in items">
         <!-- select -->
         <v-card :key="item.id"
@@ -34,33 +31,34 @@
           </v-card-text>
         </v-card>
 
-        <!-- checkbox_group -->
-        <v-card :key="item.id"
-                flat
-                tile
-                v-if="item.type === 'checkbox_group'">
-          <v-card-title primary-title>{{item.name}}</v-card-title>
+        <div
+          v-if="item.type === 'checkbox_group'"
+          :key="item.id"
+        >
 
-          <v-card-text>
-            <v-layout row
-                      wrap>
-              <v-flex xs6
-                      sm3
-                      md3
-                      v-for="attribute in item.values"
-                      :key="attribute.id">
-                <v-checkbox v-model="formData[item.id].value"
-                            :disabled="disabled"
-                            :readonly="readonly"
-                            :label="attribute.value"
-                            :value="attribute">
-                </v-checkbox>
-              </v-flex>
-            </v-layout>
-            <v-divider></v-divider>
-          </v-card-text>
+          <v-subheader>
+            {{item.name}}
+            <v-spacer></v-spacer>
 
-        </v-card>
+          </v-subheader>
+          <v-divider></v-divider>
+          <v-layout row wrap>
+            <v-flex xs6
+                    sm3
+                    md3
+                    v-for="attribute in item.values.data"
+                    :key="attribute.id">
+              <v-checkbox v-model="formData[item.id].value"
+                          :disabled="disabled"
+                          :readonly="readonly"
+                          :label="attribute.value"
+                          :value="attribute">
+
+              </v-checkbox>
+
+            </v-flex>
+          </v-layout>
+        </div>
 
         <!-- textarea -->
         <v-card v-if="item.type === 'textarea'"
@@ -110,8 +108,7 @@
         </v-card>
 
       </template>
-    </v-flex>
-  </v-layout>
+  </v-container>
 </template>
 
 <script lang="ts">
