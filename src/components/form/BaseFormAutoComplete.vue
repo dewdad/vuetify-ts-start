@@ -87,8 +87,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop, Model } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Model, Mixins } from 'vue-property-decorator'
 import { Pagination } from '@/store/modules/app'
+import BaseForm from '@/components/form/mixins/BaseForm'
+
 interface Item{
   id?:number;
   color?:string;
@@ -97,7 +99,7 @@ interface Item{
 @Component({
   inheritAttrs:true
   })
-export default class AutoComplete extends Vue {
+export default class AutoComplete extends Mixins(BaseForm) {
   @Prop(Object) propField!:FormInterface.Field
 
   @Prop({type: Boolean, default: false}) loading!:boolean

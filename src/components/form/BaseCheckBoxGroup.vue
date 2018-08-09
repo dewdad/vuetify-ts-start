@@ -11,10 +11,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Model } from 'vue-property-decorator'
+import { Component, Vue, Model, Mixins } from 'vue-property-decorator'
+import BaseForm from '@/components/form/mixins/BaseForm'
 
 @Component
-export default class BaseCheckBoxGroup extends Vue {
+export default class BaseCheckBoxGroup extends Mixins(BaseForm) {
   @Model('input') propField!:FormInterface.Field
 }
 </script>

@@ -134,8 +134,11 @@
 
 <script lang="ts">
 
-import { Component, Vue, Prop, Watch, Model } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch, Model, Mixins } from 'vue-property-decorator'
 import { ProductType } from '@/store/modules/productType'
+import { SkuTableSchemaChangeParams } from '@/components/table/SkuTable.vue'
+import { Validator } from 'vee-validate'
+import BaseForm from '@/components/form/mixins/BaseForm'
 
 type Groups = Array<ApiResponse.AttributeGroupData & {value?:any}>
 
@@ -144,7 +147,7 @@ type Groups = Array<ApiResponse.AttributeGroupData & {value?:any}>
   'sku-table':()=>import('@/components/table/SkuTable.vue')
   }
   })
-export default class ProductAttributes extends Vue {
+export default class ProductAttributes extends Mixins(BaseForm) {
   @Model('input', {type: Array, default: []}) value!:any[]
 
   @Prop({type: Boolean, default: false})
@@ -224,6 +227,10 @@ export default class ProductAttributes extends Vue {
   get skuTableSchema () {
     const base = {sku: '', price: 0}
     return this.cartesian.map((item:any) => ({attributes: item, ...base, key: (item.map((attr:any) => attr.value_name)).join('')}))
+  }
+
+  set skuTableSchema ({value, item, index, field}:SkuTableSchemaChangeParams) {
+    (this.skuTableSchema as any)[index][field] = value
   }
 }
 </script>

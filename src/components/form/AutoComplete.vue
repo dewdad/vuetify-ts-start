@@ -59,11 +59,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
 import { Pagination } from '@/store/modules/app'
+import BaseForm from '@/components/form/mixins/BaseForm'
 
 @Component
-export default class AutoComplete extends Vue {
+export default class AutoComplete extends Mixins(BaseForm) {
   isLoading = false
   items:any[] = []
   model:number|null = null

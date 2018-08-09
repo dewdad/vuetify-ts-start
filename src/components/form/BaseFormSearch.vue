@@ -20,14 +20,14 @@
 </template>
 
 <script lang="ts">
-import { mixins } from 'vue-class-component'
 
-import { Component, Vue, Watch, Model, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Model, Prop, Mixins } from 'vue-property-decorator'
 import FormItem from './mixins/FormItem'
+import BaseForm from '@/components/form/mixins/BaseForm'
 @Component({
   inheritAttrs:true
   })
-export default class BaseFormSearch extends mixins(FormItem) {
+export default class BaseFormSearch extends Mixins(FormItem, BaseForm) {
   @Prop({type: Array, default: () => []}) items!:any[]
 
   loading:boolean = false

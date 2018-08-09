@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Vue, Watch, Provide } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
@@ -52,6 +52,8 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     form:BaseFormItem,
     vform:any
   };
+
+  @Provide() parentValidator = this.$validator
 
   include = ['attributeGroups']
 
@@ -84,22 +86,6 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
 
   attributes:any[] = []
 
-  // 产品属性按可销售属性分组
-  productAttributeGroupByVariant () {
-    const groups = this.productType.data.attributeGroups
-    if (groups) {
-      const {variantAttributes, baseAttributes} = groups.data.reduce((res:Groups, group) => {
-        group.variant ? res.variantAttributes.push(group) : res.baseAttributes.push(group)
-        return res
-      }, {variantAttributes: [], baseAttributes: []})
-      this.variantAttributes = variantAttributes
-      this.baseAttributes = baseAttributes
-    } else {
-      this.variantAttributes = []
-      this.baseAttributes = []
-    }
-  }
-
   // 产品类型搜索框变化回调处理
   async onProductSearchChange (val:string) {
     await this.searchProductType(val)
@@ -120,9 +106,10 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
   }
 
   async submit () {
-    if (await this.$refs.form.submit()) {
-      await this.create()
-    }
+    console.log(await this.$validator.validateAll())
+    // if (await this.$refs.form.submit()) {
+    //   await this.create()
+    // }
   }
 
   async create () {

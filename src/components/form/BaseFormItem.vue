@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Component, Vue, Prop, Model, Watch } from 'vue-property-decorator'
-
+import { Component, Vue, Prop, Model, Watch, Mixins } from 'vue-property-decorator'
+import BaseForm from '@/components/form/mixins/BaseForm'
 @Component({
   name:'base-form-item',
   components:{
@@ -8,7 +8,7 @@ import { Component, Vue, Prop, Model, Watch } from 'vue-property-decorator'
   'v-search':()=>import('@/components/form/BaseFormSearch.vue')
   }
   })
-export default class BaseFormItem extends Vue {
+export default class BaseFormItem extends Mixins(BaseForm) {
   @Model('input') propFields!:FormInterface.Field[]
 
   @Prop({type: Boolean, default: false}) loading!:boolean
@@ -35,32 +35,28 @@ export default class BaseFormItem extends Vue {
     this.$emit('input', propFields)
   }
 
-  get filterFieldAttrs () {
-    return (propField:FormInterface.Field) => {
-      _.set(propField, 'loading', _.get(propField, 'loading', this.loading))
-      const {fieldType, props, value, itemEvent, ...arg} = propField
-      return {...props, ...arg}
-    }
+  filterFieldAttrs (propField:FormInterface.Field) {
+    _.set(propField, 'loading', _.get(propField, 'loading', this.loading))
+    const {fieldType, props, value, itemEvent, ...arg} = propField
+    return {...props, ...arg}
   }
 
-  get listeners () {
-    return (propField:FormInterface.Field) => {
-      const {itemEvent} = propField
-      return itemEvent
-    }
+  listeners (propField:FormInterface.Field) {
+    const {itemEvent} = propField
+    return itemEvent
   }
 
-  get groupAttributeValues () {
-    // return (propField:FormInterface.Field) => {
-    //   const values = propField.values
-    //   if (values) {
-    //     if (values.data && _.isObject(values.data) || _.isArray(values.data)) {
-    //       return propField.values.data
-    //     }
-    //     return values
-    //   }
-    //   return []
-    // }
+  groupAttributeValues (propField:FormInterface.Field) {
+    const values = propField.values
+    if (values) {
+      if (values.data) {
+        if (_.isObject(values.data) || _.isArray(values.data)) {
+          return propField.values.data
+        }
+      }
+      return values
+    }
+    return []
   }
 
   async submit () {

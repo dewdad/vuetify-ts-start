@@ -68,9 +68,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
 import { AttributeItem } from '@/store/modules/attribute'
 import FormItemCard from '@/components/card/FormItemCard.vue'
+import BaseForm from '@/components/form/mixins/BaseForm'
+
 interface Item{
   id?:number;
   text:string;
@@ -81,7 +83,7 @@ interface Item{
   'form-item-card':FormItemCard
   }
   })
-export default class AttributeForm extends Vue {
+export default class AttributeForm extends Mixins(BaseForm) {
   @Prop(Array) orginFormData!:AttributeItem[]
   @Prop(Boolean) disabled!:boolean
   activator= null

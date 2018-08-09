@@ -3,6 +3,13 @@ import Vue from 'vue'
 import VeeValidate, { Validator } from 'vee-validate'
 import { mapGetters } from 'vuex'
 
+interface SkuTableItem {
+  attributes: any;
+  sku: string;
+  price: number;
+  key: string
+}
+
 // 自定义字典
 const dictionary = {
   zh_CN: {
@@ -21,6 +28,7 @@ const dictionary = {
 Vue.use(VeeValidate, {
   delay: 100,
   events: 'input|blur',
+  // inject: false,
   dictionary: {
     ...dictionary
   }
@@ -51,12 +59,16 @@ Validator.extend('categroyNameNotEqParentId', {
   hasTarget: true
 })
 
-Validator.extend('stringUnique', {
+Validator.extend('skuUnique', {
   getMessage: (field:string) => `sku必须唯一`,
-  validate: (value:any, otherValue:any) => {
-    console.log(value)
-    console.log(otherValue)
-    return value.name !== otherValue
+  validate: (value:any, items:SkuTableItem[]) => {
+    let num = 0
+    items.forEach(item => {
+      if (value === item.sku) {
+        num++
+      }
+    })
+    return !(num>1)
   }
 })
 
