@@ -1,131 +1,151 @@
 <template>
-  <v-container fluid>
-      <template v-for="item in items">
-        <!-- select -->
-        <v-card :key="item.id"
+  <v-container fluid v-show="productTypeId!==0">
+    <v-alert v-show="groups.length===0"
+             :value="true"
+             color="info"
+             icon="priority_high"
+             outline>
+      该产品类型下无基本属性
+    </v-alert>
+    <template v-for="item in groups">
+      <!-- select -->
+
+      <v-select :key="item.id"
                 v-if="item.type === 'select'"
-                flat
-                tile>
-          <v-card-text>
-            <v-select :items="item.values"
-                      :label="item.name"
-                      item-text="value"
-                      item-value="id"
-                      :disabled="disabled"
-                      :readonly="readonly"
-                      v-model="formData[item.id].value"></v-select>
-          </v-card-text>
-        </v-card>
+                :items="item.values.data"
+                :label="item.name"
+                item-text="value"
+                item-value="id"
+                :disabled="disabled"
+                :readonly="readonly"
+                v-model="item.value"
+                v-validate="item.required ? 'required':''"
+                :error-messages="errors.collect(item.name)"
+                :name="item.name"
+                :required="item.required"></v-select>
 
-        <!-- text -->
-        <v-card :key="item.id"
-                v-if="item.type === 'text'"
-                flat
-                tile>
+      <!-- text -->
 
-          <v-card-text>
-            <v-text-field :label="item.name"
-                          :disabled="disabled"
-                          :readonly="readonly"
-                          v-model="formData[item.id].value"></v-text-field>
-          </v-card-text>
-        </v-card>
+      <v-text-field :key="item.id"
+                    v-if="item.type === 'text'"
+                    :label="item.name"
+                    :disabled="disabled"
+                    :readonly="readonly"
+                    v-model="item.value"
+                    v-validate="item.required ? 'required':''"
+                    :error-messages="errors.collect(item.name)"
+                    :name="item.name"
+                    :required="item.required"></v-text-field>
 
-        <div
-          v-if="item.type === 'checkbox_group'"
-          :key="item.id"
-        >
+      <div v-if="item.type === 'checkbox_group'"
+           :key="item.id">
 
-          <v-subheader>
-            {{item.name}}
-            <v-spacer></v-spacer>
-
-          </v-subheader>
-          <v-divider></v-divider>
-          <v-layout row wrap>
-            <v-flex xs6
-                    sm3
-                    md3
-                    v-for="attribute in item.values.data"
-                    :key="attribute.id">
-              <v-checkbox v-model="formData[item.id].value"
-                          :disabled="disabled"
-                          :readonly="readonly"
-                          :label="attribute.value"
-                          :value="attribute">
-
-              </v-checkbox>
-
-            </v-flex>
-          </v-layout>
-        </div>
-
-        <!-- textarea -->
-        <v-card v-if="item.type === 'textarea'"
-                :key="item.id"
-                flat
-                tile>
-          <v-card-text>
-            <v-textarea :label="item.name"
-                        hint="Hint text"
+        <v-subheader>
+          {{item.name}}
+          <v-spacer></v-spacer>
+          <div v-if="item.variant"
+               class="caption font-weight-thin">销售属性</div>
+        </v-subheader>
+        <v-divider></v-divider>
+        <v-layout row
+                  wrap>
+          <v-flex xs6
+                  sm3
+                  md3
+                  v-for="attribute in item.values.data"
+                  :key="attribute.id">
+            <v-checkbox v-model="item.value"
                         :disabled="disabled"
                         :readonly="readonly"
-                        v-model="formData[item.id].value"></v-textarea>
-          </v-card-text>
-        </v-card>
+                        :label="attribute.value"
+                        :value="attribute"
+                        v-validate="item.required ? 'required':''"
+                        :error-messages="errors.collect(item.name)"
+                        :name="item.name"
+                        :required="item.required">
 
-        <!-- radio_group -->
-        <v-card flat
-                tile
-                v-if="item.type === 'radio_group'"
-                :key="item.id">
-          <!-- <v-card-title>{{item.name}}</v-card-title> -->
-          <v-card-text>
-            <v-radio-group :label="item.name"
-                           :mandatory="false"
-                           :disabled="disabled"
-                           :readonly="readonly"
-                           v-model="formData[item.id].value">
-              <v-radio v-for="attribute in item.values"
-                       :key="attribute.id"
-                       :label="attribute.value"
-                       :value="attribute"></v-radio>
+            </v-checkbox>
+
+          </v-flex>
+        </v-layout>
+      </div>
+
+      <!-- textarea -->
+
+      <v-textarea v-if="item.type === 'textarea'"
+                  :key="item.id"
+                  :label="item.name"
+                  hint="Hint text"
+                  :disabled="disabled"
+                  :readonly="readonly"
+                  v-model="item.value"
+                  v-validate="item.required ? 'required':''"
+                  :error-messages="errors.collect(item.name)"
+                  :name="item.name"
+                  :required="item.required"></v-textarea>
+
+      <!-- radio_group -->
+
+      <div v-if="item.type === 'radio_group'"
+           :key="item.id">
+
+        <v-subheader>
+          {{item.name}}
+          <v-spacer></v-spacer>
+          <div v-if="item.variant"
+               class="caption font-weight-thin">销售属性</div>
+        </v-subheader>
+        <v-divider></v-divider>
+
+            <v-radio-group
+                     :mandatory="false"
+                     :disabled="disabled"
+                     :readonly="readonly"
+                     v-model="item.value"
+                     v-validate="item.required ? 'required':''"
+                     :error-messages="errors.collect(item.name)"
+                     :name="item.name"
+                     :required="item.required">
+              <v-radio v-for="attribute in item.values.data"
+                      :key="attribute.id"
+                      :label="attribute.value"
+                      :value="attribute"></v-radio>
             </v-radio-group>
-          </v-card-text>
-        </v-card>
 
-        <!-- toggle -->
-        <v-card flat
-                tile
-                v-if="item.type === 'toggle'"
-                :key="item.id">
-          <v-card-text>
-            <v-switch :label="item.name"
-                      :disabled="disabled"
-                      :readonly="readonly"
-                      v-model="formData[item.id].value"></v-switch>
-          </v-card-text>
-        </v-card>
+      </div>
 
-      </template>
+      <!-- toggle -->
+
+      <v-switch v-if="item.type === 'toggle'"
+                :key="item.id"
+                :label="item.name"
+                :disabled="disabled"
+                :readonly="readonly"
+                v-model="item.value"
+                v-validate="item.required ? 'required':''"
+                :error-messages="errors.collect(item.name)"
+                :name="item.name"
+                :required="item.required"></v-switch>
+
+    </template>
+    <sku-table v-show="skuTableSchema.length>0" v-model="skuTableSchema"></sku-table>
   </v-container>
 </template>
 
 <script lang="ts">
 
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
-import { AttributeItem } from '@/store/modules/attribute'
+import { Component, Vue, Prop, Watch, Model } from 'vue-property-decorator'
+import { ProductType } from '@/store/modules/productType'
 
-@Component
+type Groups = Array<ApiResponse.AttributeGroupData & {value?:any}>
+
+@Component({
+  components:{
+  'sku-table':()=>import('@/components/table/SkuTable.vue')
+  }
+  })
 export default class ProductAttributes extends Vue {
-  @Prop(Array)
-  items!:ApiResponse.AttributeGroupData[]
-
-  @Prop({type: Boolean, default: false})
-  sku!:boolean
-
-  @Prop(Array)
-  orginFormData!:any[]
+  @Model('input', {type: Array, default: []}) value!:any[]
 
   @Prop({type: Boolean, default: false})
   disabled!:boolean
@@ -133,72 +153,77 @@ export default class ProductAttributes extends Vue {
   @Prop({type: Boolean, default: false})
   readonly!:boolean
 
-  orginData:any = []
+  // 产品类型id
+  @Prop({type: Number, required: true}) productTypeId!:number
 
-  loaded = false
-  formData:{[propName:string]:any} = {}
+  // 产品类型所有属性数据源
+  productType = {} as ApiResponse.ProductType
 
-  variantAttribute:any[] = []
+  groups:Groups = []
 
-  genFormData () {
-    this.formData = _.reduce(this.items, (res:any, item, index) => {
-      if (this.isComment(item)) {
-        res[item.id] = {value: _.get(this.orginData, `${[index]}.0.value`, ''), item}
-      } else if (item.type === 'radio_group') {
-        res[item.id] = {value: [], item}
+  // 为groups每一项元素添加value属性
+  addValueField (groups:Groups) {
+    return groups.map(group => {
+      let value
+      if (this.isComment(group)) {
+        value = ''
+      } else if (group.type === 'radio_group') {
+        value = []
       } else {
-        res[item.id] = {value: _.get(this.orginData, `${[index]}`, []), item}
+        value = []
       }
-      return res
-    }, {})
-    this.onFormDataChanged()
+      return Object.assign({}, group, {value})
+    })
   }
 
   isComment (item:ApiResponse.AttributeGroupData) {
     return item.type === 'text' || item.type==='textarea' || item.type==='toggle'
   }
 
+  // 实现v-model双向绑定，把需要提交表单的数据传给外部组件
+  @Watch('attributes')
+  onAttributesChange (val:any) {
+    this.$emit('input', val)
+  }
+
+  // 监听产品类型变化改变
+  @Watch('productTypeId')
+  async onProductTypeIdChange (id:number) {
+    if (id === 0) {
+      this.productType = {} as ApiResponse.ProductType
+      this.groups = []
+      return
+    }
+    this.productType = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
+    const groups = this.productType.data.attributeGroups
+    this.groups = groups ? this.addValueField(groups.data.sort((a, b) => +a.variant - +b.variant)) : []
+  }
+
   get attributes () {
-    const paserValue = (value:string|boolean|AttributeItem[]) => _.isString(value) || _.isBoolean(value) ? {comment: value} : {attribute_id: (Array.prototype.concat.apply([], [value])).map((attr:AttributeItem) => attr.id)}
-    return Object.values(this.formData).map(item => (
+    const paserValue = (value:string|boolean|ApiResponse.AttributeData[]) => _.isString(value) || _.isBoolean(value) ? {comment: value} : {attribute_id: (Array.prototype.concat.apply([], [value])).map((attr:ApiResponse.AttributeData) => attr.id)}
+    return this.groups.map(item => (
       {
-        'attribute_group_id': item.item.id,
+        'attribute_group_id': item.id,
         ...paserValue(item.value)
       }
     ))
   }
 
-  groupByGroupId () {
-    const collect = _.groupBy(this.orginFormData, 'attribute_group_id')
-    this.orginData = Object.values(collect).map(item => item.map(attr => attr.value))
-  }
-
+  // 计算变体属性
   get cartesian () {
     const flatten = (arr:any) => [].concat.apply([], arr)
+    const formData = this.groups.filter(group => group.variant)
+    if (formData.length === 0 || formData.some(item => item.value.length===0)) return []
     // [...element, {group_name: attr.item.name, group_id: attr.item.id, value_id: value.id, value_name: value.value}]
-    return this.sku ? Object.values(this.formData).reduce((acc, set) =>
-      flatten(acc.map((x:any) => set.value.map((y:AttributeItem) => [ ...x,
-        {group_name: set.item.name, group_id: set.item.id, value_id: y.id, value_name: y.value}
-      ]))), [[]]) : []
+    return formData.reduce((acc, set) =>
+      flatten(acc.map((x:any) => set.value.map((y:ApiResponse.AttributeData) => [ ...x,
+        {group_name: set.name, group_id: set.id, value_id: y.id, value_name: y.value}
+      ]))), [[]])
   }
 
-  onFormDataChanged () {
-    this.$emit('change', this.cartesian)
-  }
-
-  mounted () {
-    this.$nextTick(() => {
-      if (this.orginFormData) {
-        this.groupByGroupId()
-      }
-      this.genFormData()
-
-      this.loaded = true
-
-      if (this.sku) {
-        this.$watch('formData', this.onFormDataChanged, {deep: true})
-      }
-    })
+  get skuTableSchema () {
+    const base = {sku: '', price: 0}
+    return this.cartesian.map((item:any) => ({attributes: item, ...base, key: (item.map((attr:any) => attr.value_name)).join('')}))
   }
 }
 </script>

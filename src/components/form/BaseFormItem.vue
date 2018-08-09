@@ -50,6 +50,19 @@ export default class BaseFormItem extends Vue {
     }
   }
 
+  get groupAttributeValues () {
+    // return (propField:FormInterface.Field) => {
+    //   const values = propField.values
+    //   if (values) {
+    //     if (values.data && _.isObject(values.data) || _.isArray(values.data)) {
+    //       return propField.values.data
+    //     }
+    //     return values
+    //   }
+    //   return []
+    // }
+  }
+
   async submit () {
     const res = await this.$validator.validateAll()
     return res
@@ -143,8 +156,8 @@ export default class BaseFormItem extends Vue {
       <slot v-if="propField.custom" :name="propField.slotName" :propField="propField"></slot>
       <template v-else>
         <v-checkbox
-        v-for="(value,index) in propField.values"
-        :key="index"
+        v-for="value in groupAttributeValues(propField)"
+        :key="JSON.stringify(value)"
         v-validate="propField.rule"
         :error-messages="errors.collect(propField.name || propField.field)"
         :name="propField.name || propField.field"

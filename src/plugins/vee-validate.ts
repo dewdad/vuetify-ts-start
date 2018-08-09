@@ -51,6 +51,15 @@ Validator.extend('categroyNameNotEqParentId', {
   hasTarget: true
 })
 
+Validator.extend('stringUnique', {
+  getMessage: (field:string) => `sku必须唯一`,
+  validate: (value:any, otherValue:any) => {
+    console.log(value)
+    console.log(otherValue)
+    return value.name !== otherValue
+  }
+})
+
 Vue.mixin({
   $_veeValidate: {
     validator: 'new'

@@ -30,7 +30,7 @@ declare namespace FormInterface{
     rule?:any;
     props?:any;
     items?: any[];
-    values?:any[];
+    values?:any ;
     itemText?: string|Array<any>|Function;
     itemValue?: string|Array<any>|Function;
     itemEvent?:any;

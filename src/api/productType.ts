@@ -27,11 +27,12 @@ export function store (formData:FormData) {
   })
 }
 
-export function update ({ id, ...formData }:Update) {
+export function update ({ id, ...payload }:Update) {
+  const {formData, ...arg} = payload
   return request({
     url: `${END_POINT}/${id}`,
     method: 'put',
-    data: formData
+    data: {...arg, ...formData}
   })
 }
 

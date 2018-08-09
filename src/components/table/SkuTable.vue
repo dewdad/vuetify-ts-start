@@ -7,7 +7,7 @@
     </v-layout> -->
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="value"
       hide-actions
       class="elevation-1"
     >
@@ -28,12 +28,15 @@
               :readonly="readonly"
               :disabled="disabled"
               slot="input"
+              v-validate="{required:true,stringUnique:skuList}"
+              :error-messages="errors.collect(props.item.key)"
+              :name="props.item.key"
               v-model="props.item.sku"
               :rules="[max25chars]"
               placeholder="请输入商品sku码"
               label="Edit"
               single-line
-              counter
+              @input="v=>verifySkuCodeUnique(v,props.item)"
             ></v-text-field>
           </v-edit-dialog>
         </td>
@@ -75,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch, Model } from 'vue-property-decorator'
 
 interface Attribute {
   'group_id':number;
@@ -93,6 +96,8 @@ type CacheValue = {sku:string, price:number}
 
 @Component
 export default class SkuTable extends Vue {
+  @Model('input', {type: Array, default: () => []}) value!:Item[]
+
   @Prop(Array) items!:Item[]
 
   @Prop({type: Boolean, default: false}) disabled!:boolean
@@ -122,6 +127,15 @@ export default class SkuTable extends Vue {
         item.price = (this.getCache(item.key) as CacheValue).price
       }
     })
+  }
+
+  verifySkuCodeUnique (v:string, item:Item) {
+    const attrs = this.value.filter(el => el!==item)
+    let error = attrs.some(attr => attr.sku === v)
+    const field = this.$validator.fields.find({name: item.key})
+    if (error) {
+      this.$validator.errors.add({id: field.id, field: item.key, msg: 'sku必须唯一'})
+    }
   }
 
   save (item:Item) {
@@ -154,15 +168,24 @@ export default class SkuTable extends Vue {
   }
 
   get headers () {
-    let col = _.head(this.items)
-    return [ ...(col as Item).attributes.map((item:any) => ({text: item.group_name, value: 'value_name'})),
-      {text: 'SKU码', value: 'sku'},
-      {text: '价格', value: 'price'}
-    ]
+    let col = _.head(this.value)
+    if (col) {
+      return [ ...col.attributes.map((item:any) => ({text: item.group_name, value: 'value_name'})),
+        {text: 'SKU码', value: 'sku'},
+        {text: '价格', value: 'price'}
+      ]
+    }
+    return []
   }
 
   get skuList () {
-    return this.items.map(item => item.sku)
+    return this.value.map(item => item.sku)
   }
 }
 </script>
+
+<style scoped>
+.v-menu__content{
+  background: white;
+}
+</style>

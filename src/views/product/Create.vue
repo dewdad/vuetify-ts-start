@@ -9,7 +9,7 @@
           <v-card-text>
             <base-form-item v-model="formSchema"
                             ref="form">
-            <attribute-form v-if="variantAttributes.length>0" :items="variantAttributes" sku></attribute-form>
+              <attribute-form  :productTypeId="productTypeId" v-model="attributes"  sku></attribute-form>
             </base-form-item>
           </v-card-text>
           <v-divider></v-divider>
@@ -36,6 +36,10 @@ import { ProductType } from '@/store/modules/productType'
 import Base from './mixins/Base'
 import FormMixin from '@/components/form/mixins/Form'
 // import AttributeForm from './components/AttributeForm.vue';
+interface Groups{
+  variantAttributes:ApiResponse.AttributeGroupData[];
+  baseAttributes:ApiResponse.AttributeGroupData[];
+}
 @Component({
   components:{
   'base-form-item':BaseFormItem,
@@ -51,7 +55,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
 
   include = ['attributeGroups']
 
-  groups = [] as ApiResponse.AttributeGroupItem[]
+  productType = {} as ApiResponse.ProductType
 
   paserMapping = {
     'group_ids': {handle: (item:ApiResponse.AttributeGroupData[]) => item.map(group => group.id)}
@@ -61,7 +65,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     {
       field: 'type_id',
       label: '产品类型',
-      value: '',
+      value: 0,
       items: [],
       itemText: 'name',
       itemValue: 'id',
@@ -73,14 +77,30 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     }
   ]
 
-  variantAttributes = [] as ApiResponse.AttributeData[]
-
-  @Watch('formSchema.0.value')
-  async onProductTypeChange (id:number) {
-    let {data: {attributeGroups: {data: attributes}}} = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
-    this.variantAttributes = attributes.filter((item:ApiResponse.AttributeData) => item.variant)
+  // 获取当前产品类型ID
+  get productTypeId () {
+    return _.get(this, 'formSchema.0.value', 0)
   }
 
+  attributes:any[] = []
+
+  // 产品属性按可销售属性分组
+  productAttributeGroupByVariant () {
+    const groups = this.productType.data.attributeGroups
+    if (groups) {
+      const {variantAttributes, baseAttributes} = groups.data.reduce((res:Groups, group) => {
+        group.variant ? res.variantAttributes.push(group) : res.baseAttributes.push(group)
+        return res
+      }, {variantAttributes: [], baseAttributes: []})
+      this.variantAttributes = variantAttributes
+      this.baseAttributes = baseAttributes
+    } else {
+      this.variantAttributes = []
+      this.baseAttributes = []
+    }
+  }
+
+  // 产品类型搜索框变化回调处理
   async onProductSearchChange (val:string) {
     await this.searchProductType(val)
   }
