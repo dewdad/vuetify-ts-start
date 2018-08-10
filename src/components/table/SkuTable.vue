@@ -76,7 +76,6 @@ export interface SkuTableSchemaChangeParams{
   index:number;
   field:keyof SkuTableItem;
 }
-type CacheValue = {sku:string, price:number}
 
 @Component
 export default class SkuTable extends Mixins(InjectValidator) {
@@ -86,32 +85,12 @@ export default class SkuTable extends Mixins(InjectValidator) {
 
   @Prop({type: Boolean, default: false}) readonly!:boolean
 
-  cacheInputData:Map<string, CacheValue> = new Map()
-
-  @Watch('value', {deep:true})
-  onItemsChange (v:SkuTableItem[]) {
-    v.forEach(item => {
-      if (this.getCache(item.key)) {
-        item.sku = (this.getCache(item.key) as CacheValue).sku
-        item.price = (this.getCache(item.key) as CacheValue).price
-      }
-    })
-  }
-
   onInputChange (value:string|number, item:SkuTableItem, index:number, field:keyof SkuTableItem) {
-    // if(field)
     if (field==='price') { value = +value }
-    this.$emit('input', {value, index, field, item})
-    const {key, sku, price, ...arg} = item
-    this.setCache(key, {sku, price})
-  }
-
-  setCache (key:string, val:CacheValue) {
-    this.cacheInputData.set(key, val)
-  }
-
-  getCache (key:string) {
-    return this.cacheInputData.has(key) ? this.cacheInputData.get(key) : null
+    const val = _.cloneDeep(this.value)
+    val[index][field] = value
+    this.$emit('input', val)
+    this.$emit('cache-sku-item', {key: item.key, attr: val[index]})
   }
 
   get headers () {

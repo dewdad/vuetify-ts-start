@@ -129,7 +129,7 @@
                 :required="item.required"></v-switch>
 
     </template>
-    <sku-table class="mt-3" v-show="skuTableSchema.length>0" v-model="skuTableSchema"></sku-table>
+    <sku-table class="mt-3" @cache-sku-item="setSkuItemAttr" v-show="skuTableSchema.length>0" v-model="skuTableSchema"></sku-table>
     </div>
   <!-- </v-container> -->
 </template>
@@ -154,6 +154,17 @@ interface AttributesParams{
   'attribute_id'?:Array<number>
 }
 
+interface CartesianItem{
+  'group_id':number;
+  'group_name':string;
+  'value_id':number;
+  'value_name':string;
+}
+
+type Cartesian = Array<CartesianItem[]>
+
+type SkuItemAttr = Map<string, CacheValue>
+type CacheValue = {sku:string, price:number}
 interface VariantsParams{
   sku:string;
   price:number;
@@ -185,6 +196,7 @@ interface CacheItem{
   value:AttributesParams;
   productType:ApiResponse.ProductType;
   groups:Groups;
+  skuItemAttr:SkuItemAttr;
 }
 
 @Component({
@@ -273,7 +285,12 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
   @Watch('attributes')
   onAttributesChange (attributes:AttributesParams) {
     this.$emit('input', attributes)
-    this.setCache(String(this.productTypeId), {value: attributes, productType: this.productType, groups: this.groups})
+    this.setCache(String(this.productTypeId), {
+      value: attributes,
+      productType: this.productType,
+      groups: this.groups,
+      skuItemAttr: this.skuItemAttr
+    })
   }
 
   // 监听产品类型变化改变
@@ -292,10 +309,37 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
       this.alreadyed = true
     }
     if (cache) {
-      this.productType = cache.productType
-      this.groups = cache.groups
-      this.$emit('input', cache.value)
+      const {value, groups, productType, skuItemAttr} = cache
+      this.productType = productType
+      this.groups = groups
+      this.skuItemAttr = skuItemAttr
+      this.$emit('input', value)
     }
+  }
+
+  // 表格数据储存容器
+  skuItemAttr:SkuItemAttr = new Map()
+  // 获取缓存数据
+  getSkuItemAttr (key:string) {
+    return this.skuItemAttr.has(key) ? this.skuItemAttr.get(key) : false
+  }
+  // 设置缓存数据
+  setSkuItemAttr ({key, attr}:{key:string, attr:CacheValue}) {
+    this.skuItemAttr.set(key, attr)
+  }
+
+  @Watch('groups', {deep:true})
+  onGroupsChange (val:Groups) {
+    const schema = this.genCartesian()
+    this.skuTableSchema = schema.map(item => {
+      const key = item.map(attr => attr.value_name).join('')
+      let cache = this.getSkuItemAttr(key)
+      if (!cache) {
+        cache = {sku: '', price: 0}
+        this.setSkuItemAttr({key, attr: cache})
+      }
+      return {attributes: item, ...cache, key}
+    })
   }
 
   get attributes () {
@@ -309,7 +353,19 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
   }
 
   // 计算变体属性
-  get cartesian () {
+  /* get cartesian () {
+    const flatten = (arr:any) => [].concat.apply([], arr)
+    const formData = this.groups.filter(group => group.variant)
+    if (formData.length === 0 || formData.some(item => item.value.length===0)) return []
+    // [...element, {group_name: attr.item.name, group_id: attr.item.id, value_id: value.id, value_name: value.value}]
+    return formData.reduce((acc, set) =>
+      flatten(acc.map((x:any) => set.value.map((y:ApiResponse.AttributeData) => [ ...x,
+        {group_name: set.name, group_id: set.id, value_id: y.id, value_name: y.value}
+      ]))), [[]])
+  } */
+
+  // 通过销售所选销售属性生成变体组合
+  genCartesian ():Cartesian {
     const flatten = (arr:any) => [].concat.apply([], arr)
     const formData = this.groups.filter(group => group.variant)
     if (formData.length === 0 || formData.some(item => item.value.length===0)) return []
@@ -320,24 +376,17 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
       ]))), [[]])
   }
 
-  get skuTableSchema () {
-    const base = {sku: '', price: 0}
-    return this.cartesian.map((item:any) => ({attributes: item, ...base, key: (item.map((attr:any) => attr.value_name)).join('')}))
-  }
-
-  set skuTableSchema ({value, item, index, field}:SkuTableSchemaChangeParams) {
-    (this.skuTableSchema as any)[index][field] = value
-  }
+  skuTableSchema:SkuTableItem[] = []
 
   get variants () {
-    // const sku = <any>this.skuTableSchema
-    // return sku.map((item:any) => {
-    //     let {price, sku, attributes} = item
+    const sku = this.skuTableSchema
+    return sku.map((item) => {
+      let {price, attributes, sku, key} = item
 
-    //     attributes = attributes.map((attr:any) => attr.value_id)
+      attributes = attributes.map((attr:any) => attr.value_id)
 
-    //     return {price, sku, attributes}
-    //   })
+      return {price, sku, attributes, attribute_key: key}
+    })
   }
 }
 </script>

@@ -253,6 +253,21 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     ])
     console.log('parent created')
     this.$refs.attributeForm.setAttributeData(this.item.attributes)
+    // const genSkuItemKey = (variants:ApiResponse.ProductData['variants'])=>{
+    //   if(variants){
+    //     variants.data.map(item=>{
+    //       const attributes = item.attributes
+    //       if(attributes){
+    //         attributes.data.map(attr=>{
+    //           const value = attr.value
+    //           if(value){
+    //             value.date.value
+    //           }
+    //         })
+    //       }
+    //     })
+    //   }
+    // }
   }
 
   mounted () {
