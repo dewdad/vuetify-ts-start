@@ -12,10 +12,10 @@
 
 <script lang="ts">
 import { Component, Vue, Model, Mixins } from 'vue-property-decorator'
-import BaseForm from '@/components/form/mixins/BaseForm'
+import InjectValidator from '@/components/form/mixins/InjectValidator'
 
 @Component
-export default class BaseCheckBoxGroup extends Mixins(BaseForm) {
+export default class BaseCheckBoxGroup extends Mixins(InjectValidator) {
   @Model('input') propField!:FormInterface.Field
 }
 </script>

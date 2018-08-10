@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from './types'
+import { QueryBuild, Show, Update, FormData } from '@/api/types'
 import { RelationProducts } from '@/store/modules/productProvider'
 const END_POINT = 'product_providers'
 export function index (payload:QueryBuild|null = null) {

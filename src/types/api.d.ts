@@ -65,8 +65,9 @@ declare namespace ApiResponse{
     'created_at': string;
     'updated_at': string;
     'deleted_at'?: any;
-    'pivot': PivotPrice;
-    'name':string;
+    'pivot'?: PivotPrice;
+    'name'?:string;
+    attributes?:ProductAttribute;
   }
 
   export interface Payment {
@@ -175,6 +176,28 @@ declare namespace ApiResponse{
     type:ProductType;
     'type_id':number;
     'updated_at':string;
+    attributes?:ProductAttribute;
+    variants?:ProductVariant;
+    avatars?:Images;
+
+  }
+
+  export interface ProductAttribute{
+    data:ProductAttributeData[];
+  }
+
+  export interface ProductAttributeData{
+    'attribute_group_id':number;
+    'attribute_id':number|null;
+    comment:string|null;
+    'created_at':string;
+    'deleted_at':string|null;
+    id:number;
+    'product_id':number;
+    'updated_at':string;
+    variant:boolean;
+    group?:AttributeGroups;
+    value?:Attribute;
   }
 
   export interface Brand{

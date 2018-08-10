@@ -9,7 +9,7 @@
           <v-card-text>
             <base-form-item v-model="formSchema"
                             ref="form">
-              <attribute-form  :productTypeId="productTypeId" v-model="attributes"  sku></attribute-form>
+              <attribute-form  :productTypeId="productTypeId" v-model="attributes"  ref="attributeForm"></attribute-form>
             </base-form-item>
           </v-card-text>
           <v-divider></v-divider>
@@ -35,7 +35,10 @@ import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
 import Base from './mixins/Base'
 import FormMixin from '@/components/form/mixins/Form'
-// import AttributeForm from './components/AttributeForm.vue';
+import { Brand } from '@/store/modules/brand'
+import { CreateProductAttributeParams } from '@/views/product/components/AttributeForm.vue'
+import AttributeForm from './components/AttributeForm.vue'
+import { Product } from '@/store/modules/product'
 interface Groups{
   variantAttributes:ApiResponse.AttributeGroupData[];
   baseAttributes:ApiResponse.AttributeGroupData[];
@@ -44,89 +47,189 @@ interface Groups{
   components:{
   'base-form-item':BaseFormItem,
   'form-body-card':FormBodyCard,
-  'attribute-form':()=>import('./components/AttributeForm.vue')
+  'attribute-form':AttributeForm
   }
   })
 export default class ProductCreate extends mixins(Base, FormMixin) {
   public $refs!: {
     form:BaseFormItem,
-    vform:any
+    vform:any,
+    attributeForm:AttributeForm
   };
 
   @Provide() parentValidator = this.$validator
 
   include = ['attributeGroups']
 
-  productType = {} as ApiResponse.ProductType
+  brands:any = []
+
+  productTypes:any = []
 
   paserMapping = {
-    'group_ids': {handle: (item:ApiResponse.AttributeGroupData[]) => item.map(group => group.id)}
   }
 
   formSchema:FormInterface.Field[] = [
     {
+      field: 'name',
+      label: '产品名称',
+      value: '',
+      fieldType: 'text',
+      rule: 'required|max:60',
+      required: true,
+      clearable: true
+    },
+    {
+      field: 'name_cn',
+      label: '产品中文名称',
+      value: '',
+      fieldType: 'text',
+      rule: 'max:60',
+      clearable: true
+    },
+    {
+      field: 'name_en',
+      label: '产品英文名称',
+      value: '',
+      fieldType: 'text',
+      rule: 'max:60',
+      clearable: true,
+      hint: '填写此名称适用于amazon listing'
+    },
+    {
+      field: 'brand_id',
+      label: '品牌',
+      value: null,
+      fieldType: 'search',
+      items: [],
+      itemText: 'name',
+      itemValue: 'id',
+      noDataText: '系统中暂无品牌，可以进入到品牌管理页面添加'
+    },
+    {
+      field: 'code',
+      label: '商品编号',
+      value: '',
+      fieldType: 'text',
+      rule: 'required|max:60',
+      clearable: true
+    },
+    {
+      field: 'enabled',
+      label: '是否可售',
+      value: true,
+      fieldType: 'toggle'
+    },
+    {
+      field: 'avatars',
+      label: '产品图集',
+      fieldType: 'file',
+      value: [],
+      itemEvent: {'clear': () => this.onFileComponentClear()}
+    },
+    {
+      field: 'body',
+      label: '产品描述',
+      value: '',
+      fieldType: 'textarea',
+      counter: true
+    },
+    {
       field: 'type_id',
       label: '产品类型',
       value: 0,
+      hideNoData: true,
+      solo: true,
       items: [],
       itemText: 'name',
       itemValue: 'id',
       fieldType: 'search',
-      rule: 'required',
-      requeired: true,
-      clearable: true,
-      itemEvent: {change: this.onProductSearchChange}
+      rule: {required: true, is_not: 0},
+      required: true
+      // itemEvent: {change: this.onProductSearchChange}
     }
   ]
 
   // 获取当前产品类型ID
   get productTypeId () {
-    return _.get(this, 'formSchema.0.value', 0)
+    const typeField = this.formSchema.find(item => item.field === 'type_id')
+    if (typeField) {
+      return typeField.value
+    }
+    return 0
   }
 
-  attributes:any[] = []
+  attributes = [] as CreateProductAttributeParams['attributes']
 
+  @Watch('productTypeId', {immediate:true})
+  onProductTypeIdChange (type:any) {
+    this.$router.push({path: this.$route.path, query: {type}})
+  }
   // 产品类型搜索框变化回调处理
-  async onProductSearchChange (val:string) {
-    await this.searchProductType(val)
-  }
-
-  async searchProductType (name:string) {
-    const queryBuild = {search: name, search_fields: 'name:like', filter: 'id;name'}
-    let {data} = await ProductType.getInstance.index(queryBuild)
-    this.formSchema[0].items = data
+  onProductSearchChange () {
+    const productTypeField = this.formSchema.find(item => item.field === 'type_id')
+    if (productTypeField) {
+      const type = productTypeField.values
+      type > 0 && this.$router.push({path: this.$route.path, query: {type}})
+    }
   }
 
   clear () {
     this.$refs.vform.reset()
   }
 
-  onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
-    item.value = []
+  onFileComponentClear () {
+
+  }
+
+  getFormData () {
+    const base = this.paserFormData()
+    const attributes = this.attributes
+    const variants = this.$refs.attributeForm.variants
+    return {...base, attributes, variants}
   }
 
   async submit () {
-    console.log(await this.$validator.validateAll())
-    // if (await this.$refs.form.submit()) {
-    //   await this.create()
-    // }
+    if (await this.$validator.validateAll()) {
+      await this.create()
+    }
   }
 
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await ProductType.getInstance.with(this.include).create(this.paserFormData())
+    let res = await Product.getInstance.with(this.include).create(this.getFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
     } else {
-      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$setErrorsFromResponse(res.data)
       this.$fail({text: res.data.message})
     }
     this.$loading({show: false})
   }
 
-  async created () {
+  async loadBrands () {
+    const {data} = await Brand.getInstance.index({filter: 'id;name', per_page: 999})
+    this.brands = data
+    const brandField = this.formSchema.find(item => item.field === 'brand_id')
+    if (brandField) {
+      brandField.items = this.brands
+    }
+  }
 
+  async loadProductTypes () {
+    let {data} = await ProductType.getInstance.index({per_page: 999, filter: 'id;name'})
+    this.productTypes = data
+    const productTypeField = this.formSchema.find(item => item.field === 'type_id')
+    if (productTypeField) {
+      productTypeField.items = this.productTypes
+    }
+  }
+
+  async created () {
+    await Promise.all([
+      this.loadBrands(),
+      this.loadProductTypes()
+    ])
   }
 }
 </script>

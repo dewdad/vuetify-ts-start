@@ -6,7 +6,7 @@ import Router, { Route, RouteRecord, RawLocation } from 'vue-router'
 import { sync } from 'vuex-router-sync'
 import { PositionResult, RouteConfig, Position, NavigationGuard, Component, RouterOptions } from 'vue-router/types/router'
 import { getToken } from '@/auth' // getToken from cookie
-import { Guard, ScrollBehavior } from './types'
+import { Guard, ScrollBehavior } from '@/router/types'
 
 Vue.use(Meta)
 Vue.use(Router)

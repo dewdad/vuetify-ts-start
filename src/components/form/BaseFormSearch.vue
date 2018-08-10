@@ -5,12 +5,6 @@
       :search-input.sync="search"
       @input="val=>$emit('input',val)"
       cache-items
-      class="mx-3"
-
-      hide-no-data
-
-      solo
-
       v-validate="propField.rule"
       :error-messages="errors.first(propField.name || propField.field)"
       :name="propField.name || propField.field"
@@ -23,11 +17,11 @@
 
 import { Component, Vue, Watch, Model, Prop, Mixins } from 'vue-property-decorator'
 import FormItem from './mixins/FormItem'
-import BaseForm from '@/components/form/mixins/BaseForm'
+import InjectValidator from '@/components/form/mixins/InjectValidator'
 @Component({
   inheritAttrs:true
   })
-export default class BaseFormSearch extends Mixins(FormItem, BaseForm) {
+export default class BaseFormSearch extends Mixins(FormItem, InjectValidator) {
   @Prop({type: Array, default: () => []}) items!:any[]
 
   loading:boolean = false

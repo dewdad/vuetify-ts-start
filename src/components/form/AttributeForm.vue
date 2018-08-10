@@ -71,7 +71,7 @@
 import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
 import { AttributeItem } from '@/store/modules/attribute'
 import FormItemCard from '@/components/card/FormItemCard.vue'
-import BaseForm from '@/components/form/mixins/BaseForm'
+import InjectValidator from '@/components/form/mixins/InjectValidator'
 
 interface Item{
   id?:number;
@@ -83,7 +83,7 @@ interface Item{
   'form-item-card':FormItemCard
   }
   })
-export default class AttributeForm extends Mixins(BaseForm) {
+export default class AttributeForm extends Mixins(InjectValidator) {
   @Prop(Array) orginFormData!:AttributeItem[]
   @Prop(Boolean) disabled!:boolean
   activator= null

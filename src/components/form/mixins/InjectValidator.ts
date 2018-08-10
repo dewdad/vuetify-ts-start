@@ -4,7 +4,7 @@ import { Validator } from 'vee-validate'
 
 // You can declare a mixin as the same style as components.
 @Component
-export default class BaseFormMixin extends Vue {
+export default class InjectValidator extends Vue {
   @Inject({ from: 'parentValidator', default: null }) parentValidator!: Validator
 
   created () {

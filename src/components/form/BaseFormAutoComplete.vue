@@ -89,7 +89,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Prop, Model, Mixins } from 'vue-property-decorator'
 import { Pagination } from '@/store/modules/app'
-import BaseForm from '@/components/form/mixins/BaseForm'
+import InjectValidator from '@/components/form/mixins/InjectValidator'
 
 interface Item{
   id?:number;
@@ -99,7 +99,7 @@ interface Item{
 @Component({
   inheritAttrs:true
   })
-export default class AutoComplete extends Mixins(BaseForm) {
+export default class AutoComplete extends Mixins(InjectValidator) {
   @Prop(Object) propField!:FormInterface.Field
 
   @Prop({type: Boolean, default: false}) loading!:boolean

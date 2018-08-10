@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from './types'
+import { QueryBuild, Show, Update, FormData } from '@/api/types'
 
 const END_POINT = 'attribute-groups'
 
@@ -28,7 +28,6 @@ export function store (formData:FormData) {
 }
 
 export function update ({ id, ...formData }:Update) {
-  console.log(formData)
   return request({
     url: `${END_POINT}/${id}`,
     method: 'put',

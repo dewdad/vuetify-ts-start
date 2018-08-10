@@ -22,6 +22,7 @@ export default class FormMixin extends Vue {
 
   ]
 
+  // 解析 formSchema 表单提交数据
   paserFormData () {
     return this.formSchema.reduce((formData:any, field) => {
       if (_.has(this.paserMapping, field.field)) {

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from './types'
+import { QueryBuild, Show, Update, FormData } from '@/api/types'
 
 const END_POINT = 'products'
 
@@ -31,7 +31,7 @@ export function update ({ formData, id }:Update) {
   return request({
     url: `${END_POINT}/${id}`,
     method: 'put',
-    data: formData
+    data: {...formData}
   })
 }
 

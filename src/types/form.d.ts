@@ -36,6 +36,7 @@ declare namespace FormInterface{
     itemEvent?:any;
     custom?:boolean;
     slotName?:string;
+    required?:boolean;
     [propName:string]:any;
   }
 }

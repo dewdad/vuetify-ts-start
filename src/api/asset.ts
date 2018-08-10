@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from './types'
+import { QueryBuild, Show, Update, FormData } from '@/api/types'
 
 const END_POINT = 'assets'
 

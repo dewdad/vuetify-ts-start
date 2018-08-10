@@ -2,7 +2,7 @@ import store from '@/store'
 import { getToken, setToken, removeToken } from '@/auth'
 import { Commit, ActionContext } from 'vuex'
 import * as UserApi from '@/api/user'
-import { Base } from './app'
+import { Base } from '@/store/modules/app'
 
 interface UserInterface {
   [propNmae:string]:any
