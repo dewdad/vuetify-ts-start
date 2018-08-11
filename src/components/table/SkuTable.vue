@@ -67,7 +67,8 @@ export interface SkuTableItem {
   attributes: Attribute[];
   sku: string;
   price: number;
-  key: string
+  key: string;
+  id?:number;
 }
 
 export interface SkuTableSchemaChangeParams{

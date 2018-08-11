@@ -14,37 +14,6 @@ export default class BaseMixin extends Vue {
   }
   translation = 'brand'
 
-  formSchema:FormInterface.Field[] = [
-    {
-      field: 'name',
-      label: '品牌名称',
-      value: '',
-      type: 'text',
-      fieldType: 'text',
-      rule: 'required',
-      requeired: true
-    },
-    {
-      field: 'avatars',
-      label: '品牌LOGO',
-      fieldType: 'file',
-      rule: 'required',
-      value: [],
-      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
-    },
-    {
-      field: 'description',
-      label: '品牌描述',
-      fieldType: 'textarea',
-      rule: 'max:200',
-      counter: true
-    }
-  ]
-
-  onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
-    item.value = []
-  }
-
   showItem (id:any) {
     return this.$router.push(
       {name: this.routeName.show, params: {id}}

@@ -5,11 +5,11 @@
     app
   >
   <div class="pa-3 text-xs-center">
-    <div class="display-2 py-4">
+    <div class="display-2 py-4 font-weight-medium">
       BESTKIT
 
     </div>
-    <P>erp system</P>
+    <P class="font-weight-thin">erp system 🚀v1.0</P>
   </div>
   <v-divider></v-divider>
       <!-- <v-list>

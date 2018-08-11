@@ -1,13 +1,42 @@
 import { Base } from '@/store/modules/app'
 import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
-import { Commit, ActionContext } from 'vuex'
+import { Commit, ActionContext, Payload, CommitOptions } from 'vuex'
 import * as ProductApi from '@/api/product'
 
 export const ROUTE_NAME = 'product'
 
 interface State{
-  // products:ApiResponse.product
+  item:ApiResponse.Product| null
+}
+
+export const state:State = {
+  // 当前浏览/编辑商品
+  item: null
+}
+
+interface Mutations {
+  'SET_ITEM':(state:State, payload:ApiResponse.Product)=>void
+}
+
+export const mutations:Mutations = {
+  SET_ITEM: (state, payload) => { state.item = payload }
+}
+
+interface Getters{
+  current:(state:State)=>State['item']
+}
+
+export const getters:Getters = {
+  current: (state) => state.item
+}
+export interface Commit {
+  (type: keyof Mutations, payload?: any, options?: CommitOptions): void;
+  <P extends Payload>(payloadWithType: P, options?: CommitOptions): void;
+}
+interface Context extends ActionContext<State, any> {
+  commit:Commit;
+  getters:Getters
 }
 
 export const actions = {
@@ -19,13 +48,16 @@ export const actions = {
 
     }
   },
-  async show (ctx: ActionContext<State, any>, payload:Show) {
-    try {
-      let {data} = await ProductApi.show(payload)
-      return data
-    } catch (error) {
+  async show (ctx: Context, payload:Show) {
+    if (!ctx.getters.current) {
+      try {
+        let {data} = await ProductApi.show(payload)
+        ctx.commit('SET_ITEM', data)
+      } catch (error) {
 
+      }
     }
+    return ctx.getters.current
   },
   async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
@@ -82,5 +114,9 @@ export class Product extends Base {
 
   destroy (id:number|string):Promise<any> {
     return store.dispatch('product/destroy', id)
+  }
+
+  current () {
+    return store.getters('product/current')
   }
 }

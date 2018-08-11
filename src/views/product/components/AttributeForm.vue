@@ -16,7 +16,7 @@
                 :items="item.values.data"
                 :label="item.name"
                 item-text="value"
-                item-value="id"
+                :item-value="(el)=>el"
                 :disabled="disabled"
                 :readonly="readonly"
                 v-model="item.value"
@@ -135,7 +135,7 @@
 </template>
 
 <script lang="ts">
-
+import { Getter, namespace } from 'vuex-class'
 import { Component, Vue, Prop, Watch, Model, Mixins } from 'vue-property-decorator'
 import { ProductType } from '@/store/modules/productType'
 import { SkuTableSchemaChangeParams, SkuTableItem } from '@/components/table/SkuTable.vue'
@@ -164,7 +164,7 @@ interface CartesianItem{
 type Cartesian = Array<CartesianItem[]>
 
 type SkuItemAttr = Map<string, CacheValue>
-type CacheValue = {sku:string, price:number}
+type CacheValue = {sku:string, price:number, id?:number}
 interface VariantsParams{
   sku:string;
   price:number;
@@ -199,6 +199,8 @@ interface CacheItem{
   skuItemAttr:SkuItemAttr;
 }
 
+const ProductModule = namespace('product')
+
 @Component({
   components:{
   'sku-table':()=>import('@/components/table/SkuTable.vue')
@@ -215,6 +217,8 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
 
   // 产品类型id
   @Prop({type: Number, required: true}) productTypeId!:number
+
+  @ProductModule.Getter('current') current!:ApiResponse.Product
 
   // 产品类型所有属性数据源
   productType = {} as ApiResponse.ProductType
@@ -250,31 +254,41 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
     })
   }
 
-  setAttributeData (attributes:any) {
-    const groups = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (this.alreadyed) {
-          return resolve(this.groups)
+  // 编辑模式下数据填充
+  @Watch('alreadyed')
+  onAlreadyEdChange (v:boolean) {
+    if (v) {
+      if (this.current) {
+        const attributes = this.current.data.attributes
+        if (attributes) {
+          const updateAttributes = attributes.data.reduce((rrs:any, item:any) => {
+            if (!rrs[item.attribute_group_id]) {
+              rrs[item.attribute_group_id] = []
+            }
+            const value = item.comment || item.value.data
+            rrs[item.attribute_group_id].push(value)
+            return rrs
+          }, {})
+          // 属性☑️
+          this.groups = this.groups.map(attr => {
+            if (updateAttributes[attr.id]) {
+              const updateAttribute = updateAttributes[attr.id]
+              const val = ['radio_group', 'select', 'text', 'textarea', 'toggle'].includes(attr.type) ? updateAttribute[0] : updateAttribute
+              attr.value = val
+            }
+            return attr
+          })
+          // sku表格数据填充
+          const variants = this.current.data.variants
+          if (variants) {
+            variants.data.forEach(variant => {
+              const {attribute_key: key, price, sku, id} = variant
+              key && this.setSkuItemAttr({key, attr: {price, sku, id}})
+            })
+          }
         }
-      }, 300)
-    })
-    groups.then((res:any) => {
-      const groupBy = attributes.data.reduce((rrs:any, item:any) => {
-        if (!rrs[item.attribute_group_id]) {
-          rrs[item.attribute_group_id] = []
-        }
-        const value = item.comment || item.value.data
-        rrs[item.attribute_group_id].push(value)
-        return rrs
-      }, {})
-      this.groups = res.map((attr:any) => {
-        if (groupBy[attr.id]) {
-          const val = _.isString(_.head(groupBy[attr.id])) ?groupBy[attr.id][0] : groupBy[attr.id]
-          attr.value = val
-        }
-        return attr
-      })
-    })
+      }
+    }
   }
 
   isComment (item:ApiResponse.AttributeGroupData) {
@@ -381,11 +395,13 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
   get variants () {
     const sku = this.skuTableSchema
     return sku.map((item) => {
-      let {price, attributes, sku, key} = item
+      let {price, attributes, sku, key, id} = item
 
       attributes = attributes.map((attr:any) => attr.value_id)
 
-      return {price, sku, attributes, attribute_key: key}
+      let append = id ? {id} : {}
+
+      return Object.assign({}, {price, sku, attributes, attribute_key: key}, append)
     })
   }
 }

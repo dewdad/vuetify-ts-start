@@ -12,48 +12,57 @@
               <div class="mt-3"
                    slot="attribute-group"
                    slot-scope="{propField}">
+                <v-alert v-show="groups.length===0"
+                        :value="true"
+                        color="info"
+                        icon="priority_high"
+                        outline>
+                  尚未创建属性组
+                  <router-link :to="{name:'attribute-group.create'}">点击前往创建</router-link>
+                </v-alert>
+                <template v-if="groups.length>0">
+                  <v-subheader>
+                    可包含属性
+                    <v-spacer></v-spacer>
+                    <v-icon color="primary">add_shopping_cart</v-icon>
+                    销售属性
+                    <v-icon>bookmark_border</v-icon>
+                    普通属性
+                  </v-subheader>
+                  <v-divider></v-divider>
+                  <v-layout row
+                            wrap>
+                    <v-flex xs6
+                            sm3
+                            md3
+                            v-for="group in propField.values"
+                            :key="group.id">
+                      <v-checkbox v-model="propField.value"
+                                  :label="group.name"
+                                  :value="group">
+                        <v-tooltip slot="prepend"
+                                  fixed
+                                  bottom>
+                          <v-icon v-if="group.variant"
+                                  slot="activator"
+                                  color="primary">add_shopping_cart</v-icon>
+                          <v-icon v-else
+                                  slot="activator">bookmark_border</v-icon>
+                          <div>
+                            <ul>
+                              <li v-for="(item,key) in group"
+                                  :key="key">
+                                <i>{{key}}</i>
+                                <i>:{{item}}</i>
+                              </li>
+                            </ul>
+                          </div>
+                        </v-tooltip>
+                      </v-checkbox>
 
-                <v-subheader>
-                  可包含属性
-                  <v-spacer></v-spacer>
-                  <v-icon color="primary">add_shopping_cart</v-icon>
-                  销售属性
-                  <v-icon>bookmark_border</v-icon>
-                  普通属性
-                </v-subheader>
-                <v-divider></v-divider>
-                <v-layout row
-                          wrap>
-                  <v-flex xs6
-                          sm3
-                          md3
-                          v-for="group in propField.values"
-                          :key="group.id">
-                    <v-checkbox v-model="propField.value"
-                                :label="group.name"
-                                :value="group">
-                      <v-tooltip slot="prepend"
-                                 fixed
-                                 bottom>
-                        <v-icon v-if="group.variant"
-                                slot="activator"
-                                color="primary">add_shopping_cart</v-icon>
-                        <v-icon v-else
-                                slot="activator">bookmark_border</v-icon>
-                        <div>
-                          <ul>
-                            <li v-for="(item,key) in group"
-                                :key="key">
-                              <i>{{key}}</i>
-                              <i>:{{item}}</i>
-                            </li>
-                          </ul>
-                        </div>
-                      </v-tooltip>
-                    </v-checkbox>
-
-                  </v-flex>
-                </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </template>
               </div>
             </base-form-item>
           </v-card-text>
@@ -73,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Provide } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
@@ -93,6 +102,8 @@ export default class ProductTypeCreate extends mixins(Base, FormMixin) {
     form:BaseFormItem,
     vform:any
   };
+
+  @Provide() parentValidator = this.$validator
 
   include = ['attributeGroups']
 
@@ -144,7 +155,7 @@ export default class ProductTypeCreate extends mixins(Base, FormMixin) {
   }
 
   async submit () {
-    if (await this.$refs.form.submit()) {
+    if (await this.$validator.validateAll()) {
       await this.create()
     }
   }

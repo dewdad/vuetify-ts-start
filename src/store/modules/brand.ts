@@ -3,7 +3,6 @@ import { QueryBuild, Show, FormData, Update } from '@/api/types'
 import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
 import * as BrandApi from '@/api/brand'
-import {Module, VuexModule, CacheAction, Action, Mutation} from '@/../vuex-module-decorators/src'
 
 export const ROUTE_NAME = 'brand'
 
@@ -11,52 +10,46 @@ interface State{
   list:ApiResponse.BrandData[]
 }
 
-@Module({namespaced:true, name:'brand'})
-export default class BrandModule extends VuexModule {
-  @CacheAction({cache:true})
-  async index (payload:QueryBuild) {
+export const mutations ={
+
+}
+export const actions = {
+  async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
       let {data} = await BrandApi.index(payload)
-      return data
-    } catch (error) {
-
-    }
-  }
-
-  @CacheAction({cache:true})
-  async show (payload:Show) {
-    try {
-      let {data} = await BrandApi.show(payload)
       console.log(payload)
       console.log(data)
       return data
     } catch (error) {
 
     }
-  }
-
-  @CacheAction
-  async store (payload:FormData) {
+  },
+  async show (ctx: ActionContext<State, any>, payload:Show) {
     try {
-      let data = await BrandApi.store(payload)
+      let {data} = await BrandApi.show(payload)
       return data
     } catch (error) {
 
     }
-  }
-
-  @CacheAction
-  async update (payload:Update) {
+  },
+  async store (ctx: ActionContext<State, any>, payload:FormData) {
     try {
-      const data = await BrandApi.update(payload)
+      let {data} = await BrandApi.store(payload)
+      return data
+    } catch (error) {
+
+    }
+  },
+  async update (ctx: ActionContext<State, any>, payload:Update) {
+    try {
+      const { data } = await BrandApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
     }
-  }
+  },
 
-  @CacheAction
-  async destroy (id:string|number) {
+  async destroy (ctx: ActionContext<State, any>, id:string|number) {
     try {
       const { data } = await BrandApi.destroy(id)
       return data
@@ -85,11 +78,11 @@ export class Brand extends Base {
   }
 
   create (payload:FormData):Promise<any> {
-    return store.dispatch('brand/store', this.assignQueryBuild(payload))
+    return store.dispatch('brand/store', payload)
   }
 
   update (payload:Update):Promise<any> {
-    return store.dispatch('brand/update', this.assignQueryBuild(payload))
+    return store.dispatch('brand/update', payload)
   }
 
   destroy (id:number|string):Promise<any> {

@@ -74,14 +74,6 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     avatars: {key: 'avatars', handle: (item:ApiResponse.Images) => this.getAvatars(item)}
   }
 
-  getAvatars (item:ApiResponse.Images) {
-    return item.data.map(img => {
-      const {id, url: src} = img
-      const thumb = img.thumb ? img.thumb.url : null
-      return {id, src, thumb}
-    })
-  }
-
   formSchema:FormInterface.Field[] = [
     {
       field: 'name',
@@ -204,13 +196,13 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
 
   async submit () {
     if (await this.$validator.validateAll()) {
-      await this.create()
+      await this.update()
     }
   }
 
-  async create () {
+  async update () {
     this.$loading({show: true, text: '提交中'})
-    let res = await Product.getInstance.with(this.include).create(this.getFormData())
+    let res = await Product.getInstance.with(this.include).update({id: this.item.id, ...this.getFormData()})
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
@@ -251,29 +243,6 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
       this.loadProductTypes(),
       this.viewInit()
     ])
-    console.log('parent created')
-    this.$refs.attributeForm.setAttributeData(this.item.attributes)
-    // const genSkuItemKey = (variants:ApiResponse.ProductData['variants'])=>{
-    //   if(variants){
-    //     variants.data.map(item=>{
-    //       const attributes = item.attributes
-    //       if(attributes){
-    //         attributes.data.map(attr=>{
-    //           const value = attr.value
-    //           if(value){
-    //             value.date.value
-    //           }
-    //         })
-    //       }
-    //     })
-    //   }
-    // }
-  }
-
-  mounted () {
-    this.$nextTick(() => {
-      console.log('parent mounted')
-    })
   }
 }
 </script>

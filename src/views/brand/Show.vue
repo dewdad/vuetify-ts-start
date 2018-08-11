@@ -1,12 +1,7 @@
 <template>
   <v-layout fill-height
             justify-center>
-    <v-flex xs12
-            sm
-            12
-            md12
-            lg8
-            xl8>
+    <v-flex xs12>
       <name-card v-bind="attrs">
         <v-list slot="after-card-text" two-line>
           <v-list-tile>

@@ -68,6 +68,7 @@ declare namespace ApiResponse{
     'pivot'?: PivotPrice;
     'name'?:string;
     attributes?:ProductAttribute;
+    'attribute_key'?:string;
   }
 
   export interface Payment {

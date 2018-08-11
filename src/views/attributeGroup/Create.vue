@@ -30,8 +30,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Vue, Watch, Mixins, Provide } from 'vue-property-decorator'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
@@ -46,11 +45,13 @@ import BaseFormAutoComplete from '@/components/form/BaseFormAutoComplete.vue'
   'base-form-auto':BaseFormAutoComplete
   }
   })
-export default class AttributeGroupCreate extends mixins(Base, FormMixin) {
+export default class AttributeGroupCreate extends Mixins(Base, FormMixin) {
   public $refs!: {
     form:BaseFormItem,
     vform:any
   };
+
+  @Provide() parentValidator = this.$validator
 
   include = ['values']
 
@@ -124,7 +125,7 @@ export default class AttributeGroupCreate extends mixins(Base, FormMixin) {
   }
 
   async submit () {
-    if (await this.$refs.form.submit()) {
+    if (await this.$validator.validateAll()) {
       await this.create()
     }
   }

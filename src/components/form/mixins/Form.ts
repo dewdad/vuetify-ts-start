@@ -22,6 +22,14 @@ export default class FormMixin extends Vue {
 
   ]
 
+  getAvatars (item:ApiResponse.Images) {
+    return item.data.map(img => {
+      const {id, url: src} = img
+      const thumb = img.thumb ? img.thumb.url : null
+      return {id, src, thumb}
+    })
+  }
+
   // 解析 formSchema 表单提交数据
   paserFormData () {
     return this.formSchema.reduce((formData:any, field) => {

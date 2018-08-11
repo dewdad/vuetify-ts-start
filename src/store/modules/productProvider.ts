@@ -30,7 +30,8 @@ export const mutations = {
   SET_PRODUCT: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
     state.products[payload.data.id] = {}
     state.providers[payload.data.id].data.products.data.forEach(variant => {
-      state.products[payload.data.id][variant.id] = {price: variant.pivot.price}
+      const price = variant.pivot ? variant.pivot.price : 0
+      state.products[payload.data.id][variant.id] = {price}
     })
   },
   DEL_PROVIDER: (state:State, id:number) => {

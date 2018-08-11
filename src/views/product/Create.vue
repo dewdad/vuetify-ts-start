@@ -28,8 +28,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Provide } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Vue, Mixins, Watch, Provide } from 'vue-property-decorator'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
@@ -50,7 +49,7 @@ interface Groups{
   'attribute-form':AttributeForm
   }
   })
-export default class ProductCreate extends mixins(Base, FormMixin) {
+export default class ProductCreate extends Mixins(Base, FormMixin) {
   public $refs!: {
     form:BaseFormItem,
     vform:any,

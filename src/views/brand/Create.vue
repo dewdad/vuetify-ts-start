@@ -2,11 +2,8 @@
 <v-layout fill-height  justify-center>
   <v-flex xs12 sm 12 md12 lg8 xl8>
   <v-form ref="vform" @keyup.native.enter="submit" @submit.prevent="submit">
-    <v-card class="mb-3">
-      <v-toolbar card dark color="primary">
-        <v-toolbar-title>创建品牌</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar>
+    <form-body-card title="创建品牌">
+
       <v-card-text>
 
         <base-form-item  v-model="formSchema" ref="form"></base-form-item>
@@ -19,28 +16,35 @@
         <v-btn color="primary" type="submit">提交</v-btn>
         <!-- <submit-button color="primary" block="true" label="Login"></submit-button> -->
       </v-card-actions>
-    </v-card>
+    </form-body-card>
     </v-form>
   </v-flex>
 </v-layout>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Vue, Mixins, Provide } from 'vue-property-decorator'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
+
+import FormMixin from '@/components/form/mixins/Form'
+
+import FormBodyCard from '@/components/card/FormBodyCard.vue'
+
 import { Brand } from '@/store/modules/brand'
 import Base from './mixins/Base'
 @Component({
   components:{
-  'base-form-item':BaseFormItem
+  'base-form-item':BaseFormItem,
+  'form-body-card':FormBodyCard,
   }
   })
-export default class BrandCreate extends mixins(Base) {
+export default class BrandCreate extends Mixins(Base, FormMixin) {
   public $refs!: {
     'form':BaseFormItem,
     'vform':any
   };
+
+  @Provide() parentValidator = this.$validator
 
   include = ['avatars']
 
@@ -48,21 +52,41 @@ export default class BrandCreate extends mixins(Base) {
     this.$refs.vform.reset()
   }
 
+  formSchema:FormInterface.Field[] = [
+    {
+      field: 'name',
+      label: '品牌名称',
+      value: '',
+      type: 'text',
+      fieldType: 'text',
+      rule: 'required',
+      requeired: true
+    },
+    {
+      field: 'avatars',
+      label: '品牌LOGO',
+      fieldType: 'file',
+      rule: 'required',
+      value: [],
+      itemEvent: {'clear': (e:MouseEvent) => this.onFileComponentClear(e, this.formSchema[1])}
+    },
+    {
+      field: 'description',
+      label: '品牌描述',
+      fieldType: 'textarea',
+      rule: 'max:200',
+      counter: true
+    }
+  ]
+
   onFileComponentClear (e:MouseEvent, item:FormInterface.Field) {
     item.value = []
   }
 
   async submit () {
-    if (await this.$refs.form.submit()) {
+    if (await this.$validator.validateAll()) {
       await this.create()
     }
-  }
-
-  paserFormData () {
-    return this.formSchema.reduce((formData:any, field) => {
-      formData[field.field] = field.value
-      return formData
-    }, {})
   }
 
   async create () {
