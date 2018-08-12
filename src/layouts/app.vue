@@ -5,8 +5,8 @@
     <toolbar></toolbar>
     <v-content>
       <app-main></app-main>
-      <footerbar></footerbar>
     </v-content>
+    <footerbar></footerbar>
     <snackbar></snackbar>
   </div>
 </template>

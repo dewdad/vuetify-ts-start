@@ -1,7 +1,8 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, {StoreOptions} from 'vuex'
 
 import getters from '@/store/getters'
+import { RootState } from './types'
 
 Vue.use(Vuex)
 
@@ -14,8 +15,12 @@ const modules: VuexModule = requireContext.keys()
   // tslint:disable-next-line:max-line-length
   .reduce((moduless: VuexModule, [name, module]) => ({ ...moduless, ...{ [name]: mergeModule(module) } }), {})
 
-export default new Vuex.Store({
+const store:StoreOptions<RootState> = {
+  state: {
+    version: 'v1.0.0'
+  },
   modules,
   getters
-  // plugins: [createPersistedState({ storage: window.sessionStorage })]
-})
+}
+
+export default new Vuex.Store<RootState>(store)

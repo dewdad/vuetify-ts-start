@@ -30,15 +30,15 @@ export default class Singleton {
     /**
      * 销毁方法。事实上单例是很少进行销毁的
      */
-    destroy (o: any = null): void {
-      this.onDestroy()
+    destroyed (o: any = null): void {
+      this.onDestroyed()
       Singleton.removeInstance(this['constructor'])
     }
 
     /**
      * 子类重写的方法
      */
-    protected onDestroy (): void {
+    protected onDestroyed (): void {
 
     }
     /**

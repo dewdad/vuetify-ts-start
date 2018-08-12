@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height grid-list-lg>
+  <v-container fluid>
       <transition name="fade-transform" mode="out-in">
         <!-- <keep-alive :include="cachedViews"> -->
           <router-view></router-view>

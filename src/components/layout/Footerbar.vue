@@ -1,5 +1,5 @@
 <template>
-  <v-footer height="20"  inset fixed app>
+  <v-footer inset fixed app>
     <!-- <span class="caption">isocked.com Design &copy; {{ new Date().getFullYear() }}</span> -->
     <breadcrumb></breadcrumb>
     <v-spacer></v-spacer>

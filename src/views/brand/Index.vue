@@ -12,17 +12,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-import Base from './mixins/Base'
-import { Brand } from '@/store/modules/brand'
+import { Component, Vue, Mixins } from 'vue-property-decorator'
 
+import Base from './mixins/Base'
+import { Brand, TestBrand } from '@/store/modules/brand'
 @Component({
   components:{
   'base-data-table':()=>import('@/components/table/BaseDataTable.vue')
   }
   })
-export default class BrandIndex extends mixins(Base) {
+export default class BrandIndex extends Mixins(Base) {
   include:string[] = []
   headers = [
     {
@@ -44,6 +43,11 @@ export default class BrandIndex extends mixins(Base) {
 
   getDataFromApi (queryBuild = null) {
     return Brand.getInstance.with(this.include).index(queryBuild)
+  }
+
+  mounted () {
+    let brand = new TestBrand()
+    // console.log(brand.actions)
   }
 }
 </script>

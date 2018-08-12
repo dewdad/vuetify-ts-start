@@ -2,7 +2,9 @@
   <v-navigation-drawer
     v-model="drawer"
     fixed
+    overflow
     app
+    style="max-height: calc(100%);"
   >
   <div class="pa-3 text-xs-center">
     <div class="display-2 py-4 font-weight-medium">

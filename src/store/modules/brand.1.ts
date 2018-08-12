@@ -1,11 +1,8 @@
 import { Base } from '@/store/modules/app'
 import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import { RootState } from '../types'
-
 import store from '@/store'
-import { Commit, ActionContext, GetterTree, MutationTree, ActionTree, Module } from 'vuex'
+import { Commit, ActionContext } from 'vuex'
 import BrandApi from '@/api/brand'
-import { VuexHelper } from '@/utils/decorators'
 
 export const ROUTE_NAME = 'brand'
 
@@ -13,15 +10,10 @@ interface State{
   list:ApiResponse.BrandData[]
 }
 
-const mutations ={
+export const mutations ={
 
 }
-
-const state:State = {
-  list: []
-}
-
-const actions:ActionTree<State, RootState> = {
+export const actions = {
   async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
     try {
       let {data} = await BrandApi.index<ApiResponse.Brands>(payload)
@@ -67,12 +59,6 @@ const actions:ActionTree<State, RootState> = {
   }
 }
 
-export default {
-  namespaced: true,
-  actions,
-  state
-} as Module<State, RootState>
-
 export class Brand extends Base {
   protected static instance:Brand;
 
@@ -102,9 +88,4 @@ export class Brand extends Base {
   destroy (id:number|string):Promise<any> {
     return store.dispatch('brand/destroy', id)
   }
-}
-
-@VuexHelper({actions})
-export class TestBrand {
-
 }

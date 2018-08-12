@@ -16,7 +16,8 @@
     "types": [
       "node",
       "webpack",
-      "webpack-env"
+      "webpack-env",
+      "reflect-metadata"
     ],
     "paths": {
       "@/*": [
