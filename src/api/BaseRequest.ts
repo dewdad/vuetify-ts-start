@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 import { List, Show, Update, Create, Delete } from '@/api/types'
 import { ParseInclude } from '@/utils/decorators'
-import { AxiosInstance } from '../../node_modules/axios'
-
-export default abstract class BaseRequest {
+import { AxiosInstance } from 'axios'
+export const VERSION = 1.0
+export default class {
   constructor (path = '') {
     // if (!path) {
     //   throw new Error('API端点未指定')

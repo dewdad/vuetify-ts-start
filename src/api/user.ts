@@ -1,8 +1,10 @@
-import BaseRequest from './BaseRequest'
+import BaseRequest from '@/api/BaseRequest'
 import { AxiosPromise } from 'axios'
+import request from '@/utils/request'
 
-console.log(BaseRequest)
-export default new class extends BaseRequest {
+export default new class {
+  http = request
+
   login (payload:{email: string, password: string}) {
     return this.http.post('/login', payload)
   }
