@@ -71,7 +71,7 @@ export const Balance = new class extends Helpers<Actions> {
   /**
    * 获取列表
    */
-  index (payload:List|null) {
+  index (payload?:List|null) {
     return this.dispatch('index', payload)
   }
   /**

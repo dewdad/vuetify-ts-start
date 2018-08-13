@@ -33,4 +33,23 @@ export abstract class Helpers<A = any, G = any> {
       ? this.store.getters[this.getActionName(getterName)](payload)
       : this.store.getters[this.getActionName(getterName)]
   }
+
+  filterData (items:any[]|{[propName:string]:any}, orgin = {}) {
+    return _.reduce(items, (res:any, item, key) => {
+      if (_.isObject(item)) {
+        if (_.has(item, 'data')) {
+          res[key] = this.filterData(item.data, _.isArray(item.data) ? [] : {})
+        } else {
+          if (_.isArray(res)) {
+            res.push(this.filterData(item))
+          } else {
+            res[key] = this.filterData(item)
+          }
+        }
+      } else {
+        res[key] = item
+      }
+      return res
+    }, orgin)
+  }
 }

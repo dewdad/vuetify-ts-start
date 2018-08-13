@@ -52,16 +52,16 @@ export default class CategoryUpdate extends mixins(Base) {
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await Category.getInstance.update({ formData: res, id: this.item.id })
+      await this.updateApi({ id: this.item.id, ...res })
       this.$success({text: '更新成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
   }
 
   async viewInit () {
-    const { data } = await Category.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = Category.getInstance.filterData(data)
+    this.orginFormData = Category.filterData(data)
   }
 
   async loadFormStructure () {

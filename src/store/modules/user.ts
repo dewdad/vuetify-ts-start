@@ -108,7 +108,7 @@ export const actions:Actions = {
   }
 }
 
-export const Brand = new class extends Helpers<Actions> {
+export const User = new class extends Helpers<Actions> {
   login (payload:{email:string, password:string}) {
     return this.dispatch('login', payload)
   }

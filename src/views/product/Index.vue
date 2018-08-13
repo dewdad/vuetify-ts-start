@@ -1,7 +1,7 @@
 <template>
 <v-layout fill-height  justify-center>
   <v-flex xs12>
-  <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
+  <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="listApi" :showItem="showItem" :editItem="editItem" liked>
         <!-- 创建表单 -->
         <v-btn color="info" slot="storeButton" @click="$router.push({name:routeName.create})">创建</v-btn>
         <!-- 更新表单 -->
@@ -40,11 +40,7 @@ export default class ProductIndex extends mixins(Base) {
   ]
 
   delItem (id:number) {
-    return Product.getInstance.destroy(id)
-  }
-
-  getDataFromApi (queryBuild = null) {
-    return Product.getInstance.with(this.include).index(queryBuild)
+    return this.deleteApi({id})
   }
 }
 </script>

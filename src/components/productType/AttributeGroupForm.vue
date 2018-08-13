@@ -43,7 +43,7 @@ export default class RelationAttributeGroupForm extends Vue {
   groupIds:number[] = []
 
   async fetchGroups () {
-    const {data} = await AttributeGroup.getInstance.index()
+    const {data} = await AttributeGroup.index()
     this.groups = data
   }
 

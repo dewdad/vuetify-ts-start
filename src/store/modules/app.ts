@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie'
 import { Commit } from 'vuex'
-import { QueryBuild } from '@/api/types'
 import Singleton from '@/utils/Singleton'
 import Drawers from '@/navigation'
 import Router from '@/router'
@@ -135,7 +134,7 @@ export class Base extends Singleton {
     return { include: this.parseInclude() }
   }
 
-  assignQueryBuild (queryBuild:QueryBuild|null) {
+  assignQueryBuild (queryBuild:any|null) {
     return Object.assign({}, this.getInclude(), queryBuild)
   }
 

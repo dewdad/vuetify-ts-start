@@ -50,7 +50,7 @@ export default class ProductProviderCreate extends mixins(Base) {
     const res = await this.$refs.form.submit()
     if (res) {
       this.createItem = res
-      await ProductProvider.getInstance.create(res)
+      await this.createApi(res)
       this.$success({text: '创建成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }

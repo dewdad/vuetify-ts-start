@@ -124,9 +124,9 @@ export default class ProductProviderShow extends mixins(Base) {
   }
 
   async viewInit () {
-    const { data } = await ProductProvider.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductProvider.getInstance.filterData(data)
+    this.orginFormData = ProductProvider.filterData(data)
     this.orginFormData.addresses = this.orginFormData.addresses[0]
   }
 
@@ -141,7 +141,7 @@ export default class ProductProviderShow extends mixins(Base) {
   }
 
   get products () {
-    return ProductProvider.getInstance.getProducts(this.$route.params.id)
+    return ProductProvider.getProducts(this.$route.params.id)
   }
 
   get showBtn () {

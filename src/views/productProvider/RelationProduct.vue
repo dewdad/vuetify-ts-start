@@ -199,7 +199,8 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { Product } from '@/store/modules/product'
 import { ProductProvider, RelationProducts } from '@/store/modules/productProvider'
-import { QueryBuild } from '@/api/types'
+import { List } from '@/api/types'
+import { With } from '@/utils/decorators'
 
 @Component
 export default class RelationProduct extends Vue {
@@ -257,15 +258,20 @@ export default class RelationProduct extends Vue {
     }
   }
 
-  async fetchProductList (queryBuild:QueryBuild|null = null) {
-    const {data, meta} = await Product.getInstance.with(['variants.attributes.attributeValue', 'type', 'brand']).index({...queryBuild, ...this.queryBuild})
-    this.productList = Product.getInstance.filterData(data)
+  @With(['variants.attributes.attributeValue', 'type', 'brand'])
+  listProductApi (payload:List) {
+    return Product.index(payload)
+  }
+
+  async fetchProductList (queryBuild:List|null = null) {
+    const {data, meta} = await this.listProductApi({...queryBuild, ...this.queryBuild})
+    this.productList = Product.filterData(data)
     this.meta = meta
     this.fetched = true
   }
 
   async save () {
-    await ProductProvider.getInstance.products(this.params as any)
+    await ProductProvider.products(this.params)
     this.dialogForm = false
     this.$success({text: '关联成功'})
   }
@@ -296,7 +302,7 @@ export default class RelationProduct extends Vue {
   async deleteHandle () {
     this.deleting = true
     // 发请求进行删除
-    await ProductProvider.getInstance.products(this.willDeleteVariant.item, true)
+    await ProductProvider.products(this.willDeleteVariant.item, true)
     this.deleting = false
     const dialog = {
       title: null,
@@ -331,15 +337,15 @@ export default class RelationProduct extends Vue {
   }
 
   get products () {
-    return ProductProvider.getInstance.getProducts(this.$route.params.id)
+    return ProductProvider.getProducts(this.$route.params.id)
   }
 
   get productIds () {
-    return ProductProvider.getInstance.productIds(this.$route.params.id)
+    return ProductProvider.productIds(this.$route.params.id)
   }
 
   get provider () {
-    return ProductProvider.getInstance.provider(this.$route.params.id)
+    return ProductProvider.provider(this.$route.params.id)
   }
 }
 </script>

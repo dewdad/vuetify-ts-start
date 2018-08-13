@@ -141,6 +141,8 @@ import { ProductType } from '@/store/modules/productType'
 import { SkuTableSchemaChangeParams, SkuTableItem } from '@/components/table/SkuTable.vue'
 import { Validator } from 'vee-validate'
 import InjectValidator from '@/components/form/mixins/InjectValidator'
+import { Show } from '@/api/types'
+import { With } from '@/utils/decorators'
 
 type Groups = Array<ApiResponse.AttributeGroupData & {value?:any}>
 export interface CreateProductAttributeParams{
@@ -307,6 +309,11 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
     })
   }
 
+  @With(['attributeGroups.values'])
+  showProductType (payload:Show) {
+    return ProductType.show(payload)
+  }
+
   // 监听产品类型变化改变
   @Watch('productTypeId')
   async onProductTypeIdChange (id:number) {
@@ -317,7 +324,7 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
     }
     const cache = this.getCache(String(id))
     if (!cache) {
-      this.productType = await ProductType.getInstance.with(['attributeGroups.values']).show({id})
+      this.productType = await this.showProductType({id})
       const groups = this.productType.data.attributeGroups
       this.groups = groups ? this.addValueField(groups.data.sort((a, b) => +a.variant - +b.variant)) : []
       this.alreadyed = true

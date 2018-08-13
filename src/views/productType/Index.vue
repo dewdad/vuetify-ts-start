@@ -36,7 +36,7 @@ export default class ProductTypeIndex extends mixins(Base) {
   ]
 
   delItem (id:number) {
-    return ProductType.destroy(id)
+    return ProductType.destroy({id})
   }
 
   getDataFromApi (queryBuild = null) {

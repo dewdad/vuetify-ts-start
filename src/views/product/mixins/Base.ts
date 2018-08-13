@@ -83,7 +83,7 @@ export default class BaseMixin extends Vue {
   }
 
   // 列表
-  @With(['avatars', 'brand', 'type', 'attributes.group', 'attributes.value', 'variants.attributes.group', 'variants.attributes.value'])
+  @With(['brand', 'type'])
   listApi (payload:List) {
     return this.vuexModel.index(payload)
   }

@@ -111,8 +111,9 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { Product } from '@/store/modules/product'
 // import { ProductProvider, RelationProducts } from '@/store/modules/productProvider'
-import { QueryBuild } from '@/api/types'
 import { Category } from '@/store/modules/category'
+import { List } from '@/api/types'
+import { With } from '@/utils/decorators'
 
 @Component
 export default class RelationProduct extends Vue {
@@ -153,8 +154,13 @@ export default class RelationProduct extends Vue {
     }
   }
 
-  async fetchProductList (queryBuild:QueryBuild|null = null) {
-    const {data, meta} = await Product.getInstance.with(['type', 'brand']).index({...queryBuild, ...this.queryBuild})
+  @With(['type', 'brand'])
+  listProductApi (payload:List) {
+    return Product.index(payload)
+  }
+
+  async fetchProductList (queryBuild:List|null = null) {
+    const {data, meta} = await this.listProductApi({...queryBuild, ...this.queryBuild})
     this.productList = data
     this.meta = meta
     this.fetched = true
@@ -175,7 +181,7 @@ export default class RelationProduct extends Vue {
   }
 
   async relationProduct (product:ApiResponse.ProductData, cancel:boolean) {
-    await Category.getInstance.products({id: +this.$route.params.id, product}, cancel)
+    await Category.products({id: +this.$route.params.id, product}, cancel)
   }
 
   get products () {
@@ -183,7 +189,7 @@ export default class RelationProduct extends Vue {
   }
 
   get productIds () {
-    return Category.getInstance.productIds(+this.$route.params.id)
+    return Category.productIds(+this.$route.params.id)
   }
 
   get provider () {

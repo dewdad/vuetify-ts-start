@@ -52,16 +52,16 @@ export default class ProductProviderUpdate extends mixins(Base) {
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await ProductProvider.getInstance.update({ formData: res, id: this.item.id })
+      await this.updateApi({ formData: res, id: this.item.id })
       this.$success({text: '更新成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
   }
 
   async viewInit () {
-    const { data } = await ProductProvider.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductProvider.getInstance.filterData(data)
+    this.orginFormData = data
     this.orginFormData.addresses = this.orginFormData.addresses[0]
   }
 

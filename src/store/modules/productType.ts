@@ -84,7 +84,7 @@ export const ProductType = new class extends Helpers<Actions> {
    * 获取列表
    * @param  {QueryBuild|null} payload
    */
-  index (payload?:List):AxiosPromise<ApiResponse.Brands> {
+  index (payload?:List|null):AxiosPromise<ApiResponse.Brands> {
     return this.dispatch('index', payload)
   }
   /**

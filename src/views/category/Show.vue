@@ -146,14 +146,14 @@ export default class CategoryShow extends mixins(Base) {
   }
 
   async viewInit () {
-    const { data } = await Category.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
     this.categoryName = this.item.name
-    this.orginFormData = Category.getInstance.filterData(data)
+    this.orginFormData = Category.filterData(data)
   }
 
   async relationProduct (product:ApiResponse.ProductData, cancel:boolean) {
-    await Category.getInstance.products({id: +this.$route.params.id, product}, cancel)
+    await Category.products({id: +this.$route.params.id, product}, cancel)
   }
 
   async loadFormStructure () {
