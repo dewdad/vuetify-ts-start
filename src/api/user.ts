@@ -1,10 +1,9 @@
 import BaseRequest from './BaseRequest'
 import { AxiosPromise } from 'axios'
 
-const END_POINT = ''
-
+console.log(BaseRequest)
 export default new class extends BaseRequest {
-  login (payload:{email: string, password: string}):AxiosPromise<any> {
+  login (payload:{email: string, password: string}) {
     return this.http.post('/login', payload)
   }
 
@@ -15,4 +14,4 @@ export default new class extends BaseRequest {
   logout () {
     return this.http.post('/logout')
   }
-}(END_POINT)
+}()

@@ -52,16 +52,16 @@ export default class AttributeUpdate extends mixins(Base) {
   async submit () {
     const res = await this.$refs.form.submit()
     if (res) {
-      await Attribute.getInstance.update({ formData: res, id: this.item.id })
+      await this.updateApi({id: this.item.id, ...res})
       this.$success({text: '更新成功', position: 9})
       this.$router.replace({name: this.routeName.index})
     }
   }
 
   async viewInit () {
-    const { data } = await Attribute.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = Attribute.getInstance.filterData(data)
+    this.orginFormData = Attribute.filterData(data)
   }
 
   async loadFormStructure () {

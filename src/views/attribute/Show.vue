@@ -39,9 +39,9 @@ export default class AttributeShow extends mixins(Base) {
   include = ['group']
 
   async viewInit () {
-    const { data } = await Attribute.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = Attribute.getInstance.filterData(data)
+    this.orginFormData = Attribute.filterData(data)
   }
 
   async loadFormStructure () {

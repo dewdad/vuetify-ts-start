@@ -86,7 +86,7 @@ export default class Login extends Vue {
 
   async login () {
     this.$loading({show: true, text: '登录中'})
-    let res = await User.getInstance.login(this.paserFormData())
+    let res = await User.login(this.paserFormData())
     if (res.status === 200) {
       this.$router.push({name: 'home'})
       this.$success({text: 'Welcome back!'})

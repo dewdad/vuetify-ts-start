@@ -41,11 +41,11 @@ export default class AttributeGroupIndex extends mixins(Base) {
   ]
 
   delItem (id:number) {
-    return AttributeGroup.getInstance.destroy(id)
+    return this.deleteApi({id})
   }
 
   getDataFromApi (queryBuild = null) {
-    return AttributeGroup.getInstance.with(this.include).index(queryBuild)
+    return this.listApi(queryBuild)
   }
 }
 </script>

@@ -1,7 +1,8 @@
-import { ROUTE_NAME } from '@/store/modules/attributeGroup'
+import { ROUTE_NAME, AttributeGroup } from '@/store/modules/attributeGroup'
 import Vue from 'vue'
 import Component from 'vue-class-component'
-
+import { With } from '@/utils/decorators'
+import { Update, Show, List, Create, Delete } from '@/api/types'
 // You can declare a mixin as the same style as components.
 @Component
 export default class BaseMixin extends Vue {
@@ -12,6 +13,8 @@ export default class BaseMixin extends Vue {
     create: `${ROUTE_NAME}.create`
   }
   translation = 'attributeGroup'
+
+  vuexModel = AttributeGroup
 
   async createSchema () {
     return [
@@ -68,5 +71,34 @@ export default class BaseMixin extends Vue {
     return this.$router.push(
       {name: this.routeName.update, params: { id }}
     )
+  }
+
+  // 列表
+  @With([])
+  listApi (payload?:List|null) {
+    return this.vuexModel.index(payload)
+  }
+
+  // 更新方法
+  @With(['values'])
+  updateApi (payload:Update) {
+    return this.vuexModel.update(payload)
+  }
+
+  // 详情
+  @With(['values'])
+  showApi (payload:Show) {
+    return this.vuexModel.show(payload)
+  }
+
+  // 创建
+  @With(['values'])
+  createApi (payload:Create) {
+    return this.vuexModel.create(payload)
+  }
+
+  // 删除
+  deleteApi (payload:Delete) {
+    return this.vuexModel.destroy(payload)
   }
 }

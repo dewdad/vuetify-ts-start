@@ -132,7 +132,7 @@ export default class AttributeGroupCreate extends Mixins(Base, FormMixin) {
 
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await AttributeGroup.getInstance.with(this.include).create(this.paserFormData())
+    let res = await this.createApi(this.paserFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})

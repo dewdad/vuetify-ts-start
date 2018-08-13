@@ -71,7 +71,7 @@ export const AttributeGroup = new class extends Helpers<Actions> {
   /**
    * 获取列表
    */
-  index (payload?:List):AxiosPromise<any> {
+  index (payload?:List|null):AxiosPromise<any> {
     return this.dispatch('index', payload)
   }
   /**

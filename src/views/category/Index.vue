@@ -3,7 +3,7 @@
             v-bind="{'wrap':!$vuetify.breakpoint.lgAndUp}"
             justify-center>
     <v-flex xs12>
-      <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="getDataFromApi" :showItem="showItem" :editItem="editItem" liked>
+      <base-data-table ref="table" :headers="headers" :delItem="delItem" :getDataFromApi="listApi" :showItem="showItem" :editItem="editItem" liked>
       <!-- 创建表单 -->
       <v-btn color="info" slot="storeButton" @click="$router.push({name:routeName.create})">创建</v-btn>
       <!-- 更新表单 -->
@@ -105,20 +105,16 @@ export default class CategoryIndex extends mixins(Base) {
   }
 
   async fetchCategoryById (id:number) {
-    let res = await Category.getInstance.with(['products', 'product_count']).show({id})
+    let res = await this.showApi({id})
     this.currentCategory = res
   }
 
   delItem (id:number) {
-    return Category.getInstance.destroy(id)
-  }
-
-  getDataFromApi (queryBuild = null) {
-    return Category.getInstance.with(this.include).index(queryBuild)
+    return this.deleteApi({id})
   }
 
   async mounted () {
-    let {data} = await Category.getInstance.toTree()
+    let {data} = await Category.toTree()
     this.tree = data
   }
 

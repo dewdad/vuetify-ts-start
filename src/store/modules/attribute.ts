@@ -79,37 +79,32 @@ export const actions:Actions = {
 export const Attribute = new class extends Helpers<Actions> {
   /**
    * 获取列表
-   * @param  {List|null} payload
    */
-  index (payload:List|null) {
+  index (payload?:List|null) {
     return this.dispatch('index', payload)
   }
   /**
    * 获取详情
-   * @param  {Show} payload
    */
   show (payload:Show):Promise<any> {
     return this.dispatch('show', payload)
   }
   /**
    * 创建
-   * @param  {Create} payload
    */
   create (payload:Create):Promise<any> {
     return this.dispatch('store', payload)
   }
   /**
    * 更新
-   * @param  {Update} payload
    */
   update (payload:Update):Promise<any> {
     return this.dispatch('update', payload)
   }
   /**
    * 删除
-   * @param  {number|string} id
    */
-  destroy (id:number|string):Promise<any> {
+  destroy (id:Delete):Promise<any> {
     return this.dispatch('destroy', id)
   }
 }(VUEX_MOUDLE_NAME)

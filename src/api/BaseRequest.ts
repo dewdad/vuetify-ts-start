@@ -1,14 +1,14 @@
 import request from '@/utils/request'
 import { List, Show, Update, Create, Delete } from '@/api/types'
-import { AxiosInstance } from '../../node_modules/axios'
 import { ParseInclude } from '@/utils/decorators'
+import { AxiosInstance } from '../../node_modules/axios'
 
 export default abstract class BaseRequest {
-  constructor (path?:string) {
+  constructor (path = '') {
     // if (!path) {
     //   throw new Error('API端点未指定')
     // }
-    this.path = path || ''
+    this.path = path
     this.http = request
   }
 
@@ -21,7 +21,7 @@ export default abstract class BaseRequest {
    * @type {(string|null)}
    * @memberof BaseRequest
    */
-  protected path:string|null = null
+  protected path!:string
 
   /**
    *
