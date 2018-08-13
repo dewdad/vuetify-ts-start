@@ -90,6 +90,7 @@ import { ProductType } from '@/store/modules/productType'
 import Base from './mixins/Base'
 import FormMixin from '@/components/form/mixins/Form'
 import { AttributeGroup } from '@/store/modules/attributeGroup'
+import { With } from '@/utils/decorators'
 
 @Component({
   components:{
@@ -104,8 +105,6 @@ export default class ProductTypeCreate extends mixins(Base, FormMixin) {
   };
 
   @Provide() parentValidator = this.$validator
-
-  include = ['attributeGroups']
 
   groups = [] as ApiResponse.AttributeGroupItem[]
 
@@ -142,7 +141,7 @@ export default class ProductTypeCreate extends mixins(Base, FormMixin) {
   }
 
   async fetchGroups () {
-    const {data} = await AttributeGroup.getInstance.index()
+    const {data} = await AttributeGroup.index()
     this.groups = data
   }
 
@@ -162,12 +161,12 @@ export default class ProductTypeCreate extends mixins(Base, FormMixin) {
 
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await ProductType.getInstance.with(this.include).create(this.paserFormData())
+    let res = await this.createApi(this.paserFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
     } else {
-      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$setErrorsFromResponse(res.data)
       this.$fail({text: res.data.message})
     }
     this.$loading({show: false})

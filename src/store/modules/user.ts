@@ -1,9 +1,15 @@
+import { List, Show, Create, Update, Delete } from '@/api/types'
+
 import store from '@/store'
 import { getToken, setToken, removeToken } from '@/auth'
 import { Commit, ActionContext } from 'vuex'
-import * as UserApi from '@/api/user'
-import { Base } from '@/store/modules/app'
+import UserApi from '@/api/user'
+import { Helpers } from '@/store/helpers/Helpers'
 
+export const ROUTE_NAME = ''
+export const VUEX_MOUDLE_NAME = 'user'
+
+// interface
 interface UserInterface {
   [propNmae:string]:any
 }
@@ -12,11 +18,21 @@ interface State {
   token:string|undefined;
 }
 
+interface Actions {
+  login ({commit}: ({commit: Commit}), payload:{email:string, password:string}) :any
+  me ({commit}: ({commit: Commit})):any
+  logout ({commit}: ({commit: Commit})):any
+  unauthorized ({commit}: ({commit: Commit})):any
+  refreshToken ({commit}: ({commit: Commit}), token:string):any
+}
+
+// state
 export const state:State = {
   user: null,
   token: getToken()
 }
 
+// mutations
 export const mutations = {
   REFRESH_TOKEN: (state: State, token:string) => {
     setToken(token)
@@ -38,14 +54,15 @@ export const mutations = {
   REMOVE_USER: (state:State) => (state.user=null)
 }
 
-export const actions = {
+// actions
+export const actions:Actions = {
   /**
    * @description 用户登录方法
    *
    * @param {({commit: Commit})} {commit}
    * @param {{email:string, password:string}} payload
    */
-  async login ({commit}: ({commit: Commit}), payload:{email:string, password:string}) {
+  async login ({commit}, payload) {
     try {
       let data = await UserApi.login(payload)
       commit('SET_TOKEN', data.data)
@@ -60,7 +77,7 @@ export const actions = {
    *
    * @param {({commit: Commit})} {commit}
    */
-  async me ({commit}: ({commit: Commit})) {
+  async me ({commit}) {
     try {
       let {data} = await UserApi.me()
       commit('SET_USER', data)
@@ -69,7 +86,7 @@ export const actions = {
     }
   },
 
-  async logout ({commit}: ({commit: Commit})) {
+  async logout ({commit}) {
     try {
       await UserApi.logout()
       commit('REMOVE_TOKEN')
@@ -80,55 +97,29 @@ export const actions = {
     }
   },
 
-  unauthorized ({commit}: ({commit: Commit})) {
+  unauthorized ({commit}) {
     commit('REMOVE_TOKEN')
     commit('REMOVE_USER')
     commit('app/GO', {router: {name: 'login'}, type: 'replace'}, {root: true})
   },
 
-  async refreshToken ({commit}: ({commit: Commit}), token:string) {
+  async refreshToken ({commit}, token) {
     commit('REFRESH_TOKEN', token)
   }
 }
 
-export class User extends Base {
-  protected static instance:User;
-
-  public static get getInstance ():User {
-    if (!this.instance) {
-      this.instance = new User()
-    }
-    return this.instance
+export const Brand = new class extends Helpers<Actions> {
+  login (payload:{email:string, password:string}) {
+    return this.dispatch('login', payload)
+  }
+  me () {
+    return this.dispatch('me')
+  }
+  logout () {
+    return this.dispatch('logout')
   }
 
-  /**
-   *
-   * 用户登录
-   * @static
-   * @param {{email:string, password:string}} formData
-   * @returns {Promise<any>}
-   * @memberof User
-   */
-  public login (formData:{email:string, password:string}):Promise<any> {
-    return store.dispatch('user/login', formData)
+  unauthorized () {
+    return this.dispatch('unauthorized')
   }
-
-  /**
-   *
-   * 获取用户信息
-   * @static
-   * @returns {Promise<User>}
-   * @memberof User
-   */
-  public me ():Promise<User> {
-    return store.dispatch('user/me')
-  }
-
-  public logout () {
-    return store.dispatch('user/logout')
-  }
-
-  public unauthorized () {
-    return store.dispatch('user/unauthorized')
-  }
-}
+}(VUEX_MOUDLE_NAME)

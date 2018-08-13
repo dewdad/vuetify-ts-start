@@ -1,12 +1,15 @@
 import Vue from 'vue'
-import Vuex, {StoreOptions} from 'vuex'
+import Vuex, {StoreOptions, Module} from 'vuex'
 
 import getters from '@/store/getters'
 import { RootState } from './types'
 
 Vue.use(Vuex)
 
-const mergeModule = (module:any) => module.default ? module.default : {...module, namespaced: true}
+const mergeModule = (module:any) => {
+  const {actions, getters, mutations, state} = module
+  return module.default ? module.default : {...{actions, getters, mutations, state}, namespaced: true}
+}
 
 const requireContext = require.context('./modules', false, /.*\.ts$/)
 interface VuexModule {[propName: string]: any; }

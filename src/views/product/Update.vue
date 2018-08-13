@@ -59,8 +59,6 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
 
   @Provide() parentValidator = this.$validator
 
-  include = ['avatars', 'brand', 'type', 'attributes.group', 'attributes.value', 'variants.attributes.group', 'variants.attributes.value']
-
   item = {} as ApiResponse.ProductData
 
   brands:any = []
@@ -202,7 +200,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
 
   async update () {
     this.$loading({show: true, text: '提交中'})
-    let res = await Product.getInstance.with(this.include).update({id: this.item.id, ...this.getFormData()})
+    let res = await this.updateApi({id: this.item.id, ...this.getFormData()})
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
@@ -214,7 +212,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
   }
 
   async loadBrands () {
-    const {data} = await Brand.getInstance.index({filter: 'id;name', per_page: 999})
+    const {data} = await Brand.index({filter: 'id;name', per_page: 999})
     this.brands = data
     const brandField = this.formSchema.find(item => item.field === 'brand_id')
     if (brandField) {
@@ -223,7 +221,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
   }
 
   async loadProductTypes () {
-    let {data} = await ProductType.getInstance.index({per_page: 999, filter: 'id;name'})
+    let {data} = await ProductType.index({per_page: 999, filter: 'id;name'})
     this.productTypes = data
     const productTypeField = this.formSchema.find(item => item.field === 'type_id')
     if (productTypeField) {
@@ -232,7 +230,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
   }
 
   async viewInit () {
-    const {data} = await Product.getInstance.with(this.include).show({id: +this.$route.params.id})
+    const {data} = await this.showApi({id: +this.$route.params.id})
     this.item = data
     this.assignmentFormSchema(this.item)
   }

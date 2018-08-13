@@ -13,16 +13,17 @@
 
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator'
+import { State, Action, Getter } from 'vuex-class'
 
 import Base from './mixins/Base'
-import { Brand, TestBrand } from '@/store/modules/brand'
+import { Brand } from '@/store/modules/brand'
+import { With } from '@/utils/decorators'
 @Component({
   components:{
   'base-data-table':()=>import('@/components/table/BaseDataTable.vue')
   }
   })
 export default class BrandIndex extends Mixins(Base) {
-  include:string[] = []
   headers = [
     {
       text: 'ID',
@@ -38,16 +39,16 @@ export default class BrandIndex extends Mixins(Base) {
   ]
 
   delItem (id:number) {
-    return Brand.getInstance.destroy(id)
+    return Brand.destroy({id})
   }
 
+  @With(['avatars'])
   getDataFromApi (queryBuild = null) {
-    return Brand.getInstance.with(this.include).index(queryBuild)
+    return Brand.index(queryBuild)
   }
 
-  mounted () {
-    let brand = new TestBrand()
-    // console.log(brand.actions)
+  async mounted () {
+    // this.$store.getters.
   }
 }
 </script>

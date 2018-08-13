@@ -40,6 +40,7 @@ import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
 import { Brand } from '@/store/modules/brand'
 import NameCard from '@/components/card/NameCard.vue'
+import { With } from '@/utils/decorators'
 
 @Component({
   components:{
@@ -51,10 +52,9 @@ export default class BrandShow extends mixins(Base) {
 
   item:any|null = null
 
-  include = ['avatars']
-
+  @With(['avatars'])
   async viewInit () {
-    const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
+    const {data} = await Brand.show({id: +this.$route.params.id})
     this.item = data
   }
 

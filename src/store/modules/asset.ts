@@ -1,17 +1,25 @@
 import { Base } from '@/store/modules/app'
-import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import store from '@/store'
 import { Commit, ActionContext } from 'vuex'
-import * as AssetApi from '@/api/asset'
+import AssetApi from '@/api/asset'
+import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'asset'
 
+export const VUEX_MOUDLE_NAME = 'asset'
+
+// interface
 interface State{
 
 }
-export const actions = {
 
-  async upload (ctx: ActionContext<State, any>, file:string) {
+interface Actions {
+  upload(ctx: ActionContext<State, any>, file:File):any
+}
+
+// actions
+export const actions:Actions = {
+
+  async upload (ctx, file) {
     try {
       let {data} = await AssetApi.upload(file)
       return data
@@ -20,3 +28,7 @@ export const actions = {
     }
   }
 }
+
+export const Asset = new class extends Helpers<Actions> {
+
+}(VUEX_MOUDLE_NAME)

@@ -1,23 +1,18 @@
-import request from '@/utils/request'
+import BaseRequest from './BaseRequest'
+import { AxiosPromise } from 'axios'
 
-export function login (payload:{email: string, password: string}) {
-  return request({
-    url: '/login',
-    method: 'post',
-    data: payload
-  })
-}
+const END_POINT = ''
 
-export function me () {
-  return request({
-    url: '/me',
-    method: 'get'
-  })
-}
+export default new class extends BaseRequest {
+  login (payload:{email: string, password: string}):AxiosPromise<any> {
+    return this.http.post('/login', payload)
+  }
 
-export function logout () {
-  return request({
-    url: '/logout',
-    method: 'post'
-  })
-}
+  me () {
+    return this.http.get('/me')
+  }
+
+  logout () {
+    return this.http.post('/logout')
+  }
+}(END_POINT)

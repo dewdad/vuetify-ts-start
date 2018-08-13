@@ -128,9 +128,9 @@ export default class ProductTypeShow extends mixins(Base) {
   selected:number[] = []
 
   async viewInit () {
-    const { data } = await ProductType.getInstance.with(this.include).show({id: this.$route.params.id})
+    const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductType.getInstance.filterData(data)
+    this.orginFormData = data
     this.selected = this.orginFormData.attributeGroups.map((item:any) => item.id)
   }
 

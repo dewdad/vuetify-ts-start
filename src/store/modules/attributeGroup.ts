@@ -1,24 +1,38 @@
-import { Base } from '@/store/modules/app'
-import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import store from '@/store'
+import { List, Show, Create, Update, Delete } from '@/api/types'
+
 import { Commit, ActionContext } from 'vuex'
-import * as AttributeGroupApi from '@/api/attributeGroup'
+import AttributeGroupApi from '@/api/attributeGroup'
+import { AxiosPromise } from 'axios'
+import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'attribute-group'
 
+export const VUEX_MOUDLE_NAME = 'attributeGroup'
+
+// interface
 interface State{
 
 }
-export const actions = {
-  async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
+
+interface Actions{
+  index(ctx: ActionContext<State, any>, payload?:List):any;
+  show(ctx: ActionContext<State, any>, payload:Show):any;
+  store(ctx: ActionContext<State, any>, payload:Create):any
+  update(ctx: ActionContext<State, any>, payload:Update):any
+  destroy(ctx: ActionContext<State, any>, id:Delete):any
+}
+
+// actions
+export const actions:Actions = {
+  async index (ctx, payload) {
     try {
-      let {data} = await AttributeGroupApi.index(payload)
+      let {data} = await AttributeGroupApi.index<ApiResponse.AttributeGroups>(payload)
       return data
     } catch (error) {
 
     }
   },
-  async show (ctx: ActionContext<State, any>, payload:Show) {
+  async show (ctx, payload) {
     try {
       let {data} = await AttributeGroupApi.show(payload)
       return data
@@ -26,7 +40,7 @@ export const actions = {
 
     }
   },
-  async store (ctx: ActionContext<State, any>, payload:FormData) {
+  async store (ctx, payload) {
     try {
       let data = await AttributeGroupApi.store(payload)
       return data
@@ -34,7 +48,7 @@ export const actions = {
 
     }
   },
-  async update (ctx: ActionContext<State, any>, payload:Update) {
+  async update (ctx, payload) {
     try {
       const data = await AttributeGroupApi.update(payload)
       return data
@@ -43,7 +57,7 @@ export const actions = {
     }
   },
 
-  async destroy (ctx: ActionContext<State, any>, id:string|number) {
+  async destroy (ctx, id) {
     try {
       const { data } = await AttributeGroupApi.destroy(id)
       return data
@@ -53,33 +67,35 @@ export const actions = {
   }
 }
 
-export class AttributeGroup extends Base {
-  protected static instance:AttributeGroup;
-
-  public static get getInstance ():AttributeGroup {
-    if (!this.instance) {
-      this.instance = new AttributeGroup()
-    }
-    return this.instance
+export const AttributeGroup = new class extends Helpers<Actions> {
+  /**
+   * 获取列表
+   */
+  index (payload?:List):AxiosPromise<any> {
+    return this.dispatch('index', payload)
   }
-
-  index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('attributeGroup/index', this.assignQueryBuild(payload))
-  }
-
+  /**
+   * 获取详情
+   */
   show (payload:Show):Promise<any> {
-    return store.dispatch('attributeGroup/show', this.assignQueryBuild(payload))
+    return this.dispatch('show', payload)
   }
-
-  create (payload:FormData):Promise<any> {
-    return store.dispatch('attributeGroup/store', this.assignQueryBuild(payload))
+  /**
+   * 创建
+   */
+  create (payload:Create):Promise<any> {
+    return this.dispatch('store', payload)
   }
-
+  /**
+   * 更新
+   */
   update (payload:Update):Promise<any> {
-    return store.dispatch('attributeGroup/update', this.assignQueryBuild(payload))
+    return this.dispatch('update', payload)
   }
-
-  destroy (id:number|string):Promise<any> {
-    return store.dispatch('attributeGroup/destroy', id)
+  /**
+   * 删除
+   */
+  destroy (id:Delete):Promise<any> {
+    return this.dispatch('destroy', id)
   }
-}
+}(VUEX_MOUDLE_NAME)

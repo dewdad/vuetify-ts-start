@@ -3,7 +3,6 @@ import { EventBus } from '@/plugins/event'
 import Vue from 'vue'
 import { Component } from 'vue-router/types/router'
 import { Validator, ErrorBag } from 'vee-validate'
-
 declare global {
   const _: LoDashStatic
 }

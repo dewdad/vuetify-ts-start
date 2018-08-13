@@ -1,13 +1,14 @@
 import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from '@/api/types'
+import { List, Show, Update, Create, Delete } from '@/api/types'
 import { AxiosInstance } from '../../node_modules/axios'
+import { ParseInclude } from '@/utils/decorators'
 
 export default abstract class BaseRequest {
-  constructor (path:string) {
-    if (!path) {
-      throw new Error('API端点未指定')
-    }
-    this.path = path
+  constructor (path?:string) {
+    // if (!path) {
+    //   throw new Error('API端点未指定')
+    // }
+    this.path = path || ''
     this.http = request
   }
 
@@ -24,38 +25,13 @@ export default abstract class BaseRequest {
 
   /**
    *
-   * 关联关系查询
-   * @protected
-   * @type {string[]}
-   * @memberof BaseRequest
-   */
-  protected _include:string[] = []
-
-  public with (arg:string[]):this {
-    this._include.push(...arg)
-    return this
-  }
-
-  parseInclude () {
-    return [...new Set(this._include)].join(',')
-  }
-
-  get include () {
-    return { include: this.parseInclude() }
-  }
-
-  assignQueryBuild (queryBuild:QueryBuild|null) {
-    return Object.assign({}, this.include, queryBuild)
-  }
-
-  /**
-   *
    * 获取列表
    * @param {(QueryBuild|null)} [payload=null]
    * @returns
    * @memberof BaseRequest
    */
-  public index<T> (payload:QueryBuild|null = null) {
+  @ParseInclude
+  public index<T> (payload:List|null = null) {
     const url = `${this.path}`
     const params = payload
     return this.http.get<T>(url, {params})
@@ -68,6 +44,7 @@ export default abstract class BaseRequest {
    * @returns
    * @memberof BaseRequest
    */
+  @ParseInclude
   public show<T> ({ id, ...payload }:Show) {
     const url = `${this.path}/${id}`
     const params = payload
@@ -81,7 +58,8 @@ export default abstract class BaseRequest {
    * @returns
    * @memberof BaseRequest
    */
-  public store<T> (formData:FormData) {
+  @ParseInclude
+  public store<T> (formData:Create) {
     const url = `${this.path}`
     const data = formData
     return this.http.post<T>(url, data)
@@ -94,6 +72,7 @@ export default abstract class BaseRequest {
    * @returns
    * @memberof BaseRequest
    */
+  @ParseInclude
   public update<T> ({ id, ...formData }:Update) {
     const url = `${this.path}/${id}`
     const data = {...formData}
@@ -107,7 +86,7 @@ export default abstract class BaseRequest {
    * @returns
    * @memberof BaseRequest
    */
-  public destroy (id:string|number) {
+  public destroy (id:Delete) {
     const url = `${this.path}/${id}`
     return this.http.delete(url)
   }

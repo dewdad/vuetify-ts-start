@@ -1,35 +1,25 @@
-import { Base } from '@/store/modules/app'
-import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import store from '@/store'
+import { List, Show, Create, Update, Delete } from '@/api/types'
 import { Commit, ActionContext, Payload, CommitOptions } from 'vuex'
-import * as ProductApi from '@/api/product'
+import ProductApi from '@/api/product'
+import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'product'
 
+export const VUEX_MOUDLE_NAME = 'product'
+
+// interface
 interface State{
   item:ApiResponse.Product| null
-}
-
-export const state:State = {
-  // 当前浏览/编辑商品
-  item: null
 }
 
 interface Mutations {
   'SET_ITEM':(state:State, payload:ApiResponse.Product)=>void
 }
 
-export const mutations:Mutations = {
-  SET_ITEM: (state, payload) => { state.item = payload }
-}
-
 interface Getters{
   current:(state:State)=>State['item']
 }
 
-export const getters:Getters = {
-  current: (state) => state.item
-}
 export interface Commit {
   (type: keyof Mutations, payload?: any, options?: CommitOptions): void;
   <P extends Payload>(payloadWithType: P, options?: CommitOptions): void;
@@ -39,8 +29,33 @@ interface Context extends ActionContext<State, any> {
   getters:Getters
 }
 
-export const actions = {
-  async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
+interface Actions{
+  index(ctx: ActionContext<State, any>, payload?:List):any;
+  show(ctx: ActionContext<State, any>, payload:Show):any;
+  store(ctx: ActionContext<State, any>, payload:Create):any
+  update(ctx: ActionContext<State, any>, payload:Update):any
+  destroy(ctx: ActionContext<State, any>, id:Delete):any
+}
+
+// state
+export const state:State = {
+  // 当前浏览/编辑商品
+  item: null
+}
+
+// mutations
+export const mutations:Mutations = {
+  SET_ITEM: (state, payload) => { state.item = payload }
+}
+
+// getters
+export const getters:Getters = {
+  current: (state) => state.item
+}
+
+// actions
+export const actions:Actions = {
+  async index (ctx, payload) {
     try {
       let {data} = await ProductApi.index(payload)
       return data
@@ -48,7 +63,7 @@ export const actions = {
 
     }
   },
-  async show (ctx: Context, payload:Show) {
+  async show (ctx, payload) {
     if (!ctx.getters.current) {
       try {
         let {data} = await ProductApi.show(payload)
@@ -59,7 +74,7 @@ export const actions = {
     }
     return ctx.getters.current
   },
-  async store (ctx: ActionContext<State, any>, payload:FormData) {
+  async store (ctx, payload) {
     try {
       let data = await ProductApi.store(payload)
       return data
@@ -67,7 +82,7 @@ export const actions = {
       console.log(error)
     }
   },
-  async update (ctx: ActionContext<State, any>, payload:Update) {
+  async update (ctx, payload) {
     try {
       const { data } = await ProductApi.update(payload)
       return data
@@ -76,7 +91,7 @@ export const actions = {
     }
   },
 
-  async destroy (ctx: ActionContext<State, any>, id:string|number) {
+  async destroy (ctx, id) {
     try {
       const { data } = await ProductApi.destroy(id)
       return data
@@ -86,37 +101,39 @@ export const actions = {
   }
 }
 
-export class Product extends Base {
-  protected static instance:Product;
-
-  public static get getInstance ():Product {
-    if (!this.instance) {
-      this.instance = new Product()
-    }
-    return this.instance
+export const Product = new class extends Helpers<Actions, Getters> {
+  /**
+   * 获取列表
+   */
+  index (payload?:List|null) {
+    return this.dispatch('index', payload)
   }
-
-  index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('product/index', this.assignQueryBuild(payload))
-  }
-
+  /**
+   * 获取详情
+   */
   show (payload:Show):Promise<any> {
-    return store.dispatch('product/show', this.assignQueryBuild(payload))
+    return this.dispatch('show', payload)
   }
-
-  create (payload:FormData):Promise<any> {
-    return store.dispatch('product/store', this.assignQueryBuild(payload))
+  /**
+   * 创建
+   */
+  create (payload:Create):Promise<any> {
+    return this.dispatch('store', payload)
   }
-
+  /**
+   * 更新
+   */
   update (payload:Update):Promise<any> {
-    return store.dispatch('product/update', this.assignQueryBuild(payload))
+    return this.dispatch('update', payload)
   }
-
-  destroy (id:number|string):Promise<any> {
-    return store.dispatch('product/destroy', id)
+  /**
+   * 删除
+   */
+  destroy (id:Delete):Promise<any> {
+    return this.dispatch('destroy', id)
   }
 
   current () {
-    return store.getters('product/current')
+    return this.getters('current')
   }
-}
+}(VUEX_MOUDLE_NAME)

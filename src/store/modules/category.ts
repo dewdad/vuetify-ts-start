@@ -1,19 +1,20 @@
-import { Base } from '@/store/modules/app'
-import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import store from '@/store'
+import { List, Show, Create, Update, Delete } from '@/api/types'
 import { Commit, ActionContext } from 'vuex'
-import * as CategoryApi from '@/api/category'
+import CategoryApi from '@/api/category'
+import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'category'
 
+export const VUEX_MOUDLE_NAME = 'category'
+
+// interface
 interface State{
   categories:{[propName:string]:ApiResponse.Category}
 }
 
-export const state:State = {
-  categories: {}
+interface Getters{
+  productIds:(state:State)=>(id:number)=>void
 }
-
 export interface AddProductPayload{
   id:number,
   product:ApiResponse.ProductData
@@ -24,6 +25,23 @@ interface SetCategoryPayload{
   category:ApiResponse.Category
 }
 
+interface Actions{
+  toTree(ctx: ActionContext<State, any>):any;
+  index(ctx: ActionContext<State, any>, payload?:List):any;
+  show(ctx: ActionContext<State, any>, payload:Show):any;
+  store(ctx: ActionContext<State, any>, payload:Create):any
+  update(ctx: ActionContext<State, any>, payload:Update):any
+  destroy(ctx: ActionContext<State, any>, id:Delete):any
+  products (ctx: ActionContext<State, any>, payload:AddProductPayload):any
+  cancelProducts (ctx: ActionContext<State, any>, payload:AddProductPayload):any
+}
+
+// state
+export const state:State = {
+  categories: {}
+}
+
+// mutations
 export const mutations = {
   ADD_PRODUCT: (state:State, {id, product}:AddProductPayload) => {
     (state.categories[id].data.products as ApiResponse.Products).data.includes(product) || (state.categories[id].data.products as ApiResponse.Products).data.push(product)
@@ -57,8 +75,9 @@ export const mutations = {
 
 }
 
-export const actions = {
-  async toTree (ctx: ActionContext<State, any>) {
+// actions
+export const actions:Actions = {
+  async toTree (ctx) {
     try {
       let {data} = await CategoryApi.toTree()
       return data
@@ -66,7 +85,7 @@ export const actions = {
 
     }
   },
-  async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
+  async index (ctx, payload) {
     try {
       let {data} = await CategoryApi.index(payload)
       return data
@@ -74,7 +93,7 @@ export const actions = {
 
     }
   },
-  async show (ctx: ActionContext<State, any>, payload:Show) {
+  async show (ctx, payload) {
     try {
       if (!ctx.state.categories[payload.id]) {
         let {data} = await CategoryApi.show(payload)
@@ -85,7 +104,7 @@ export const actions = {
 
     }
   },
-  async store (ctx: ActionContext<State, any>, payload:FormData) {
+  async store (ctx, payload) {
     try {
       let {data} = await CategoryApi.store(payload)
       return data
@@ -93,7 +112,7 @@ export const actions = {
 
     }
   },
-  async products (ctx: ActionContext<State, any>, payload:AddProductPayload) {
+  async products (ctx, payload) {
     try {
       // const productIds = ctx.getters.productIds(payload.id)
       // productIds.push(payload.product.id)
@@ -105,7 +124,7 @@ export const actions = {
     }
   },
 
-  async cancelProducts (ctx: ActionContext<State, any>, payload:AddProductPayload) {
+  async cancelProducts (ctx, payload) {
     try {
       let {data} = await CategoryApi.detachProducts({id: payload.id, productIds: payload.product.id})
       ctx.commit('DEL_PRODUCT', payload)
@@ -115,7 +134,7 @@ export const actions = {
     }
   },
 
-  async update (ctx: ActionContext<State, any>, payload:Update) {
+  async update (ctx, payload) {
     try {
       const { data } = await CategoryApi.update(payload)
       return data
@@ -124,7 +143,7 @@ export const actions = {
     }
   },
 
-  async destroy (ctx: ActionContext<State, any>, id:string|number) {
+  async destroy (ctx, id) {
     try {
       const { data } = await CategoryApi.destroy(id)
       return data
@@ -134,58 +153,57 @@ export const actions = {
   }
 }
 
-interface Getters{
-  productIds:(state:State)=>(id:number)=>void
-}
-
+// getters
 export const getters:Getters = {
   productIds: (state:State) => (id:number) => (state.categories[id].data.products as ApiResponse.Products).data.map(product => product.id)
 }
 
-export class Category extends Base {
-  protected static instance:Category;
+// Helper Vuex
 
-  public static get getInstance ():Category {
-    if (!this.instance) {
-      this.instance = new Category()
-    }
-    return this.instance
+export const Category = new class extends Helpers<Actions, Getters> {
+  /**
+   * 获取列表
+   */
+  index (payload?:List|null) {
+    return this.dispatch('index', payload)
+  }
+  /**
+   * 获取详情
+   */
+  show (payload:Show):Promise<any> {
+    return this.dispatch('show', payload)
+  }
+  /**
+   * 创建
+   */
+  create (payload:Create):Promise<any> {
+    return this.dispatch('store', payload)
+  }
+  /**
+   * 更新
+   */
+  update (payload:Update):Promise<any> {
+    return this.dispatch('update', payload)
+  }
+  /**
+   * 删除
+   */
+  destroy (id:Delete):Promise<any> {
+    return this.dispatch('destroy', id)
   }
 
   toTree ():Promise<any> {
-    return store.dispatch('category/toTree')
-  }
-
-  index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('category/index', this.assignQueryBuild(payload))
-  }
-
-  show (payload:Show):Promise<any> {
-    return store.dispatch('category/show', this.assignQueryBuild(payload))
-  }
-
-  create (payload:FormData):Promise<any> {
-    return store.dispatch('category/store', payload)
+    return this.dispatch('toTree')
   }
 
   products (payload:AddProductPayload, cancel = false):Promise<any> {
-    console.log(payload)
-    console.log(cancel)
     if (cancel) {
-      return store.dispatch('category/cancelProducts', payload)
+      return this.dispatch('cancelProducts', payload)
     }
-    return store.dispatch('category/products', payload)
-  }
-
-  update (payload:Update):Promise<any> {
-    return store.dispatch('category/update', payload)
-  }
-
-  destroy (id:number|string):Promise<any> {
-    return store.dispatch('category/destroy', id)
+    return this.dispatch('products', payload)
   }
 
   productIds (id:number) {
-    return store.getters['category/productIds'](id)
+    return this.getters('productIds')(id)
   }
-}
+}(VUEX_MOUDLE_NAME)

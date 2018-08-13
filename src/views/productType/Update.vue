@@ -94,8 +94,6 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
     vform:any
   };
 
-  include = ['attributeGroups']
-
   item = {} as ApiResponse.ProductTypeData
 
   groups = [] as ApiResponse.AttributeGroupItem[]
@@ -137,7 +135,7 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
   }
 
   async fetchGroups () {
-    const {data} = await AttributeGroup.getInstance.index()
+    const {data} = await AttributeGroup.index()
     this.groups = data
   }
 
@@ -157,7 +155,7 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
 
   async update () {
     this.$loading({show: true, text: '提交中'})
-    let res = await ProductType.getInstance.with(this.include).update({id: +this.$route.params.id, formData: this.paserFormData()})
+    let res = await this.updateApi({id: +this.$route.params.id, ...this.paserFormData()})
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'update success!'})
@@ -169,7 +167,7 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
   }
 
   async viewInit () {
-    const {data} = await ProductType.getInstance.with(this.include).show({id: +this.$route.params.id})
+    const {data} = await this.showApi({id: +this.$route.params.id})
     this.item = data
     this.assignmentFormSchema(this.item)
   }

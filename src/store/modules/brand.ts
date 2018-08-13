@@ -1,38 +1,60 @@
-import { Base } from '@/store/modules/app'
-import { QueryBuild, Show, FormData, Update } from '@/api/types'
-import { RootState } from '../types'
+import { List, Show, Create, Update, Delete } from '@/api/types'
 
-import store from '@/store'
-import { Commit, ActionContext, GetterTree, MutationTree, ActionTree, Module } from 'vuex'
+import { Commit, GetterTree, MutationTree, ActionTree, Module, Dispatch } from 'vuex'
 import BrandApi from '@/api/brand'
-import { VuexHelper } from '@/utils/decorators'
+import { AxiosPromise } from 'axios'
+import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'brand'
 
+export const VUEX_MOUDLE_NAME = 'brand'
+
+// interface
 interface State{
   list:ApiResponse.BrandData[]
 }
 
-const mutations ={
-
+interface Actions{
+  index(ctx: ActionContext<State, any>, payload?:List):any;
+  show(ctx: ActionContext<State, any>, payload:Show):any;
+  store(ctx: ActionContext<State, any>, payload:Create):any
+  update(ctx: ActionContext<State, any>, payload:Update):any
+  destroy(ctx: ActionContext<State, any>, id:Delete):any
 }
 
-const state:State = {
+export interface ActionContext<S, R> {
+  dispatch: Dispatch;
+  commit: Commit;
+  state: S;
+  getters: any;
+  rootState: R;
+  rootGetters: any;
+}
+
+// state
+export const state:State = {
   list: []
 }
 
-const actions:ActionTree<State, RootState> = {
-  async index (ctx: ActionContext<State, any>, payload:QueryBuild) {
+// mutations
+export const mutations ={
+
+}
+
+// actions
+export const actions:Actions = {
+  async index (ctx, payload) {
     try {
+      // payload maybe has include prop = {includ:['']}
       let {data} = await BrandApi.index<ApiResponse.Brands>(payload)
-      console.log(payload)
-      console.log(data)
+      // console.log(payload)
+      // console.log(data)
       return data
     } catch (error) {
 
     }
   },
-  async show (ctx: ActionContext<State, any>, payload:Show) {
+  async show (ctx, payload) {
     try {
       let {data} = await BrandApi.show<ApiResponse.BrandData>(payload)
       return data
@@ -40,24 +62,24 @@ const actions:ActionTree<State, RootState> = {
 
     }
   },
-  async store (ctx: ActionContext<State, any>, payload:FormData) {
+  async store (ctx, payload) {
     try {
-      let {data} = await BrandApi.store(payload)
+      let data = await BrandApi.store(payload)
       return data
     } catch (error) {
 
     }
   },
-  async update (ctx: ActionContext<State, any>, payload:Update) {
+  async update (ctx, payload) {
     try {
-      const { data } = await BrandApi.update(payload)
+      const data = await BrandApi.update(payload)
       return data
     } catch (error) {
       console.error(error)
     }
   },
 
-  async destroy (ctx: ActionContext<State, any>, id:string|number) {
+  async destroy (ctx, id) {
     try {
       const { data } = await BrandApi.destroy(id)
       return data
@@ -67,44 +89,39 @@ const actions:ActionTree<State, RootState> = {
   }
 }
 
-export default {
-  namespaced: true,
-  actions,
-  state
-} as Module<State, RootState>
+// getters
 
-export class Brand extends Base {
-  protected static instance:Brand;
+// Helper Vuex
 
-  public static get getInstance ():Brand {
-    if (!this.instance) {
-      this.instance = new Brand()
-    }
-    return this.instance
+export const Brand = new class extends Helpers<Actions> {
+  /**
+   * 获取列表
+   */
+  index (payload?:List|null):AxiosPromise<ApiResponse.Brands> {
+    return this.dispatch('index', payload)
   }
-
-  index (payload:QueryBuild|null = null):Promise<any> {
-    return store.dispatch('brand/index', this.assignQueryBuild(payload))
-  }
-
+  /**
+   * 获取详情
+   */
   show (payload:Show):Promise<any> {
-    return store.dispatch('brand/show', this.assignQueryBuild(payload))
+    return this.dispatch('show', payload)
   }
-
-  create (payload:FormData):Promise<any> {
-    return store.dispatch('brand/store', payload)
+  /**
+   * 创建
+   */
+  create (payload:Create):Promise<any> {
+    return this.dispatch('store', payload)
   }
-
+  /**
+   * 更新
+   */
   update (payload:Update):Promise<any> {
-    return store.dispatch('brand/update', payload)
+    return this.dispatch('update', payload)
   }
-
-  destroy (id:number|string):Promise<any> {
-    return store.dispatch('brand/destroy', id)
+  /**
+   * 删除
+   */
+  destroy (id:Delete):Promise<any> {
+    return this.dispatch('destroy', id)
   }
-}
-
-@VuexHelper({actions})
-export class TestBrand {
-
-}
+}(VUEX_MOUDLE_NAME)

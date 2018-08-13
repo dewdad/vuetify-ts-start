@@ -1,12 +1,9 @@
-import request from '@/utils/request'
-import { QueryBuild, Show, Update, FormData } from '@/api/types'
-
+import BaseRequest from './BaseRequest'
 const END_POINT = 'assets'
 
-export function upload (file:string) {
-  return request({
-    url: `${END_POINT}/upload`,
-    method: 'post',
-    data: file
-  })
-}
+export default new class extends BaseRequest {
+  upload (file:File) {
+    const url = `${this.path}/upload`
+    return this.http.post(url, file)
+  }
+}(END_POINT)

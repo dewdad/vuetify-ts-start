@@ -32,6 +32,7 @@ import FormBodyCard from '@/components/card/FormBodyCard.vue'
 
 import { Brand } from '@/store/modules/brand'
 import Base from './mixins/Base'
+import { With } from '@/utils/decorators'
 @Component({
   components:{
   'base-form-item':BaseFormItem,
@@ -45,8 +46,6 @@ export default class BrandCreate extends Mixins(Base, FormMixin) {
   };
 
   @Provide() parentValidator = this.$validator
-
-  include = ['avatars']
 
   clear () {
     this.$refs.vform.reset()
@@ -89,14 +88,19 @@ export default class BrandCreate extends Mixins(Base, FormMixin) {
     }
   }
 
+  @With(['avatars'])
+  createBrandApi (payload:any) {
+    return Brand.create(payload)
+  }
+
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await Brand.getInstance.with(this.include).create(this.paserFormData())
+    let res = await this.createBrandApi(this.paserFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
     } else {
-      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$setErrorsFromResponse(res.data)
       this.$fail({text: res.data.message})
     }
     this.$loading({show: false})

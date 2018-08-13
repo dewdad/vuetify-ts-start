@@ -23,7 +23,6 @@ import { ProductType } from '@/store/modules/productType'
   }
   })
 export default class ProductTypeIndex extends mixins(Base) {
-  include:string[] = []
   headers = [
     {
       text: 'ID',
@@ -37,11 +36,11 @@ export default class ProductTypeIndex extends mixins(Base) {
   ]
 
   delItem (id:number) {
-    return ProductType.getInstance.destroy(id)
+    return ProductType.destroy(id)
   }
 
   getDataFromApi (queryBuild = null) {
-    return ProductType.getInstance.with(this.include).index(queryBuild)
+    return ProductType.index(queryBuild)
   }
 }
 </script>

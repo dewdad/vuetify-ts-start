@@ -32,6 +32,8 @@ import FormBodyCard from '@/components/card/FormBodyCard.vue'
 
 import { Brand } from '@/store/modules/brand'
 import Base from './mixins/Base'
+import { Update, Show } from '@/api/types'
+import { With } from '@/utils/decorators'
 
 interface Images{
   origin:ApiResponse.ImageData[],
@@ -51,8 +53,6 @@ export default class BrandUpdate extends Mixins(Base, FormMixin) {
   };
 
   @Provide() parentValidator = this.$validator
-
-  include = ['avatars']
 
   item = {} as ApiResponse.BrandData
 
@@ -111,22 +111,33 @@ export default class BrandUpdate extends Mixins(Base, FormMixin) {
     }, {})
   }
 
+  @With(['avatars'])
+  updateBrandApi (payload:Update) {
+    return Brand.update(payload)
+  }
+
+  @With(['avatars'])
+  showBrandApi (payload:Show) {
+    return Brand.show(payload)
+  }
+
   async update () {
     this.$loading({show: true, text: '提交中'})
-    let res = await Brand.getInstance.update({id: +this.$route.params.id, formData: this.paserFormData()})
 
-    if (res.status === 204) {
+    let res = await this.updateBrandApi({id: +this.$route.params.id, ...this.paserFormData()})
+
+    if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: this.$route.params.id}})
       this.$success({text: 'update success!'})
     } else {
-      this.$refs.form.$setErrorsFromResponse(res.data)
+      this.$setErrorsFromResponse(res.data)
       this.$fail({text: res.data.message})
     }
     this.$loading({show: false})
   }
 
   async viewInit () {
-    const {data} = await Brand.getInstance.with(this.include).show({id: +this.$route.params.id})
+    const {data} = await this.showBrandApi({id: +this.$route.params.id})
     this.item = data
     this.assignmentFormSchema(this.item)
   }

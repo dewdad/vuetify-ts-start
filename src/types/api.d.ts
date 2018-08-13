@@ -1,6 +1,7 @@
 declare namespace ApiResponse{
   export interface AttributeGroups{
     data:AttributeGroupData[];
+    meta?:Meta;
   }
 
   export type AttributeGroupType ='text'|'textarea'|'select'|'radio'|'richtext'|'checkbox'|'date'|'time'|'checkbox_group'|'radio_group'|'toggle'|'file'
@@ -262,6 +263,10 @@ declare namespace ApiResponse{
     type: string;
   }
 
+  export interface ProductTypes{
+    data:ProductTypeData[];
+    meta:Meta;
+  }
   export interface ProductType{
     data:ProductTypeData;
   }
