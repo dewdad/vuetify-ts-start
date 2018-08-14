@@ -106,7 +106,7 @@ export const actions:Actions = {
   },
   async store (ctx, payload) {
     try {
-      let {data} = await ProductProviderApi.store(payload)
+      let data = await ProductProviderApi.store(payload)
       return data
     } catch (error) {
 
@@ -136,7 +136,7 @@ export const actions:Actions = {
 
   async update (ctx, payload) {
     try {
-      const { data } = await ProductProviderApi.update(payload)
+      const data = await ProductProviderApi.update(payload)
       ctx.commit('DEL_PROVIDER', payload.id)
       return data
     } catch (error) {

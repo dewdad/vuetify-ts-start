@@ -29,6 +29,7 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
+    "@mdi/font": "^2.6.95",
     "@types/js-cookie": "^2.1.0",
     "@types/lodash": "^4.14.112",
     "@types/webpack": "^4.4.0",

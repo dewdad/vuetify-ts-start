@@ -1,17 +1,13 @@
 <template>
 <v-layout fill-height  justify-center>
-  <v-flex xs12 sm12 md8 lg8 xl8>
+  <v-flex xs8>
     <v-expansion-panel
       v-model="panel"
     >
       <v-expansion-panel-content>
         <div slot="header">
           供应商详情</div>
-        <v-card class="mb-3">
-          <v-card-text v-if="loaded">
-            <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData" :disabled="true"></base-form>
-          </v-card-text>
-        </v-card>
+        <detail-list v-if="loaded" :item="item"></detail-list>
       </v-expansion-panel-content>
       <v-expansion-panel-content>
         <div slot="header">产品</div>
@@ -95,18 +91,16 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
-import Form from '@/components/form/BaseForm.vue'
 import { ProductProvider } from '@/store/modules/productProvider'
 import RelationProduct from './RelationProduct.vue'
 @Component({
   components:{
-  'base-form':Form,
-  'relation-product':RelationProduct
+  'relation-product':RelationProduct,
+  'detail-list':()=>import('@/views/productProvider/components/DetailList.vue')
   }
   })
 export default class ProductProviderShow extends mixins(Base) {
   public $refs!: {
-    form: Form,
     relationProduct:RelationProduct
   }
   formSchema:any[]|null = null
@@ -126,8 +120,6 @@ export default class ProductProviderShow extends mixins(Base) {
   async viewInit () {
     const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = ProductProvider.filterData(data)
-    this.orginFormData.addresses = this.orginFormData.addresses[0]
   }
 
   getAttribute (attributes:any) {

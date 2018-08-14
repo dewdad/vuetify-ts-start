@@ -107,6 +107,17 @@ declare namespace ApiResponse{
     'product_provider_id': number;
     'created_at': string;
     'updated_at': string;
+    payment?:{
+      data:PaymentObj
+    },
+    balance?:BalanceData;
+  }
+
+  export interface PaymentObj{
+    id:number;
+    name:string;
+    'created_at':string;
+    'updated_at':string;
   }
 
   export interface PaymentOptions {
@@ -136,9 +147,33 @@ declare namespace ApiResponse{
     'created_at': string;
     'updated_at': string;
     'deleted_at'?: any;
-    'info': ProductProviderInfo;
-    'payment': Payment;
-    'products': ProductVariant;
+    'info'?: ProductProviderInfo;
+    'payment'?: Payment;
+    'products'?: ProductVariant;
+    'addresses'?:Addresses;
+  }
+
+  export interface Addresses{
+    data:AddressData[];
+  }
+
+  export interface AddressData{
+      id: number;
+      name: string;
+      tel: string;
+      phone: string;
+      fax: string;
+      zip: string;
+      country: string;
+      province: string;
+      city: string;
+      district: string;
+      address: string;
+      en: {};
+      'addressable_type': string;
+      'addressable_id': number;
+      'created_at': string;
+      'updated_at': string;
   }
 
   export interface ProductProvider {

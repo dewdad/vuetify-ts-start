@@ -161,8 +161,7 @@ export default class BrandCreate extends Mixins(Base, FormMixin) {
 
   async submit () {
     if (await this.$validator.validateAll()) {
-      console.log(this.getFormData())
-      // await this.create()
+      await this.create()
     } else {
       this.$fail({text: '表单有误检查后再次提交'})
     }
@@ -177,7 +176,7 @@ export default class BrandCreate extends Mixins(Base, FormMixin) {
 
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await this.createApi(this.paserFormData())
+    let res = await this.createApi(this.getFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})
