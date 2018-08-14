@@ -73,7 +73,7 @@ export default class BaseMixin extends Vue {
   }
 
   // 详情
-  @With([])
+  @With(['products.brand', 'products.type', 'products.avatars'])
   showApi (payload:Show) {
     return this.vuexModel.show(payload)
   }

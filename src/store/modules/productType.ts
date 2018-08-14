@@ -2,7 +2,7 @@ import { List, Show, Create, Update, Delete } from '@/api/types'
 
 import { Commit, ActionContext } from 'vuex'
 import ProductTypeApi from '@/api/productType'
-import { AxiosPromise } from 'axios'
+import { AxiosPromise, AxiosError } from 'axios'
 import { Helpers } from '@/store/helpers/Helpers'
 
 export const ROUTE_NAME = 'product-type'
@@ -91,7 +91,7 @@ export const ProductType = new class extends Helpers<Actions> {
    * 获取详情
    * @param  {Show} payload
    */
-  show (payload:Show):Promise<any> {
+  show (payload:Show):AxiosPromise<ApiResponse.ProductTypeData> {
     return this.dispatch('show', payload)
   }
   /**

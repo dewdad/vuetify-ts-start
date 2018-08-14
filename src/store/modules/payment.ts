@@ -22,7 +22,7 @@ interface Actions{
 
 // actions
 export const actions:Actions = {
-  async index (ctx, payload) {
+  async index (ctx, payload = {}) {
     try {
       let {data} = await PaymentApi.index(payload)
       return data

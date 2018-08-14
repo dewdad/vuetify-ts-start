@@ -65,15 +65,9 @@ export default class ProductProviderUpdate extends mixins(Base) {
     this.orginFormData.addresses = this.orginFormData.addresses[0]
   }
 
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在生成表单。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
-  }
-
   async created () {
     this.$nextTick(async () => {
-      await Promise.all([this.viewInit(), this.loadFormStructure()])
+      await Promise.all([this.viewInit()])
       this.loaded = true
     })
   }

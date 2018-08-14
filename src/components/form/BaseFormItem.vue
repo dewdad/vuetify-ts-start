@@ -86,6 +86,17 @@ export default class BaseFormItem extends Mixins(InjectValidator) {
                 v-bind="filterFieldAttrs(propField)"
                 v-on="listeners(propField)"></v-switch>
 
+      <v-slider :key="propField.field"
+                v-if="propField.fieldType === 'slider'"
+                v-validate="propField.rule"
+                :error-messages="errors.first(propField.name || propField.field)"
+                :name="propField.name || propField.field"
+                v-model="propField.value"
+                v-bind="filterFieldAttrs(propField)"
+                v-on="listeners(propField)"
+
+      ></v-slider>
+
       <v-textarea outline
                   :key="propField.field"
                   v-if="propField.fieldType === 'textarea'"

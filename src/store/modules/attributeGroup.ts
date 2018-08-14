@@ -24,7 +24,7 @@ interface Actions{
 
 // actions
 export const actions:Actions = {
-  async index (ctx, payload) {
+  async index (ctx, payload = {}) {
     try {
       let {data} = await AttributeGroupApi.index<ApiResponse.AttributeGroups>(payload)
       return data

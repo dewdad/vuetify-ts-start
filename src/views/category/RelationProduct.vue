@@ -15,17 +15,15 @@
         </v-btn>
         <v-toolbar-title>添加关联产品</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-text-field
-                  flat
-                  solo-inverted
-                  hide-details
-                  append-icon="search"
-                  label="Search"
-                  v-model="search"
-                  class="hidden-sm-and-down"
-                  @keydown.enter="searchHandel"
-                  @click:append="searchHandel"
-                ></v-text-field>
+        <v-text-field flat
+                      solo-inverted
+                      hide-details
+                      append-icon="search"
+                      label="Search"
+                      v-model="search"
+                      class="hidden-sm-and-down"
+                      @keydown.enter="searchHandel"
+                      @click:append="searchHandel"></v-text-field>
         <!-- <v-toolbar-items>
               <v-btn dark flat @click.native="dialog = false">Save</v-btn>
             </v-toolbar-items> -->
@@ -34,69 +32,22 @@
 
         <v-list three-line
                 expand>
-                <v-text-field
-                  flat
-                  color="white"
-                  solo-inverted
-                  hide-details
-                  append-icon="search"
-                  label="Search"
-                  v-model="search"
-                  @keydown.enter="searchHandel"
-                  @click:append="searchHandel"
-                  class="hidden-md-and-up grey lighten-5"
-                ></v-text-field>
+          <v-text-field flat
+                        color="white"
+                        solo-inverted
+                        hide-details
+                        append-icon="search"
+                        label="Search"
+                        v-model="search"
+                        @keydown.enter="searchHandel"
+                        @click:append="searchHandel"
+                        class="hidden-md-and-up grey lighten-5"></v-text-field>
           <template v-for="(item,index) in productList">
-
-              <v-list-tile :key="item.id" avatar @click="openProductShow(item)">
-                <v-list-tile-avatar color="indigo"
-                                    class="headline font-weight-light white--text">
-                  {{ item.name.charAt(0) }}
-                </v-list-tile-avatar>
-
-                <v-list-tile-content>
-                  <v-list-tile-title v-html="item.name"></v-list-tile-title>
-
-                  <v-list-tile-sub-title>
-                    <v-layout row
-                              wrap>
-                      <v-flex>
-                        <v-chip outline
-                                small
-                                color="primary">{{item.type.data.name}}</v-chip>
-
-                        <v-chip color="secondary" text-color="white"
-                                small
-                                >{{item.brand.data.name}}</v-chip>
-                        {{item.name_en}}
-                      </v-flex>
-
-                    </v-layout>
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                    <v-layout row wrap>
-                          <v-flex v-if="productIds.includes(item.id)">
-                            <v-tooltip bottom>
-                              <v-btn @click.stop="relationProduct(item,true)" icon slot="activator" ripple>
-                              <v-icon  color="red lighten-1">cancel</v-icon>
-                              </v-btn>
-                              <span>从分类中移除</span>
-                            </v-tooltip>
-                          </v-flex>
-                          <v-flex v-else>
-                            <v-tooltip bottom>
-                              <v-btn @click.stop="relationProduct(item,false)" icon slot="activator" ripple>
-                              <v-icon color="grey lighten-1">info</v-icon>
-                              </v-btn>
-                              <span>加入到该分类</span>
-                            </v-tooltip>
-                          </v-flex>
-                        </v-layout>
-                  </v-list-tile-action>
-              </v-list-tile>
-
-              <v-divider v-if="index!==productList.length-1" :key="item.code"></v-divider>
+            <product-list-item :product="item"
+                               :key="item.id"
+                               :relationed="productIds" @attach="attach" @detach="detach"></product-list-item>
+            <v-divider v-if="index!==productList.length-1"
+                       :key="item.code"></v-divider>
           </template>
         </v-list>
 
@@ -115,7 +66,11 @@ import { Category } from '@/store/modules/category'
 import { List } from '@/api/types'
 import { With } from '@/utils/decorators'
 
-@Component
+@Component({
+  components:{
+  'product-list-item':()=>import('@/components/card/ProductListItem.vue')
+  }
+  })
 export default class RelationProduct extends Vue {
   dialog:boolean = false
 
@@ -154,7 +109,7 @@ export default class RelationProduct extends Vue {
     }
   }
 
-  @With(['type', 'brand'])
+  @With(['type', 'brand', 'avatars'])
   listProductApi (payload:List) {
     return Product.index(payload)
   }
@@ -180,8 +135,12 @@ export default class RelationProduct extends Vue {
     this.lastSearch = this.search
   }
 
-  async relationProduct (product:ApiResponse.ProductData, cancel:boolean) {
-    await Category.products({id: +this.$route.params.id, product}, cancel)
+  async attach (product:ApiResponse.ProductData) {
+    await Category.products({id: +this.$route.params.id, product}, false)
+  }
+
+  async detach (product:ApiResponse.ProductData) {
+    await Category.products({id: +this.$route.params.id, product}, true)
   }
 
   get products () {

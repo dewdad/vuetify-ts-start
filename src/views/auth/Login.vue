@@ -24,9 +24,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Provide, Mixins } from 'vue-property-decorator'
 import {User} from '@/store/modules/user'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
+import FormMixin from '@/components/form/mixins/Form'
+
 @Component({
   layout: 'default',
   middleware:'guest',
@@ -34,12 +36,14 @@ import BaseFormItem from '@/components/form/BaseFormItem.vue'
   'base-form-item':BaseFormItem
   }
   })
-export default class Login extends Vue {
+export default class Login extends Mixins(FormMixin) {
   public $refs!: {
     'form':BaseFormItem
   };
 
   public drawer = null;
+
+  @Provide() parentValidator = this.$validator
 
   onPasswordClickAppendIcon (e:MouseEvent, item:FormInterface.Field) {
     item.appendIcon = item.appendIcon ==='visibility_off' ? 'visibility' : 'visibility_off'
@@ -72,7 +76,7 @@ export default class Login extends Vue {
   ]
 
   async submit () {
-    if (await this.$refs.form.submit()) {
+    if (await this.$validator.validateAll()) {
       await this.login()
     }
   }

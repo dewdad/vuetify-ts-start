@@ -72,6 +72,15 @@ Validator.extend('skuUnique', {
   }
 })
 
+Validator.extend('categoryUnique', {
+  getMessage: (field:string) => `该分类名称已存在`,
+  validate: (value:any, [items]:{categories:{id:number, name:string, parent_id:number|null}[], parentId:number}[]) => {
+    // 获取当前父分类下所有分类
+    const currentCategories = items.categories.filter(item => item.parent_id === items.parentId)
+    return !currentCategories.some(item => item.name === value)
+  }
+})
+
 Vue.mixin({
   $_veeValidate: {
     validator: 'new'

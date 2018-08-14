@@ -72,6 +72,28 @@ declare namespace ApiResponse{
     'attribute_key'?:string;
   }
 
+  export interface Balances {
+    data:BalanceData[];
+    meta:Meta;
+  }
+
+  export interface Balance {
+    data:BalanceData;
+  }
+
+  export interface BalanceData{
+    id:number;
+    name:string;
+    options:null|any;
+    'created_at':string|null;
+    'updated_at':string|null;
+  }
+
+  export interface Payments {
+    data: PaymentData[];
+    meta:Meta;
+  }
+
   export interface Payment {
     data: PaymentData;
   }
@@ -157,6 +179,7 @@ declare namespace ApiResponse{
 
   export interface Products{
     data:ProductData[];
+    meta:Meta;
   }
 
   export interface Product{

@@ -1,24 +1,25 @@
 <template>
-<v-layout fill-height  justify-center>
-  <v-flex xs12>
-<v-card>
-        <v-img
-          src="https://cdn.vuetifyjs.com/images/lists/ali.png"
-          height="300px"
-        >
-          <v-layout
-            column
-            fill-height
-          >
+  <v-layout fill-height
+            justify-center>
+    <v-flex xs12>
+      <v-card v-if="loaded">
+        <v-img src="https://cdn.vuetifyjs.com/images/lists/ali.png"
+               height="300px">
+          <v-layout column
+                    fill-height>
             <v-card-title>
 
               <v-spacer></v-spacer>
 
-              <v-btn dark icon class="mr-3">
+              <v-btn dark
+                     :to="{name:'product-type.update',params:{id:item.id}}"
+                     icon
+                     class="mr-3">
                 <v-icon>edit</v-icon>
               </v-btn>
 
-              <v-btn dark icon>
+              <v-btn dark
+                     icon>
                 <v-icon>more_vert</v-icon>
               </v-btn>
             </v-card-title>
@@ -32,72 +33,32 @@
         </v-img>
 
         <v-list two-line>
-          <v-list-tile >
-            <v-list-tile-action>
-              <v-icon color="indigo">phone</v-icon>
-            </v-list-tile-action>
 
-            <v-list-tile-content>
-              <v-list-tile-title>(650) 555-1234</v-list-tile-title>
-              <v-list-tile-sub-title>Mobile</v-list-tile-sub-title>
-            </v-list-tile-content>
+          <template v-for="(group,index) in attributeGroups">
 
-            <v-list-tile-action>
-              <v-icon>chat</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+            <v-list-tile :key="group.id">
+              <v-list-tile-action>
+                <v-icon color="primary" v-if="group.variant">add_shopping_cart</v-icon>
+                <v-icon color="grey" v-else>bookmark_border</v-icon>
+              </v-list-tile-action>
 
-          <v-list-tile >
-            <v-list-tile-action></v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{group.name}}</v-list-tile-title>
+                <v-list-tile-sub-title>{{ group.variant ? '销售属性' : '非销售属性' }}</v-list-tile-sub-title>
+              </v-list-tile-content>
 
-            <v-list-tile-content>
-              <v-list-tile-title>(323) 555-6789</v-list-tile-title>
-              <v-list-tile-sub-title>Work</v-list-tile-sub-title>
-            </v-list-tile-content>
+              <v-list-tile-action>
+                <v-icon color="grey">info</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider inset :key="group.name + group.id" v-if="index < attributeGroups.length-1"></v-divider>
 
-            <v-list-tile-action>
-              <v-icon>chat</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+          </template>
 
-          <v-divider inset></v-divider>
-
-          <v-list-tile >
-            <v-list-tile-action>
-              <v-icon color="indigo">mail</v-icon>
-            </v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>aliconnors@example.com</v-list-tile-title>
-              <v-list-tile-sub-title>Personal</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile >
-            <v-list-tile-action></v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>ali_connors@example.com</v-list-tile-title>
-              <v-list-tile-sub-title>Work</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-divider inset></v-divider>
-
-          <v-list-tile >
-            <v-list-tile-action>
-              <v-icon color="indigo">location_on</v-icon>
-            </v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>1400 Main Street</v-list-tile-title>
-              <v-list-tile-sub-title>Orlando, FL 79938</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
         </v-list>
       </v-card>
-  </v-flex>
-</v-layout>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
@@ -118,31 +79,31 @@ export default class ProductTypeShow extends mixins(Base) {
   public $refs!: {
     form: Form,
   }
-  formSchema:any[]|null = null
-  orginFormData:any|null = null
+
   loaded = false
-  createItem:any = null
-  item:any|null = null
-  include = ['attributeGroups']
+
+  item = {} as ApiResponse.ProductTypeData
 
   selected:number[] = []
 
   async viewInit () {
     const { data } = await this.showApi({id: this.$route.params.id})
     this.item = data
-    this.orginFormData = data
-    this.selected = this.orginFormData.attributeGroups.map((item:any) => item.id)
   }
 
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在加载。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
+  get attributeGroups () {
+    if (this.item) {
+      const groups = this.item.attributeGroups
+      if (groups) {
+        return groups.data
+      }
+    }
+    return []
   }
 
   async created () {
     this.$nextTick(async () => {
-      await Promise.all([this.viewInit(), this.loadFormStructure()])
+      await Promise.all([this.viewInit()])
       this.loaded = true
     })
   }

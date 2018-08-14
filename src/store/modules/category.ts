@@ -34,6 +34,8 @@ interface Actions{
   destroy(ctx: ActionContext<State, any>, id:Delete):any
   products (ctx: ActionContext<State, any>, payload:AddProductPayload):any
   cancelProducts (ctx: ActionContext<State, any>, payload:AddProductPayload):any
+  attachProduct (ctx: ActionContext<State, any>, payload:AddProductPayload):any
+  detachProduct (ctx: ActionContext<State, any>, payload:AddProductPayload):any
 }
 
 // state
@@ -106,7 +108,7 @@ export const actions:Actions = {
   },
   async store (ctx, payload) {
     try {
-      let {data} = await CategoryApi.store(payload)
+      let data = await CategoryApi.store(payload)
       return data
     } catch (error) {
 
@@ -134,9 +136,31 @@ export const actions:Actions = {
     }
   },
 
+  async attachProduct (ctx, payload) {
+    try {
+      // const productIds = ctx.getters.productIds(payload.id)
+      // productIds.push(payload.product.id)
+      let {data} = await CategoryApi.attachProducts({id: payload.id, productIds: payload.product.id})
+      ctx.commit('ADD_PRODUCT', payload)
+      return data
+    } catch (error) {
+
+    }
+  },
+
+  async detachProduct (ctx, payload) {
+    try {
+      let {data} = await CategoryApi.detachProducts({id: payload.id, productIds: payload.product.id})
+      ctx.commit('DEL_PRODUCT', payload)
+      return data
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
   async update (ctx, payload) {
     try {
-      const { data } = await CategoryApi.update(payload)
+      const data = await CategoryApi.update(payload)
       return data
     } catch (error) {
       console.error(error)

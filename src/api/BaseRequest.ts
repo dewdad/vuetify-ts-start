@@ -9,10 +9,11 @@ export default class {
     //   throw new Error('API端点未指定')
     // }
     this.path = path
-    this.http = request
   }
 
-  protected http!:AxiosInstance
+  get http ():AxiosInstance {
+    return request
+  }
 
   /**
    *
@@ -31,7 +32,7 @@ export default class {
    * @memberof BaseRequest
    */
   @ParseInclude
-  public index<T> (payload:List|null = null) {
+  public index<T> (payload?:List) {
     const url = `${this.path}`
     const params = payload
     return this.http.get<T>(url, {params})

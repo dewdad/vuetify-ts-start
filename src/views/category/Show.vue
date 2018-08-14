@@ -1,74 +1,59 @@
 <template>
 <v-layout fill-height  justify-center>
-  <v-flex xs12 sm12 md8 lg8 xl8>
+
+  <v-flex xs8>
     <v-expansion-panel>
-      <v-expansion-panel-content>
+      <v-expansion-panel-content v-if="loaded && item">
         <div slot="header">
           分类详情
         </div>
         <v-card class="mb-3">
           <v-card-text v-if="loaded">
-            <base-form ref="form" :schema="formSchema" :orginFormData="orginFormData" :disabled="true"></base-form>
-          </v-card-text>
-        </v-card>
-      </v-expansion-panel-content>
-      <v-expansion-panel-content>
-        <div slot="header">产品</div>
-        <v-card class="mb-3">
-          <v-card-text v-if="loaded">
-            <v-list two-line>
-              <template v-for="(product,index) in item.products.data">
+            <v-list slot="after-card-text" two-line>
+              <v-list-tile>
+                <v-list-tile-action>
+                  <v-icon color="indigo">title</v-icon>
+                </v-list-tile-action>
 
-                <v-list-tile
-                  :key="product.id"
-                  avatar
-                  @click.stop.native="toProductShow(product)"
-                >
-                  <v-list-tile-avatar
-                    color="indigo"
-                    class="headline font-weight-light white--text"
-                  >
-                    {{ product.name.charAt(0) }}
-                  </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{item.name}}</v-list-tile-title>
+                  <v-list-tile-sub-title>分类名称</v-list-tile-sub-title>
+                </v-list-tile-content>
 
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{product.name}}</v-list-tile-title>
-                    <v-list-tile-sub-title>
-                    <v-layout row
-                              wrap>
-                      <v-flex>
-                        <v-chip outline
-                                small
-                                color="primary">{{product.type.data.name}}</v-chip>
+              </v-list-tile>
 
-                        <v-chip color="secondary" text-color="white"
-                                small
-                                >{{product.brand.data.name}}</v-chip>
-                        {{product.name_en}}
-                      </v-flex>
+              <v-divider inset v-if="item.parent_name"></v-divider>
 
-                    </v-layout>
-                  </v-list-tile-sub-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-layout row wrap>
-                          <v-flex>
-                            <v-tooltip bottom>
-                              <v-btn @click.stop.native="relationProduct(product,true)" icon slot="activator" ripple>
-                              <v-icon  color="red lighten-1">cancel</v-icon>
-                              </v-btn>
-                              <span>从分类中移除</span>
-                            </v-tooltip>
-                          </v-flex>
-                        </v-layout>
-                  </v-list-tile-action>
+              <v-list-tile v-if="item.parent_name">
+                <v-list-tile-action>
+                  <v-icon color="indigo">text_fields</v-icon>
+                </v-list-tile-action>
 
-                </v-list-tile>
-                <v-divider v-if="index!==orginFormData.products.length-1" :key="product.code"></v-divider>
-              </template>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{item.parent_name}}</v-list-tile-title>
+                  <v-list-tile-sub-title>父分类</v-list-tile-sub-title>
+                </v-list-tile-content>
+              </v-list-tile>
+
+              <v-divider inset v-if="item.description"></v-divider>
+
+              <v-list-tile v-if="item.description">
+                <v-list-tile-action>
+                  <v-icon color="indigo">description</v-icon>
+                </v-list-tile-action>
+
+                <v-list-tile-content>
+                  <v-list-tile-title>{{item.description}}</v-list-tile-title>
+                  <v-list-tile-sub-title>分类描述</v-list-tile-sub-title>
+                </v-list-tile-content>
+              </v-list-tile>
             </v-list>
           </v-card-text>
         </v-card>
+      </v-expansion-panel-content>
+      <v-expansion-panel-content v-if="loaded && item.products">
+        <div slot="header">产品</div>
+        <product-list-card :products="item.products" :relationed="productIds" @attach="attach" @detach="detach"></product-list-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-flex>
@@ -105,6 +90,7 @@
     </v-btn>
   </v-fab-transition>
   <relation-product ref="relationProduct"></relation-product>
+
 </v-layout>
 </template>
 
@@ -119,7 +105,8 @@ import RelationProduct from './RelationProduct.vue'
 @Component({
   components:{
   'base-form':Form,
-  'relation-product':RelationProduct
+  'relation-product':RelationProduct,
+  'product-list-card':()=>import('@/components/card/ProductListCard.vue')
   }
   })
 export default class CategoryShow extends mixins(Base) {
@@ -152,19 +139,25 @@ export default class CategoryShow extends mixins(Base) {
     this.orginFormData = Category.filterData(data)
   }
 
+  async attach (product:ApiResponse.ProductData) {
+    await Category.products({id: +this.$route.params.id, product}, false)
+  }
+
+  async detach (product:ApiResponse.ProductData) {
+    await Category.products({id: +this.$route.params.id, product}, true)
+  }
+
   async relationProduct (product:ApiResponse.ProductData, cancel:boolean) {
     await Category.products({id: +this.$route.params.id, product}, cancel)
   }
 
-  async loadFormStructure () {
-    this.$loading({ show: true, text: '正在加载。。。' })
-    this.formSchema = await this.createSchema()
-    this.$loading({ show: false })
+  get productIds () {
+    return Category.productIds(+this.$route.params.id)
   }
 
   async created () {
     this.$nextTick(async () => {
-      await Promise.all([this.viewInit(), this.loadFormStructure()])
+      await Promise.all([this.viewInit()])
       this.loaded = true
     })
   }

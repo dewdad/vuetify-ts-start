@@ -36,9 +36,11 @@ export default class FormMixin extends Vue {
       if (_.has(this.paserMapping, field.field)) {
         const {key, handle} = _.get(this.paserMapping, field.field)
         const fieldName = key || field.field
-        formData[fieldName] = handle(field.value)
+        // formData[fieldName] = handle(field.value)
+        _.set(formData, fieldName, handle(field.value))
       } else {
-        formData[field.field] = field.value
+        // formData[field.field] = field.value
+        _.set(formData, field.field, field.value)
       }
       return formData
     }, {})

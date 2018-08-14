@@ -23,6 +23,7 @@ const layouts: any = requireContext.keys()
     (components as any)[name] = component
     return components
   }, {})
+
 @Component({
   components: {
   'v-loading': Linear,

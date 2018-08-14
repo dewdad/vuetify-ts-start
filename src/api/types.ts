@@ -1,4 +1,5 @@
-export interface List extends Include {
+export type List = Index | null
+export interface Index extends Include {
   [propName:string]:any;
 }
 

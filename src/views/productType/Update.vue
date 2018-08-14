@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Mixins, Provide } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
@@ -93,6 +93,8 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
     form:BaseFormItem,
     vform:any
   };
+
+  @Provide() parentValidator = this.$validator
 
   item = {} as ApiResponse.ProductTypeData
 
@@ -148,7 +150,7 @@ export default class ProductTypeUpdate extends mixins(Base, FormMixin) {
   }
 
   async submit () {
-    if (await this.$refs.form.submit()) {
+    if (await this.$validator.validateAll()) {
       await this.update()
     }
   }

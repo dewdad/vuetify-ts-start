@@ -3,7 +3,9 @@ import { AxiosPromise } from 'axios'
 import request from '@/utils/request'
 
 export default new class {
-  http = request
+  get http () {
+    return request
+  }
 
   login (payload:{email: string, password: string}) {
     return this.http.post('/login', payload)

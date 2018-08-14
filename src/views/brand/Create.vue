@@ -1,6 +1,6 @@
 <template>
 <v-layout fill-height  justify-center>
-  <v-flex xs12 sm 12 md12 lg8 xl8>
+  <v-flex xs12>
   <v-form ref="vform" @keyup.native.enter="submit" @submit.prevent="submit">
     <form-body-card title="创建品牌">
 

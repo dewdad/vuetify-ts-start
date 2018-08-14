@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Mixins, Watch, Provide } from 'vue-property-decorator'
+import { Component, Mixins, Watch, Provide } from 'vue-property-decorator'
 import BaseFormItem from '@/components/form/BaseFormItem.vue'
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 import { ProductType } from '@/store/modules/productType'
