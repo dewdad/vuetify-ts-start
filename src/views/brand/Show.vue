@@ -38,7 +38,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import Base from './mixins/Base'
-import { Brand } from '@/store/modules/brand'
 import NameCard from '@/components/card/NameCard.vue'
 import { With } from '@/utils/decorators'
 
@@ -52,9 +51,8 @@ export default class BrandShow extends mixins(Base) {
 
   item:any|null = null
 
-  @With(['avatars'])
   async viewInit () {
-    const {data} = await Brand.show({id: +this.$route.params.id})
+    const {data} = await this.showApi({id: +this.$route.params.id})
     this.item = data
   }
 

@@ -30,7 +30,6 @@ import FormMixin from '@/components/form/mixins/Form'
 
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 
-import { Brand } from '@/store/modules/brand'
 import Base from './mixins/Base'
 import { Update, Show } from '@/api/types'
 import { With } from '@/utils/decorators'
@@ -111,20 +110,10 @@ export default class BrandUpdate extends Mixins(Base, FormMixin) {
     }, {})
   }
 
-  @With(['avatars'])
-  updateBrandApi (payload:Update) {
-    return Brand.update(payload)
-  }
-
-  @With(['avatars'])
-  showBrandApi (payload:Show) {
-    return Brand.show(payload)
-  }
-
   async update () {
     this.$loading({show: true, text: '提交中'})
 
-    let res = await this.updateBrandApi({id: +this.$route.params.id, ...this.paserFormData()})
+    let res = await this.updateApi({id: +this.$route.params.id, ...this.paserFormData()})
 
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: this.$route.params.id}})
@@ -137,7 +126,7 @@ export default class BrandUpdate extends Mixins(Base, FormMixin) {
   }
 
   async viewInit () {
-    const {data} = await this.showBrandApi({id: +this.$route.params.id})
+    const {data} = await this.showApi({id: +this.$route.params.id})
     this.item = data
     this.assignmentFormSchema(this.item)
   }

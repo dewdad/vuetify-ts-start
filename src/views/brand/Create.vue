@@ -30,7 +30,6 @@ import FormMixin from '@/components/form/mixins/Form'
 
 import FormBodyCard from '@/components/card/FormBodyCard.vue'
 
-import { Brand } from '@/store/modules/brand'
 import Base from './mixins/Base'
 import { With } from '@/utils/decorators'
 @Component({
@@ -88,14 +87,9 @@ export default class BrandCreate extends Mixins(Base, FormMixin) {
     }
   }
 
-  @With(['avatars'])
-  createBrandApi (payload:any) {
-    return Brand.create(payload)
-  }
-
   async create () {
     this.$loading({show: true, text: '提交中'})
-    let res = await this.createBrandApi(this.paserFormData())
+    let res = await this.createApi(this.paserFormData())
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
       this.$success({text: 'create success!'})

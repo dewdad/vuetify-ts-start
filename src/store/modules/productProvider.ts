@@ -10,6 +10,11 @@ export const VUEX_MOUDLE_NAME = 'productProvider'
 // interface
 type delProductParams = {providerId:number, variantId:number}
 type addProductParams = {providerId:number, variantId:number, price:number}
+export interface RelationProductPayload{
+  id:number;
+  products?:{[propName:number]:{price:number}};
+  'product_ids':number[]|number;
+}
 export interface RelationProducts{
   [propName:string]:{[propName:string]:{price:number}}
 }
@@ -26,6 +31,8 @@ interface Actions{
   destroy(ctx: ActionContext<State, any>, id:Delete):any
   products (ctx: ActionContext<State, any>, payload:{providerId:number, products:RelationProducts}):any
   cancelProducts (ctx: ActionContext<State, any>, payload:{providerId:number, variantId:number}):any
+  attachProduct (ctx: ActionContext<State, any>, payload:RelationProductPayload):any
+  detachProduct (ctx: ActionContext<State, any>, payload:RelationProductPayload):any
 }
 
 interface Getters {
@@ -149,6 +156,26 @@ export const actions:Actions = {
       return data
     } catch (error) {
       console.error(error)
+    }
+  },
+
+  async attachProduct (ctx, payload) {
+    try {
+      let {data} = await ProductProviderApi.attachProducts({id: payload.id, products: payload.products})
+      // ctx.commit('ADD_PRODUCT', payload)
+      return data
+    } catch (error) {
+
+    }
+  },
+
+  async detachProduct (ctx, payload) {
+    try {
+      let {data} = await ProductProviderApi.detachProducts({id: payload.id, productIds: payload.product_ids})
+      // ctx.commit('DEL_PRODUCT', payload)
+      return data
+    } catch (error) {
+      console.log(error)
     }
   }
 }
