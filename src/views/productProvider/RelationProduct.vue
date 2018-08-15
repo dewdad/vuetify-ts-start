@@ -337,15 +337,15 @@ export default class RelationProduct extends Vue {
   }
 
   get products () {
-    return ProductProvider.getProducts(this.$route.params.id)
+    return ProductProvider.getProducts(+this.$route.params.id)
   }
 
   get productIds () {
-    return ProductProvider.productIds(this.$route.params.id)
+    return ProductProvider.productIds(+this.$route.params.id)
   }
 
   get provider () {
-    return ProductProvider.provider(this.$route.params.id)
+    return ProductProvider.provider(+this.$route.params.id)
   }
 }
 </script>

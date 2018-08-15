@@ -127,7 +127,7 @@ export default class ProductProviderShow extends mixins(Base) {
   }
 
   get products () {
-    return ProductProvider.getProducts(this.$route.params.id)
+    return ProductProvider.getProducts(+this.$route.params.id)
   }
 
   get showBtn () {

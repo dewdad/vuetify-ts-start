@@ -1,7 +1,7 @@
 <template>
 <v-layout fill-height  justify-center>
   <v-flex xs12>
-  <v-form ref="vform" @keyup.native.enter="submit" @submit.prevent="submit">
+  <v-form ref="vform"  @submit.prevent="submit">
     <form-body-card title="创建分类">
 
       <v-card-text v-if="loaded">

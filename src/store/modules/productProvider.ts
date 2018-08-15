@@ -202,15 +202,15 @@ export const ProductProvider = new class extends Helpers<Actions, Getters> {
     return this.dispatch('products', payload)
   }
 
-  getProducts (id:number|string):ApiResponse.ProductVariantData {
+  getProducts (id:number):ApiResponse.ProductVariantData {
     return this.getters('products')(id)
   }
 
-  productIds (id:number|string) {
+  productIds (id:number) {
     return this.getters('productIds')(id)
   }
 
-  provider (id:number|string) {
+  provider (id:number) {
     return this.getters('provider')(id)
   }
 }(VUEX_MOUDLE_NAME)
