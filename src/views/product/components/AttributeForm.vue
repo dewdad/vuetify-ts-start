@@ -247,6 +247,8 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
       let value
       if (this.isComment(group)) {
         value = ''
+      } else if (group.type === 'toggle') {
+        value = false
       } else if (group.type === 'radio_group') {
         value = []
       } else {
@@ -294,7 +296,7 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
   }
 
   isComment (item:ApiResponse.AttributeGroupData) {
-    return item.type === 'text' || item.type==='textarea' || item.type==='toggle'
+    return item.type === 'text' || item.type==='textarea'
   }
 
   // 实现v-model双向绑定，把需要提交表单的数据传给外部组件
@@ -353,7 +355,7 @@ export default class ProductAttributes extends Mixins(InjectValidator) {
   onGroupsChange (val:Groups) {
     const schema = this.genCartesian()
     this.skuTableSchema = schema.map(item => {
-      const key = item.map(attr => attr.value_name).join('')
+      const key = item.map(attr => attr.value_name).join('-')
       let cache = this.getSkuItemAttr(key)
       if (!cache) {
         cache = {sku: '', price: 0}

@@ -46,66 +46,8 @@
                   @click:append="searchHandel"
                   class="hidden-md-and-up grey lighten-5"
                 ></v-text-field>
-          <template v-for="item in productList">
-            <v-list-group :key="item.id"
-                          no-action>
 
-              <v-list-tile avatar
-                           slot="activator">
-                <v-list-tile-avatar color="indigo"
-                                    class="headline font-weight-light white--text">
-                  {{ item.name.charAt(0) }}
-                </v-list-tile-avatar>
-
-                <v-list-tile-content>
-                  <v-list-tile-title v-html="item.name"></v-list-tile-title>
-
-                  <v-list-tile-sub-title>
-                    <v-layout row
-                              wrap>
-                      <v-flex>
-                        <v-chip outline
-                                small
-                                color="primary">{{item.type.name}}</v-chip>
-
-                        <v-chip color="secondary" text-color="white"
-                                small
-                                >{{item.brand.name}}</v-chip>
-                        {{item.name_en}}
-                      </v-flex>
-
-                    </v-layout>
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
-
-              <v-list-tile v-for="variant in item.variants"
-                           :key="variant.sku"
-                           @click="openForm(item,variant)">
-                <v-list-tile-content>
-                  <v-list-tile-title class="font-weight-regular">属性:{{ getAttribute(variant.attributes) }}</v-list-tile-title>
-                  <v-list-tile-sub-title>sku: {{variant.sku}}</v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action v-if="productIds[variant.id]">
-                  <v-layout row
-                            wrap>
-                    <v-flex>
-
-                      报价: {{productIds[variant.id].price}}
-                      <v-btn icon ripple @click.stop.native="cancel(item,variant)">
-                        <v-icon color="grey lighten-1">cancel</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-                  </v-layout>
-                </v-list-tile-action>
-                <!-- <v-list-tile-action>
-                <v-icon>{{ subItem.meta.action }}</v-icon>
-              </v-list-tile-action> -->
-              </v-list-tile>
-
-            </v-list-group>
-          </template>
+          <product-list-item-with-variant v-for="product in productList" @detach="cancel" @edit="openForm" :product="product" :key="product.id"></product-list-item-with-variant>
         </v-list>
 
       </v-card-text>
@@ -129,7 +71,7 @@
                 <div>SKU: {{currentAddVariant.sku}}</div>
                 <div>参考价: {{currentAddVariant.price}}</div>
                 <v-divider></v-divider>
-                <div class='grey--text'>添加 {{currentAddVariant.name+' '+ getAttribute(currentAddVariant.attributes)|| '关联变体' }}</div>
+                <div class='grey--text'>添加 {{currentAddVariant.name+' '+ currentAddVariant.attribute_key|| '关联变体' }}</div>
               </v-flex>
             </v-layout>
           </v-card-title>
@@ -165,8 +107,8 @@
         <v-card>
           <v-card-title>{{willDeleteVariant.title}}</v-card-title>
 
-          <v-card-text>
-            {{willDeleteVariant.description}}
+          <v-card-text v-html="willDeleteVariant.description">
+
           </v-card-text>
 
           <v-card-actions>
@@ -202,7 +144,13 @@ import { ProductProvider, RelationProducts } from '@/store/modules/productProvid
 import { List } from '@/api/types'
 import { With } from '@/utils/decorators'
 
-@Component
+type EventPayload = {variant:ApiResponse.ProductVariantData, name:string}
+
+@Component({
+  components:{
+  'product-list-item-with-variant':()=>import('@/components/card/ProductListItemWithVariant.vue')
+  }
+  })
 export default class RelationProduct extends Vue {
   dialog:boolean = false
 
@@ -258,14 +206,14 @@ export default class RelationProduct extends Vue {
     }
   }
 
-  @With(['variants.attributes.attributeValue', 'type', 'brand'])
+  @With(['variants.attributes.attributeValue', 'type', 'brand', 'avatars'])
   listProductApi (payload:List) {
     return Product.index(payload)
   }
 
   async fetchProductList (queryBuild:List|null = null) {
     const {data, meta} = await this.listProductApi({...queryBuild, ...this.queryBuild})
-    this.productList = Product.filterData(data)
+    this.productList = data
     this.meta = meta
     this.fetched = true
   }
@@ -276,8 +224,8 @@ export default class RelationProduct extends Vue {
     this.$success({text: '关联成功'})
   }
 
-  openForm (product:any, variant:any) {
-    this.currentAddVariant = {...variant, name: product.name}
+  openForm ({variant, name}:EventPayload) {
+    this.currentAddVariant = {...variant, name}
     if (this.productIds[variant.id]) {
       this.currentAddVariant.prePrice =this.productIds[variant.id].price
     }
@@ -288,11 +236,12 @@ export default class RelationProduct extends Vue {
     this.willDeleteVariant = Object.assign({}, this.willDeleteVariant, item)
   }
 
-  cancel (product:any, variant:any) {
-    const title = product.name+' ' +this.getAttribute(variant.attributes)
+  cancel ({variant, name}:EventPayload) {
+    const title = name+' ' +variant.attribute_key
     const dialog = {
       title: `tips`,
-      description: `是否取消 ${this.provider.name} 对 ${title} 的关联？`,
+
+      description: `是否取消 <b class="primary--text">${this.provider.name}</b> 对 <b class="primary--text">${title}</b> 的关联？`,
       status: !this.willDeleteVariant.status,
       item: {providerId: this.$route.params.id, variantId: variant.id}
     }

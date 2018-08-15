@@ -14,38 +14,10 @@
         <v-card class="mb-3">
           <v-card-text v-if="loaded">
             <v-list two-line>
-              <template v-for="variant in products">
+              <template v-for="(variant,index) in products">
 
-                <v-list-tile
-                  :key="variant.id"
-                  avatar
-                  :to="{name:'product.show',params:{id:variant.product_id}}"
-                >
-                  <v-list-tile-avatar
-                    color="indigo"
-                    class="headline font-weight-light white--text"
-                  >
-                    {{ variant.name.charAt(0) }}
-                  </v-list-tile-avatar>
-
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{variant.name}}</v-list-tile-title>
-                    <v-list-tile-sub-title>{{getAttribute(variant.attributes)}}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-layout row wrap>
-                          <v-flex>
-                            <v-tooltip bottom>
-                              <v-icon slot="activator" color="grey lighten-1">info</v-icon>
-                              <span>{{variant.pivot.updated_at}}</span>
-                            </v-tooltip>
-                            报价: {{variant.pivot.price}}
-                          </v-flex>
-                        </v-layout>
-                  </v-list-tile-action>
-
-                </v-list-tile>
-                <v-divider :key="variant.sku"></v-divider>
+                <product-list-item-with-variant :product="variant" :key="variant.id"></product-list-item-with-variant>
+                <v-divider :key="variant.sku"  v-if="index<products.length-1"></v-divider>
               </template>
             </v-list>
           </v-card-text>
@@ -96,7 +68,8 @@ import RelationProduct from './RelationProduct.vue'
 @Component({
   components:{
   'relation-product':RelationProduct,
-  'detail-list':()=>import('@/views/productProvider/components/DetailList.vue')
+  'detail-list':()=>import('@/views/productProvider/components/DetailList.vue'),
+  'product-list-item-with-variant':()=>import('@/components/card/ProductListItemWithVariant.vue')
   }
   })
 export default class ProductProviderShow extends mixins(Base) {

@@ -161,7 +161,7 @@ export default class ProductCreate extends Mixins(Base, FormMixin) {
 
   @Watch('productTypeId', {immediate:true})
   onProductTypeIdChange (type:any) {
-    this.$router.push({path: this.$route.path, query: {type}})
+    // this.$router.push({path: this.$route.path, query: {type}})
   }
   // 产品类型搜索框变化回调处理
   onProductSearchChange () {

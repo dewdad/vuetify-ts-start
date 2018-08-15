@@ -98,7 +98,6 @@ export const actions:Actions = {
         ctx.commit('SET_PROVIDER', data)
         include && include.includes('products') && ctx.commit('SET_PRODUCT', data)
       }
-
       return ctx.state.providers[payload.id]
     } catch (error) {
       console.error(error)

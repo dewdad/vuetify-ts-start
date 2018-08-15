@@ -33,30 +33,31 @@
         </v-layout>
       </v-list-tile-sub-title>
     </v-list-tile-content>
-    <v-list-tile-action>
+    <slot name="action" :product="product">
+      <v-list-tile-action>
 
-          <v-tooltip bottom v-if="relationed.includes(product.id)">
-            <v-btn icon
-                   @click="$emit('detach',product)"
-                   slot="activator"
-                   ripple>
-              <v-icon color="red lighten-1">cancel</v-icon>
-            </v-btn>
-            <span>移除关联</span>
-          </v-tooltip>
+            <v-tooltip bottom v-if="relationed.includes(product.id)">
+              <v-btn icon
+                    @click="$emit('detach',product)"
+                    slot="activator"
+                    ripple>
+                <v-icon color="red lighten-1">cancel</v-icon>
+              </v-btn>
+              <span>移除关联</span>
+            </v-tooltip>
 
-          <v-tooltip bottom v-else>
-            <v-btn icon
-                   @click="$emit('attach',product)"
-                   slot="activator"
-                   ripple>
-              <v-icon color="grey lighten-1">info</v-icon>
-            </v-btn>
-            <span>加入关联</span>
-          </v-tooltip>
+            <v-tooltip bottom v-else>
+              <v-btn icon
+                    @click="$emit('attach',product)"
+                    slot="activator"
+                    ripple>
+                <v-icon color="grey lighten-1">info</v-icon>
+              </v-btn>
+              <span>加入关联</span>
+            </v-tooltip>
 
-    </v-list-tile-action>
-
+      </v-list-tile-action>
+    </slot>
   </v-list-tile>
 </template>
 

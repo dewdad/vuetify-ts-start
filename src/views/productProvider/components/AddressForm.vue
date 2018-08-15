@@ -29,6 +29,12 @@ export default class AddressForm extends Mixins(FormMixin, InjectValidator) {
       fieldType: 'text'
     },
     {
+      field: 'addresses.phone',
+      label: '手机',
+      value: '',
+      fieldType: 'text'
+    },
+    {
       field: 'addresses.tel',
       label: '座机',
       value: '',
