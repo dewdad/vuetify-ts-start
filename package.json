@@ -9,13 +9,14 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@vuex-orm/core": "git+https://github.com/ruddenchaux/vuex-orm#extend-model",
     "axios": "^0.18.0",
     "cropperjs": "^1.4.1",
     "inversify": "^4.13.0",
     "reflect-metadata": "^0.1.12",
     "types-vue": "^1.0.6",
     "vee-validate": "^2.1.0-beta.6",
-    "vue": "^2.5.16",
+    "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-cropperjs": "^2.2.1",
     "vue-i18n": "^8.0.0",

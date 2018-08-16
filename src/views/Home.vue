@@ -17,11 +17,20 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import {User} from '@/store/modules/user'
+import Product from '@/models/Product'
+import {Product as ProductVuex} from '@/store/modules/product'
+import http from '@/utils/request'
 @Component({
   layout: 'app',
   middleware:'auth'
   })
 export default class Home extends Vue {
+  async mounted () {
+    let products = await http.get('/products?include=brand,type,categories')
+    console.log(products.data)
+    Product.create({
+      data: products.data.data
+    })
+  }
 }
 </script>
