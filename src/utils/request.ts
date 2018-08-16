@@ -3,6 +3,7 @@ import store from '@/store'
 import { getToken } from '@/auth'
 import { User } from '@/store/modules/user'
 import router from '@/router'
+
 // const Accept = `application/x.${process.env.VUE_APP_API_SUBTYPE}.${process.env.VUE_APP_API_VERSION}+json`
 // create an axios instance
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'

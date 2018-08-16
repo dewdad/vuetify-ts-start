@@ -26,11 +26,7 @@ import http from '@/utils/request'
   })
 export default class Home extends Vue {
   async mounted () {
-    let products = await http.get('/products?include=brand,type,categories')
-    console.log(products.data)
-    Product.create({
-      data: products.data.data
-    })
+    Product.fetch()
   }
 }
 </script>

@@ -1043,11 +1043,9 @@
   version "1.2.0"
   resolved "http://registry.npm.taobao.org/@vue/web-component-wrapper/download/@vue/web-component-wrapper-1.2.0.tgz#bb0e46f1585a7e289b4ee6067dcc5a6ae62f1dd1"
 
-"@vuex-orm/core@git+https://github.com/ruddenchaux/vuex-orm#extend-model":
-  version "0.24.3"
-  resolved "git+https://github.com/ruddenchaux/vuex-orm#92961b80d66fd365edb73c1fc2700fcb250117be"
-  dependencies:
-    axios "^0.18.0"
+"@vuex-orm/core@^0.25.7":
+  version "0.25.7"
+  resolved "http://registry.npm.taobao.org/@vuex-orm/core/download/@vuex-orm/core-0.25.7.tgz#e94ece3c3c4f83d78ba6b1045d8316dc5dfc793b"
 
 "@webassemblyjs/ast@1.5.13":
   version "1.5.13"
@@ -4172,6 +4170,10 @@ indexes-of@^1.0.1:
 indexof@0.0.1:
   version "0.0.1"
   resolved "http://registry.npm.taobao.org/indexof/download/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
+
+inflection@^1.12.0:
+  version "1.12.0"
+  resolved "http://registry.npm.taobao.org/inflection/download/inflection-1.12.0.tgz#a200935656d6f5f6bc4dc7502e1aecb703228416"
 
 inflight@^1.0.4:
   version "1.0.6"
@@ -7856,9 +7858,9 @@ vue-style-loader@^4.1.0:
     hash-sum "^1.0.2"
     loader-utils "^1.0.2"
 
-vue-template-compiler@^2.5.16:
-  version "2.5.16"
-  resolved "http://registry.npm.taobao.org/vue-template-compiler/download/vue-template-compiler-2.5.16.tgz#93b48570e56c720cdf3f051cc15287c26fbd04cb"
+vue-template-compiler@^2.5.16, vue-template-compiler@^2.5.17:
+  version "2.5.17"
+  resolved "http://registry.npm.taobao.org/vue-template-compiler/download/vue-template-compiler-2.5.17.tgz#52a4a078c327deb937482a509ae85c06f346c3cb"
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"
