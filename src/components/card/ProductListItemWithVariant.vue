@@ -43,12 +43,12 @@
           <v-list-tile-sub-title>sku: {{variant.sku}}</v-list-tile-sub-title>
         </v-list-tile-content>
 
-        <v-list-tile-action v-if="productIds[variant.id]">
+        <v-list-tile-action v-if="price(variant.id)">
           <v-layout row
                     wrap>
             <v-flex>
 
-              报价: {{productIds[variant.id].price}}
+              报价: {{price(variant.id).price}}
               <v-btn icon ripple @click.stop="$emit('detach',{variant,name})">
                 <v-icon color="grey lighten-1">cancel</v-icon>
               </v-btn>
@@ -112,6 +112,14 @@ export default class ProductListItemWithVariant extends Vue {
 
   get brand () {
     return _.isString(_.get(this.product, 'brand')) ? _.get(this.product, 'brand') : _.get(this.product, 'brand.data.name', 'product brand not found!')
+  }
+
+  get providerOffer () {
+    return ProductProvider.providerOffer(+this.$route.params.id)
+  }
+
+  get price () {
+    return (id:number) => (this.providerOffer.find((item:any) => item.product_variant_id === id))
   }
 }
 </script>

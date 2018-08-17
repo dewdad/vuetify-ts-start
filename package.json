@@ -9,7 +9,6 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@vuex-orm/core": "^0.25.7",
     "axios": "^0.18.0",
     "cropperjs": "^1.4.1",
     "inversify": "^4.13.0",

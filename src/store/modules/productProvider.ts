@@ -1,7 +1,8 @@
 import { List, Show, Create, Update, Delete } from '@/api/types'
-import { Commit, ActionContext } from 'vuex'
+import { Commit, ActionContext, GetterTree } from 'vuex'
 import ProductProviderApi from '@/api/productProvider'
 import { Helpers } from '@/store/helpers/Helpers'
+import { RootState } from '@/store/types'
 
 export const ROUTE_NAME = 'product-provider'
 
@@ -12,8 +13,8 @@ type delProductParams = {providerId:number, variantId:number}
 type addProductParams = {providerId:number, variantId:number, price:number}
 export interface RelationProductPayload{
   id:number;
-  products?:{[propName:number]:{price:number}};
-  'product_ids':number[]|number;
+  product?:{id:number, attribute:{price:number}};
+  'product_ids'?:number[]|number;
 }
 export interface RelationProducts{
   [propName:string]:{[propName:string]:{price:number}}
@@ -36,9 +37,10 @@ interface Actions{
 }
 
 interface Getters {
-  products: (state:State) => (id:number) => any;
+  products: (state:State) => (id:number) => ApiResponse.ProductVariantData[];
   productIds: (state:State) => (id:number) => any;
   provider: (state:State) => (id:number) => any;
+  providerOffer: (state:State, getters:Getters) => (id:number) => ApiResponse.ProductVariantData['pivot'];
 }
 
 // state
@@ -53,12 +55,23 @@ export const mutations = {
     state.providers[payload.data.id] = payload
     state.products[payload.data.id] = {}
   },
+  ADD_OR_UPDATE_PROVIDER_PRODUCT: (state:State, payload:{id:number, product:ApiResponse.ProductVariantData}) => {
+    const provider = state.providers[payload.id].data
+    const products = provider.products ? provider.products.data : Object.assign({}, provider.products, {data: []})
+    // 确认是否已存在
+    const index = products.findIndex(item => item.id === payload.product.id)
+    index ? products.splice(index, 1, payload.product) : products.push(payload.product)
+  },
+  // 提取当前供应商管理产品报价
   SET_PRODUCT: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
     state.products[payload.data.id] = {}
-    state.providers[payload.data.id].data.products.data.forEach(variant => {
-      const price = variant.pivot ? variant.pivot.price : 0
-      state.products[payload.data.id][variant.id] = {price}
-    })
+    const products = state.providers[payload.data.id].data.products
+    if (products) {
+      products.data.forEach(variant => {
+        const price = variant.pivot ? variant.pivot.price : 0
+        state.products[payload.data.id][variant.id] = {price}
+      })
+    }
   },
   DEL_PROVIDER: (state:State, id:number) => {
     delete state.providers[id]
@@ -161,9 +174,8 @@ export const actions:Actions = {
 
   async attachProduct (ctx, payload) {
     try {
-      let {data} = await ProductProviderApi.attachProducts({id: payload.id, products: payload.products})
-      // ctx.commit('ADD_PRODUCT', payload)
-      return data
+      let {data} = await ProductProviderApi.attachProducts({id: payload.id, product: payload.product})
+      ctx.commit('ADD_OR_UPDATE_PROVIDER_PRODUCT', {id: payload.id, product: data.data})
     } catch (error) {
 
     }
@@ -181,10 +193,19 @@ export const actions:Actions = {
 }
 
 // getters
-export const getters = {
-  products: (state:State) => (id:number) => state.providers[id].data.products.data,
-  productIds: (state:State) => (id:number) => state.products[id],
-  provider: (state:State) => (id:number) => state.providers[id].data
+export const getters:GetterTree<State, RootState> = {
+  // 供应商id获取对应产品
+  products: state => (id:number) => {
+    const provider = state.providers[id]
+    if (provider) {
+      return provider.data.products ? provider.data.products.data : []
+    }
+    return []
+  },
+  // 获取供应商产品报价
+  providerOffer: (state, getters) => (id:number) => getters['products'](id).map((item:ApiResponse.ProductVariantData) => item.pivot),
+  productIds: state => (id:number) => state.products[id],
+  provider: state => (id:number) => state.providers[id].data
 }
 
 // Helper Vuex
@@ -238,5 +259,17 @@ export const ProductProvider = new class extends Helpers<Actions, Getters> {
 
   provider (id:number) {
     return this.getters('provider')(id)
+  }
+
+  providerOffer (id:number):ApiResponse.ProductVariantData['pivot'][] {
+    return this.getters('providerOffer')(id)
+  }
+
+  attach (payload:RelationProductPayload) {
+    return this.dispatch('attachProduct', payload)
+  }
+
+  detach (payload:RelationProductPayload) {
+    return this.dispatch('detachProduct', payload)
   }
 }(VUEX_MOUDLE_NAME)

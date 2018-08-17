@@ -3,14 +3,14 @@ import { RelationProductPayload } from '../store/modules/productProvider'
 const END_POINT = 'product_providers'
 
 export default new class extends BaseRequest {
-  products ({id, products}:{id:number, products:RelationProductPayload['products']}) {
+  products ({id, product}:{id:number, product:RelationProductPayload['product']}) {
     const url =`${this.path}/${id}/products`
-    return this.http.post(url, {products})
+    return this.http.post(url, {product})
   }
 
-  attachProducts ({id, products}:{id:number, products:RelationProductPayload['products']}) {
+  attachProducts ({id, product}:{id:number, product:RelationProductPayload['product']}) {
     const url = `${this.path}/${id}/products/attach`
-    return this.http.post(url, {products})
+    return this.http.post(url, {product})
   }
 
   detachProducts ({id, productIds}:{id:number, productIds:RelationProductPayload['product_ids']}) {

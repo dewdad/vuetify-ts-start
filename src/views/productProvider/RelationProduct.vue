@@ -219,7 +219,9 @@ export default class RelationProduct extends Vue {
   }
 
   async save () {
-    await ProductProvider.products(this.params)
+    console.log(this.params)
+    await ProductProvider.attach(this.params)
+    // await ProductProvider.products(this.params)
     this.dialogForm = false
     this.$success({text: '关联成功'})
   }
@@ -243,7 +245,7 @@ export default class RelationProduct extends Vue {
 
       description: `是否取消 <b class="primary--text">${this.provider.name}</b> 对 <b class="primary--text">${title}</b> 的关联？`,
       status: !this.willDeleteVariant.status,
-      item: {providerId: this.$route.params.id, variantId: variant.id}
+      item: {id: +this.$route.params.id, product_ids: variant.id}
     }
     this.setDeleteDialog(dialog)
   }
@@ -251,7 +253,9 @@ export default class RelationProduct extends Vue {
   async deleteHandle () {
     this.deleting = true
     // 发请求进行删除
-    await ProductProvider.products(this.willDeleteVariant.item, true)
+
+    await ProductProvider.detach(this.willDeleteVariant.item)
+    // await ProductProvider.products(this.willDeleteVariant.item, true)
     this.deleting = false
     const dialog = {
       title: null,
@@ -282,7 +286,7 @@ export default class RelationProduct extends Vue {
   }
 
   get params () {
-    return {providerId: this.$route.params.id, products: {[this.currentAddVariant.id]: {price: +this.currentAddVariant.prePrice}}}
+    return {id: +this.$route.params.id, product: {id: this.currentAddVariant.id, attribute: {price: +this.currentAddVariant.prePrice}}}
   }
 
   get products () {

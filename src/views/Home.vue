@@ -1,6 +1,6 @@
 <template>
   <v-layout align-center justify-center>
-    <v-flex xs12 sm8 md4>
+    <v-flex xs12>
       <v-card class="elevation-12">
         <v-toolbar card dark color="primary">
           <v-toolbar-title>Home</v-toolbar-title>
@@ -17,8 +17,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Product from '@/models/Product'
-import {Product as ProductVuex} from '@/store/modules/product'
 import http from '@/utils/request'
 @Component({
   layout: 'app',
@@ -26,7 +24,6 @@ import http from '@/utils/request'
   })
 export default class Home extends Vue {
   async mounted () {
-    Product.fetch()
   }
 }
 </script>

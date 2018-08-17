@@ -1043,10 +1043,6 @@
   version "1.2.0"
   resolved "http://registry.npm.taobao.org/@vue/web-component-wrapper/download/@vue/web-component-wrapper-1.2.0.tgz#bb0e46f1585a7e289b4ee6067dcc5a6ae62f1dd1"
 
-"@vuex-orm/core@^0.25.7":
-  version "0.25.7"
-  resolved "http://registry.npm.taobao.org/@vuex-orm/core/download/@vuex-orm/core-0.25.7.tgz#e94ece3c3c4f83d78ba6b1045d8316dc5dfc793b"
-
 "@webassemblyjs/ast@1.5.13":
   version "1.5.13"
   resolved "http://registry.npm.taobao.org/@webassemblyjs/ast/download/@webassemblyjs/ast-1.5.13.tgz#81155a570bd5803a30ec31436bc2c9c0ede38f25"

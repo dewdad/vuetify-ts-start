@@ -1,13 +1,8 @@
 import Vue from 'vue'
 import Vuex, {StoreOptions, Module} from 'vuex'
 
-import VuexORM from '@vuex-orm/core'
-import database from './database'
-import VuexORMHttp from '@/vuex-orm-http'
 import getters from '@/store/getters'
 import { RootState } from './types'
-import http from '@/utils/request'
-// VuexORM.use(VuexORMHttp, { database, http })
 Vue.use(Vuex)
 const mergeModule = (module:any) => {
   const {actions, getters, mutations, state} = module
@@ -26,11 +21,7 @@ const store:StoreOptions<RootState> = {
     version: 'v1.0.0'
   },
   modules,
-  getters,
-  plugins: [
-    VuexORM.install(database)
-  ]
-
+  getters
 }
 
 export default new Vuex.Store<RootState>(store)
