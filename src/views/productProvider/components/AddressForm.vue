@@ -95,7 +95,9 @@ export default class AddressForm extends Mixins(FormMixin, InjectValidator) {
   }
 
   mounted () {
-    this.init()
+    setTimeout(() => {
+      this.init()
+    }, 100)
   }
 }
 </script>

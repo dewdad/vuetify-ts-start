@@ -27,7 +27,7 @@
               <v-chip color="secondary"
                       text-color="white"
                       small>{{brand}}</v-chip>
-              <slot name="sub-title" slot-scope="product">{{product.name_en}}</slot>
+              <slot name="sub-title" :product="product">{{product.name_en}}</slot>
             </v-flex>
 
           </v-layout>

@@ -3,7 +3,6 @@ import { Commit, ActionContext, GetterTree } from 'vuex'
 import ProductProviderApi from '@/api/productProvider'
 import { Helpers } from '@/store/helpers/Helpers'
 import { RootState } from '@/store/types'
-
 export const ROUTE_NAME = 'product-provider'
 
 export const VUEX_MOUDLE_NAME = 'productProvider'
@@ -13,7 +12,7 @@ type delProductParams = {providerId:number, variantId:number}
 type addProductParams = {providerId:number, variantId:number, price:number}
 export interface RelationProductPayload{
   id:number;
-  product?:{id:number, attribute:{price:number}};
+  product?:{id:number, attribute:{price:number}} | ApiResponse.ProductVariantData;
   'product_ids'?:number[]|number;
 }
 export interface RelationProducts{
@@ -55,12 +54,15 @@ export const mutations = {
     state.providers[payload.data.id] = payload
     state.products[payload.data.id] = {}
   },
+  // 添加或更新供应商对产品报价
   ADD_OR_UPDATE_PROVIDER_PRODUCT: (state:State, payload:{id:number, product:ApiResponse.ProductVariantData}) => {
     const provider = state.providers[payload.id].data
     const products = provider.products ? provider.products.data : Object.assign({}, provider.products, {data: []})
+
     // 确认是否已存在
     const index = products.findIndex(item => item.id === payload.product.id)
-    index ? products.splice(index, 1, payload.product) : products.push(payload.product)
+    const product = $transformerResponseVariant(payload)
+    index>=0 ? products.splice(index, 1, product) : products.push(product)
   },
   // 提取当前供应商管理产品报价
   SET_PRODUCT: (state:State, payload:{data:ApiResponse.ProductProviderData}) => {
@@ -78,7 +80,18 @@ export const mutations = {
     delete state.products[id]
   },
   ADD_PRODUCT: (state:State, {providerId, variantId, price}:addProductParams) => (state.products[providerId] = Object.assign({}, state.products[providerId], {variantId: {price}})),
-  DEL_PRODUCT: (state:State, {providerId, variantId}:delProductParams) => delete state.products[providerId][variantId],
+  // 删除供应商关联产品
+  DEL_PRODUCT: (state:State, payload:RelationProductPayload) => {
+    let products = $getProducts(state, payload)
+    products = products.filter(product => {
+      if (payload.product_ids) {
+        return Array.isArray(payload.product_ids) ? !payload.product_ids.includes(product.id) : product.id!==payload.product_ids
+      } else {
+        return true
+      }
+    })
+    _.set(state, `providers[${payload.id}].data.products.data`, products)
+  },
   SYNC_PRODUCT: (state:State, {res, payload, providerId}:any) => {
     const {attached, detached, updated} =res
     // add
@@ -114,9 +127,7 @@ export const actions:Actions = {
     try {
       if (!ctx.state.providers[payload.id]) {
         let {data} = await ProductProviderApi.show(payload)
-        const {include} = payload
         ctx.commit('SET_PROVIDER', data)
-        include && include.includes('products') && ctx.commit('SET_PRODUCT', data)
       }
       return ctx.state.providers[payload.id]
     } catch (error) {
@@ -184,7 +195,7 @@ export const actions:Actions = {
   async detachProduct (ctx, payload) {
     try {
       let {data} = await ProductProviderApi.detachProducts({id: payload.id, productIds: payload.product_ids})
-      // ctx.commit('DEL_PRODUCT', payload)
+      ctx.commit('DEL_PRODUCT', payload)
       return data
     } catch (error) {
       console.log(error)
@@ -273,3 +284,21 @@ export const ProductProvider = new class extends Helpers<Actions, Getters> {
     return this.dispatch('detachProduct', payload)
   }
 }(VUEX_MOUDLE_NAME)
+
+// helper function
+function $getProducts (state:State, payload:RelationProductPayload) {
+  const provider = state.providers[payload.id].data
+  return provider.products ? provider.products.data : Object.assign({}, provider.products, {data: []})
+}
+
+function $transformerResponseVariant (payload:{id:number, product:ApiResponse.ProductVariantData}) {
+  const product = payload.product.product
+  let variant = _.cloneDeep(payload.product)
+  if (product) {
+    variant.name = product.name
+    variant.brand = (product.brand as any).name
+    variant.type = (product.type as any).name
+  }
+
+  return variant
+}

@@ -219,9 +219,7 @@ export default class RelationProduct extends Vue {
   }
 
   async save () {
-    console.log(this.params)
     await ProductProvider.attach(this.params)
-    // await ProductProvider.products(this.params)
     this.dialogForm = false
     this.$success({text: '关联成功'})
   }
@@ -253,7 +251,6 @@ export default class RelationProduct extends Vue {
   async deleteHandle () {
     this.deleting = true
     // 发请求进行删除
-
     await ProductProvider.detach(this.willDeleteVariant.item)
     // await ProductProvider.products(this.willDeleteVariant.item, true)
     this.deleting = false

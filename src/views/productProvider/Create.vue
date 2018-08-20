@@ -99,7 +99,7 @@ const AddressForm = () => import('@/views/productProvider/components/AddressForm
   'address-form':AddressForm
   }
   })
-export default class BrandCreate extends Mixins(Base, FormMixin) {
+export default class ProductProviderCreate extends Mixins(Base, FormMixin) {
   public $refs!: {
     'form':BaseFormItem,
     'vform':any

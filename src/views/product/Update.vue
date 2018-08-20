@@ -203,7 +203,7 @@ export default class ProductCreate extends mixins(Base, FormMixin) {
     let res = await this.updateApi({id: this.item.id, ...this.getFormData()})
     if (res.status === 201) {
       this.$router.push({name: this.routeName.show, params: {id: res.data.data.id}})
-      this.$success({text: 'create success!'})
+      this.$success({text: 'update success!'})
     } else {
       this.$setErrorsFromResponse(res.data)
       this.$fail({text: res.data.message})

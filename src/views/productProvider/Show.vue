@@ -13,10 +13,33 @@
         <div slot="header">产品</div>
         <v-card class="mb-3">
           <v-card-text v-if="loaded">
+            <v-alert v-show="products.length===0"
+                    :value="true"
+                    color="info"
+                    icon="priority_high"
+                    outline>
+              该供应商暂无关联产品
+            </v-alert>
             <v-list two-line>
               <template v-for="(variant,index) in products">
+                <product-list-item-with-variant :product="variant" :key="variant.id">
+                  <v-chip slot="sub-title" slot-scope="{product}" color="secondary"
+                      text-color="white"
+                      small>{{product.attribute_key}}</v-chip>
+                  <v-list-tile-action slot="action" slot-scope="{product}">
+                    <v-layout row
+                              wrap>
+                      <v-flex>
 
-                <product-list-item-with-variant :product="variant" :key="variant.id"></product-list-item-with-variant>
+                        报价: {{product.pivot.price}}
+                        <!-- <v-btn icon ripple @click.stop="$emit('detach',{variant,name})">
+                          <v-icon color="grey lighten-1">cancel</v-icon>
+                        </v-btn> -->
+                      </v-flex>
+
+                    </v-layout>
+                  </v-list-tile-action>
+                </product-list-item-with-variant>
                 <v-divider :key="variant.sku"  v-if="index<products.length-1"></v-divider>
               </template>
             </v-list>

@@ -72,6 +72,7 @@ declare namespace ApiResponse{
     'attribute_key'?:string;
     brand?:string;
     type?:string;
+    product?:ProductData;
   }
 
   export interface Balances {
@@ -241,6 +242,7 @@ declare namespace ApiResponse{
     attributes?:ProductAttribute;
     variants?:ProductVariant;
     avatars?:Images;
+    category?:Category;
 
   }
 
