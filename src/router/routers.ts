@@ -54,6 +54,11 @@ export default ({ authGuard, guestGuard }: {authGuard: Guard, guestGuard: Guard 
 
   {path: '/procurements', name: 'procurement.index', meta: {title: '采购管理'}, component: () => import('@/views/procurement/Index.vue')},
 
+  {path: '/procurement-plans', name: 'procurement-plan.index', meta: {title: '采购计划'}, component: () => import('@/views/procurementPlan/Index.vue')},
+  {path: '/procurement-plans/create', name: 'procurement-plan.create', meta: {title: '创建采购计划'}, component: () => import('@/views/procurementPlan/Create.vue')},
+  {path: '/procurement-plans/:id', name: 'procurement-plan.show', meta: {title: '采购计划详情'}, component: () => import('@/views/procurementPlan/Show.vue')},
+  {path: '/procurement-plans/:id/update', name: 'procurement-plan.update', meta: {title: '采购计划修改/更新'}, component: () => import('@/views/procurementPlan/Update.vue')},
+
   { path: '*', name: 'error404', component: () => import('@/views/error/404.vue'), hidden: true }
 
 ]

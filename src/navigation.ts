@@ -17,7 +17,8 @@ export default [
   },
   {meta: {title: '采购管理', icon: 'event'},
     routes: [
-      {name: 'procurement.index', meta: {title: '采购管理'}}
+      {name: 'procurement.index', meta: {title: '采购管理'}},
+      {name: 'procurement-plan.index', meta: {title: '采购计划'}}
     ]
   }
 ]

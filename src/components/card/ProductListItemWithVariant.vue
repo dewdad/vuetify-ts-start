@@ -42,7 +42,7 @@
           <v-list-tile-title class="font-weight-regular">属性:{{ variant.attribute_key }}</v-list-tile-title>
           <v-list-tile-sub-title>sku: {{variant.sku}}</v-list-tile-sub-title>
         </v-list-tile-content>
-
+        <slot name="sub-list-tile-action" :variant="variant">
         <v-list-tile-action v-if="price(variant.id)">
           <v-layout row
                     wrap>
@@ -56,7 +56,7 @@
 
           </v-layout>
         </v-list-tile-action>
-
+        </slot>
       </v-list-tile>
       <v-divider inset v-if="index<variants.length-1" :key="index"></v-divider>
     </template>
